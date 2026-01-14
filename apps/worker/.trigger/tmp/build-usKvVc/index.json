@@ -1,0 +1,161 @@
+{
+  "configPath": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/trigger.config.mjs",
+  "customConditions": [
+  ],
+  "queues": [
+  ],
+  "runtime": "node",
+  "runtimeVersion": "20.18.0",
+  "tasks": [
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/maintenance/detect-duplicates.mjs",
+      "filePath": "src/jobs/maintenance/detect-duplicates.ts",
+      "id": "detect-duplicates",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 10000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      },
+      "schedule": {
+        "cron": "0 2 * * 0",
+        "timezone": "UTC"
+      },
+      "triggerSource": "schedule"
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/maintenance/expire-jobs.mjs",
+      "filePath": "src/jobs/maintenance/expire-jobs.ts",
+      "id": "expire-jobs",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 10000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      },
+      "schedule": {
+        "cron": "0 0 * * *",
+        "timezone": "UTC"
+      },
+      "triggerSource": "schedule"
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/newsletter/daily-dispatch.mjs",
+      "filePath": "src/jobs/newsletter/daily-dispatch.ts",
+      "id": "send-batch",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 2,
+        "maxTimeoutInMs": 60000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/newsletter/daily-dispatch.mjs",
+      "filePath": "src/jobs/newsletter/daily-dispatch.ts",
+      "id": "daily-dispatch",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 10000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      },
+      "schedule": {
+        "cron": "0 6 * * *",
+        "timezone": "UTC"
+      },
+      "triggerSource": "schedule"
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/scraping/scrape-org-batch.mjs",
+      "filePath": "src/jobs/scraping/scrape-org-batch.ts",
+      "id": "scrape-org-batch",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 2,
+        "maxTimeoutInMs": 60000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/classification/classify-job.mjs",
+      "filePath": "src/jobs/classification/classify-job.ts",
+      "id": "classify-job",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 60000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/classification/classify-organization.mjs",
+      "filePath": "src/jobs/classification/classify-organization.ts",
+      "id": "classify-organization",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 60000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/feeds/process-feed-batch.mjs",
+      "filePath": "src/jobs/feeds/process-feed-batch.ts",
+      "id": "process-feed-batch",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 60000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/feeds/sync-stepstone.mjs",
+      "filePath": "src/jobs/feeds/sync-stepstone.ts",
+      "id": "sync-stepstone",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 10000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      },
+      "schedule": {
+        "cron": "0 * * * *",
+        "timezone": "UTC"
+      },
+      "triggerSource": "schedule"
+    }
+  ],
+  "timings": {
+    "src/jobs/classification/classify-job.ts": 21.585499999999996,
+    "src/jobs/classification/classify-organization.ts": 0.906833000000006,
+    "src/jobs/feeds/process-feed-batch.ts": 0.5453329999999994,
+    "src/jobs/feeds/sync-stepstone.ts": 0.5431250000000034,
+    "src/jobs/index.ts": 0.5577920000000063,
+    "src/jobs/maintenance/detect-duplicates.ts": 11.009917000000002,
+    "src/jobs/maintenance/expire-jobs.ts": 0.7071669999999983,
+    "src/jobs/newsletter/daily-dispatch.ts": 21.813375000000008,
+    "src/jobs/newsletter/send-batch.ts": 0.4517089999999939,
+    "src/jobs/scraping/scrape-org-batch.ts": 0.6918749999999818
+  },
+  "workerEntryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/private/tmp/bunx-501-trigger.dev@latest/node_modules/trigger.dev/dist/esm/entryPoints/dev-run-worker.mjs"
+}

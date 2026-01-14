@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../packages/db/src/index.ts"],
+  "sourcesContent": ["// Main entry point for @baito/db package\nexport * from \"./client\";\nexport * from \"./queries\";\nexport * from \"./schema\";\n"],
+  "mappings": ";;;;;AAAA;",
+  "names": []
+}

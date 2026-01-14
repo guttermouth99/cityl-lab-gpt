@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/jobs/maintenance/expire-jobs.ts"],
+  "sourcesContent": ["import { expireOldJobs, getExpiredJobsCount } from \"@baito/db/queries\";\nimport { schedules } from \"@trigger.dev/sdk\";\n\nexport const expireJobsTask = schedules.task({\n  id: \"expire-jobs\",\n  // Run every day at midnight\n  cron: \"0 0 * * *\",\n  run: async () => {\n    console.log(\"Starting job expiration check\");\n\n    // Get count of jobs that should be expired\n    const expiredCount = await getExpiredJobsCount();\n    console.log(`Found ${expiredCount} jobs to expire`);\n\n    if (expiredCount === 0) {\n      return { expired: 0 };\n    }\n\n    // Expire jobs\n    await expireOldJobs(new Date());\n\n    console.log(`Expired ${expiredCount} jobs`);\n\n    return {\n      expired: expiredCount,\n    };\n  },\n});\n"],
+  "mappings": ";;;;;;;;;;;;;AAAA;AAGO,IAAM,iBAAiB,kBAAU,KAAK;AAAA,EAC3C,IAAI;AAAA;AAAA,EAEJ,MAAM;AAAA,EACN,KAAK,mCAAY;AACf,YAAQ,IAAI,+BAA+B;AAG3C,UAAM,eAAe,MAAM,oBAAoB;AAC/C,YAAQ,IAAI,SAAS,YAAY,iBAAiB;AAElD,QAAI,iBAAiB,GAAG;AACtB,aAAO,EAAE,SAAS,EAAE;AAAA,IACtB;AAGA,UAAM,cAAc,oBAAI,KAAK,CAAC;AAE9B,YAAQ,IAAI,WAAW,YAAY,OAAO;AAE1C,WAAO;AAAA,MACL,SAAS;AAAA,IACX;AAAA,EACF,GAnBK;AAoBP,CAAC;",
+  "names": []
+}

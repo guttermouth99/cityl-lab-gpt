@@ -1,7 +1,7 @@
 import { defineConfig } from "@trigger.dev/sdk";
 
 export default defineConfig({
-  project: "baito-worker",
+  project: "proj_gpiqtfaeviaievzsiltt",
   runtime: "node",
   logLevel: "log",
   retries: {
