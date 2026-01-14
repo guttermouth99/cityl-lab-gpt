@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation'
+import { setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/layout/header'
+import { Link } from '@/i18n/navigation'
 
 interface UserLayoutProps {
   children: React.ReactNode
@@ -8,7 +9,8 @@ interface UserLayoutProps {
 
 export default async function UserLayout({ children, params }: UserLayoutProps) {
   const { locale } = await params
-  
+  setRequestLocale(locale)
+
   // TODO: Check authentication
   // const session = await getSession()
   // if (!session) {
@@ -22,15 +24,24 @@ export default async function UserLayout({ children, params }: UserLayoutProps) 
         {/* Sidebar */}
         <aside className="w-64 border-r bg-gray-50 p-4">
           <nav className="space-y-2">
-            <a href={`/${locale}/dashboard`} className="block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <Link
+              href="/account/dashboard"
+              className="block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               Dashboard
-            </a>
-            <a href={`/${locale}/alerts`} className="block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+            </Link>
+            <Link
+              href="/account/alerts"
+              className="block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               Job Alerts
-            </a>
-            <a href={`/${locale}/settings`} className="block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+            </Link>
+            <Link
+              href="/account/settings"
+              className="block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               Settings
-            </a>
+            </Link>
           </nav>
         </aside>
         <main className="flex-1 p-8">{children}</main>

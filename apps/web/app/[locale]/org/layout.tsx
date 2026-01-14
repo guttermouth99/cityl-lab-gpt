@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation'
+import { setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/layout/header'
+import { Link } from '@/i18n/navigation'
 import { Building2, Briefcase, CreditCard, Settings } from 'lucide-react'
 
 interface CustomerLayoutProps {
@@ -9,7 +10,8 @@ interface CustomerLayoutProps {
 
 export default async function CustomerLayout({ children, params }: CustomerLayoutProps) {
   const { locale } = await params
-  
+  setRequestLocale(locale)
+
   // TODO: Check authentication and customer role
   // const session = await getSession()
   // if (!session || session.user.role !== 'customer') {
@@ -27,22 +29,34 @@ export default async function CustomerLayout({ children, params }: CustomerLayou
             <p className="text-sm text-gray-600">Manage your job postings</p>
           </div>
           <nav className="space-y-2">
-            <a href={`/${locale}/dashboard`} className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <Link
+              href="/org/dashboard"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               <Building2 className="h-5 w-5" />
               Dashboard
-            </a>
-            <a href={`/${locale}/jobs`} className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+            </Link>
+            <Link
+              href="/org/jobs"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               <Briefcase className="h-5 w-5" />
               My Jobs
-            </a>
-            <a href={`/${locale}/billing`} className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+            </Link>
+            <Link
+              href="/org/billing"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               <CreditCard className="h-5 w-5" />
               Billing
-            </a>
-            <a href={`/${locale}/organization`} className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">
+            </Link>
+            <Link
+              href="/org/organization"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               <Settings className="h-5 w-5" />
               Organization
-            </a>
+            </Link>
           </nav>
         </aside>
         <main className="flex-1 p-8">{children}</main>

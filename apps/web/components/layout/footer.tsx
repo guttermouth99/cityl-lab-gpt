@@ -1,6 +1,9 @@
-import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
+import { Link } from '@/i18n/navigation'
 
-export function Footer() {
+export async function Footer() {
+  const t = await getTranslations('Footer')
+
   return (
     <footer className="border-t bg-gray-50">
       <div className="container mx-auto px-4 py-12">
@@ -11,33 +14,31 @@ export function Footer() {
               <span className="text-2xl">🌱</span>
               <span className="text-xl font-bold text-gray-900">Baito</span>
             </Link>
-            <p className="mt-4 text-sm text-gray-600">
-              Find meaningful work at organizations making a positive impact.
-            </p>
+            <p className="mt-4 text-sm text-gray-600">{t('tagline')}</p>
           </div>
 
           {/* Job Seekers */}
           <div>
-            <h3 className="mb-4 font-semibold text-gray-900">Job Seekers</h3>
+            <h3 className="mb-4 font-semibold text-gray-900">{t('jobSeekers.title')}</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link href="/jobs" className="hover:text-gray-900">
-                  Browse Jobs
+                  {t('jobSeekers.browseJobs')}
                 </Link>
               </li>
               <li>
-                <Link href="/alerts" className="hover:text-gray-900">
-                  Job Alerts
+                <Link href="/account/alerts" className="hover:text-gray-900">
+                  {t('jobSeekers.jobAlerts')}
                 </Link>
               </li>
               <li>
                 <Link href="/ngo" className="hover:text-gray-900">
-                  NGO Jobs
+                  {t('jobSeekers.ngoJobs')}
                 </Link>
               </li>
               <li>
                 <Link href="/j/sustainability" className="hover:text-gray-900">
-                  Sustainability Jobs
+                  {t('jobSeekers.sustainabilityJobs')}
                 </Link>
               </li>
             </ul>
@@ -45,21 +46,21 @@ export function Footer() {
 
           {/* Employers */}
           <div>
-            <h3 className="mb-4 font-semibold text-gray-900">Employers</h3>
+            <h3 className="mb-4 font-semibold text-gray-900">{t('employers.title')}</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <Link href="/jobs/new" className="hover:text-gray-900">
-                  Post a Job
+                <Link href="/org/jobs/new" className="hover:text-gray-900">
+                  {t('employers.postJob')}
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-gray-900">
-                  Pricing
+                <Link href="/org/billing" className="hover:text-gray-900">
+                  {t('employers.pricing')}
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-gray-900">
-                  Dashboard
+                <Link href="/org/dashboard" className="hover:text-gray-900">
+                  {t('employers.dashboard')}
                 </Link>
               </li>
             </ul>
@@ -67,26 +68,26 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="mb-4 font-semibold text-gray-900">Company</h3>
+            <h3 className="mb-4 font-semibold text-gray-900">{t('company.title')}</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link href="/about" className="hover:text-gray-900">
-                  About Us
+                  {t('company.about')}
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="hover:text-gray-900">
-                  Contact
+                  {t('company.contact')}
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-gray-900">
-                  Privacy Policy
+                  {t('company.privacy')}
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="hover:text-gray-900">
-                  Terms of Service
+                  {t('company.terms')}
                 </Link>
               </li>
             </ul>
@@ -94,7 +95,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t pt-8 text-center text-sm text-gray-600">
-          <p>© {new Date().getFullYear()} Baito Jobs. All rights reserved.</p>
+          <p>{t('copyright', { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </footer>

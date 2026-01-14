@@ -1,0 +1,77 @@
+{
+  "Metadata": {
+    "title": "Baito Jobs - Impact Career Platform",
+    "description": "Find meaningful work at organizations making a positive impact. Jobs in sustainability, social impact, NGOs, and more.",
+    "landingTitle": "Find Impact Jobs | Baito Jobs",
+    "landingDescription": "Discover meaningful careers at organizations making a difference. Browse jobs in sustainability, social impact, NGOs, and more."
+  },
+  "Common": {
+    "search": "Search",
+    "viewAll": "View all",
+    "new": "New",
+    "fullTime": "Full Time",
+    "remote": "Remote"
+  },
+  "Landing": {
+    "hero": {
+      "title": "Find work that",
+      "titleHighlight": "makes a difference",
+      "subtitle": "Discover meaningful careers at organizations creating positive impact. From sustainability to social justice, find your next opportunity.",
+      "searchPlaceholder": "Search jobs...",
+      "searchButton": "Search"
+    },
+    "categories": {
+      "sustainability": "Sustainability",
+      "socialImpact": "Social Impact",
+      "remoteJobs": "Remote Jobs"
+    },
+    "stats": {
+      "activeJobs": "Active Jobs",
+      "organizations": "Organizations",
+      "monthlyVisitors": "Monthly Visitors",
+      "impactFocused": "Impact Focused"
+    },
+    "featuredJobs": {
+      "title": "Featured Jobs",
+      "viewAll": "View all jobs",
+      "sampleTitle": "Sample Job Title",
+      "sampleOrg": "Organization Name"
+    },
+    "cta": {
+      "title": "Ready to make an impact?",
+      "subtitle": "Create job alerts and never miss a new opportunity.",
+      "button": "Set Up Job Alerts"
+    }
+  },
+  "Header": {
+    "jobs": "Jobs",
+    "ngos": "NGOs",
+    "sustainability": "Sustainability",
+    "dashboard": "Dashboard",
+    "postJob": "Post a Job"
+  },
+  "Footer": {
+    "tagline": "Find meaningful work at organizations making a positive impact.",
+    "jobSeekers": {
+      "title": "Job Seekers",
+      "browseJobs": "Browse Jobs",
+      "jobAlerts": "Job Alerts",
+      "ngoJobs": "NGO Jobs",
+      "sustainabilityJobs": "Sustainability Jobs"
+    },
+    "employers": {
+      "title": "Employers",
+      "postJob": "Post a Job",
+      "pricing": "Pricing",
+      "dashboard": "Dashboard"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "copyright": "© {year} Baito Jobs. All rights reserved."
+  }
+}

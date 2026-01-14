@@ -1,17 +1,26 @@
 import '@baito/ui/globals.css'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { hasLocale, NextIntlClientProvider } from 'next-intl'
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server'
+import { routing } from '@/i18n/routing'
 
-const locales = ['de', 'en'] as const
-type Locale = (typeof locales)[number]
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'Metadata' })
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://baito.jobs'),
-  title: {
-    default: 'Baito Jobs - Impact Career Platform',
-    template: '%s | Baito Jobs',
-  },
-  description: 'Find meaningful work at organizations making a positive impact. Jobs in sustainability, social impact, NGOs, and more.',
+  return {
+    metadataBase: new URL('https://baito.jobs'),
+    title: {
+      default: t('title'),
+      template: '%s | Baito Jobs',
+    },
+    description: t('description'),
+  }
 }
 
 interface LocaleLayoutProps {
@@ -21,21 +30,27 @@ interface LocaleLayoutProps {
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params
-  
+
   // Validate locale
-  if (!locales.includes(locale as Locale)) {
+  if (!hasLocale(routing.locales, locale)) {
     notFound()
   }
+
+  // Enable static rendering
+  setRequestLocale(locale)
+
+  // Get messages for client components
+  const messages = await getMessages()
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
+        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
       </body>
     </html>
   )
 }
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }))
+  return routing.locales.map((locale) => ({ locale }))
 }

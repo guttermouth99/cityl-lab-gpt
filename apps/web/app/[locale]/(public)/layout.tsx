@@ -1,11 +1,16 @@
+import { setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 
 interface PublicLayoutProps {
   children: React.ReactNode
+  params: Promise<{ locale: string }>
 }
 
-export default function PublicLayout({ children }: PublicLayoutProps) {
+export default async function PublicLayout({ children, params }: PublicLayoutProps) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   return (
     <>
       <Header />
