@@ -18,7 +18,8 @@
     "TRIGGER_API_KEY",
     "TRIGGER_API_URL",
     "STEPSTONE_FEED_URL",
-    "JINA_API_KEY"
+    "JINA_API_KEY",
+    "AI_GATEWAY_API_KEY"
   ],
   "tasks": {
     "build": {

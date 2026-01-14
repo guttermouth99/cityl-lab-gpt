@@ -1,6 +1,7 @@
 import { ArrowRight, Leaf, Search, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { JobAnalyzer } from "@/components/job-analyzer";
 import { Link } from "@/i18n/navigation";
 
 interface LandingPageProps {
@@ -105,6 +106,22 @@ export default async function LandingPage({ params }: LandingPageProps) {
               <div className="font-bold text-3xl text-gray-900">100%</div>
               <div className="text-gray-600">{t("stats.impactFocused")}</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Job Analyzer Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-2xl">
+            <h2 className="mb-2 text-center font-bold text-2xl text-gray-900">
+              AI Job Analyzer
+            </h2>
+            <p className="mb-6 text-center text-gray-600">
+              Paste a job posting to analyze its category, required skills, and
+              more.
+            </p>
+            <JobAnalyzer />
           </div>
         </div>
       </section>

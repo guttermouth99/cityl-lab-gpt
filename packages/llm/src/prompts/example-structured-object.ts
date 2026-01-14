@@ -6,23 +6,40 @@ const DEFAULT_MODEL = "openai/gpt-4o-mini";
 // Example schema for structured output
 const JobAnalysisSchema = z.object({
   title: z.string().describe("The job title"),
-  category: z.enum(["tech", "healthcare", "education", "finance", "other"]),
+  category: z
+    .enum(["tech", "healthcare", "education", "finance", "other"])
+    .optional()
+    .nullable(),
   experienceLevel: z
     .enum(["entry", "mid", "senior", "executive"])
-    .describe("Required experience level"),
-  skills: z.array(z.string()).describe("Required skills"),
+    .describe("Required experience level")
+    .optional()
+    .nullable(),
+  skills: z.array(z.string()).describe("Required skills").optional().nullable(),
   salary: z
     .object({
       min: z.number().nullable(),
       max: z.number().nullable(),
       currency: z.string().default("USD"),
     })
-    .describe("Salary range"),
-  isRemote: z.boolean().describe("Whether the position is remote"),
-  benefits: z.array(z.string()).describe("List of benefits offered"),
+    .describe("Salary range")
+    .optional()
+    .nullable(),
+  isRemote: z
+    .boolean()
+    .describe("Whether the position is remote")
+    .optional()
+    .nullable(),
+  benefits: z
+    .array(z.string())
+    .describe("List of benefits offered")
+    .optional()
+    .nullable(),
   relevantSDGs: z
     .array(z.number().min(1).max(17))
-    .describe("Relevant UN SDG numbers"),
+    .describe("Relevant UN SDG numbers")
+    .optional()
+    .nullable(),
 });
 
 export type JobAnalysis = z.infer<typeof JobAnalysisSchema>;
@@ -34,9 +51,10 @@ export async function analyzeJobPosting(input: {
   title: string;
   description: string;
 }): Promise<JobAnalysis> {
-  const { output } = await generateText({
-    model: DEFAULT_MODEL,
-    prompt: `Analyze this job posting and extract structured information.
+  try {
+    const { output } = await generateText({
+      model: DEFAULT_MODEL,
+      prompt: `Analyze this job posting and extract structured information.
 
 Job Title: ${input.title}
 
@@ -44,12 +62,16 @@ Description:
 ${input.description}
 
 Extract all relevant details following the schema.`,
-    output: Output.object({
-      schema: JobAnalysisSchema,
-    }),
-  });
+      output: Output.object({
+        schema: JobAnalysisSchema,
+      }),
+    });
 
-  return output;
+    return output;
+  } catch (error) {
+    console.error("Error analyzing job posting:", error);
+    throw error;
+  }
 }
 
 // Alternative: using name and description for better model understanding
