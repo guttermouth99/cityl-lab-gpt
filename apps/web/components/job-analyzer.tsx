@@ -10,27 +10,6 @@ import { useTRPCClient } from "@/lib/trpc/client";
 
 interface JobAnalysis {
   title: string;
-  category: "tech" | "healthcare" | "education" | "finance" | "other";
-  experienceLevel: "entry" | "mid" | "senior" | "executive";
-  skills: string[];
-  salary: {
-    min: number | null;
-    max: number | null;
-    currency: string;
-  };
-  isRemote: boolean;
-  benefits: string[];
-  relevantSDGs: number[];
-}
-
-function formatSalary(salary: JobAnalysis["salary"]): string {
-  if (salary.min && salary.max) {
-    return `${salary.currency} ${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
-  }
-  if (salary.min) {
-    return `${salary.currency} ${salary.min.toLocaleString()}+`;
-  }
-  return `Up to ${salary.currency} ${salary.max?.toLocaleString()}`;
 }
 
 export function JobAnalyzer() {
@@ -125,73 +104,9 @@ export function JobAnalyzer() {
 
           <div className="grid gap-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600">Category:</span>
-              <span className="font-medium capitalize">{result.category}</span>
+              <span className="text-gray-600">Title:</span>
+              <span className="font-medium">{result.title}</span>
             </div>
-
-            <div className="flex justify-between">
-              <span className="text-gray-600">Experience Level:</span>
-              <span className="font-medium capitalize">
-                {result.experienceLevel}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-gray-600">Remote:</span>
-              <span className="font-medium">
-                {result.isRemote ? "Yes" : "No"}
-              </span>
-            </div>
-
-            {(result.salary.min || result.salary.max) && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Salary:</span>
-                <span className="font-medium">
-                  {formatSalary(result.salary)}
-                </span>
-              </div>
-            )}
-
-            {result.skills.length > 0 && (
-              <div>
-                <span className="text-gray-600">Skills:</span>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {result.skills.map((skill) => (
-                    <span
-                      className="rounded bg-gray-100 px-2 py-0.5 text-gray-700 text-xs"
-                      key={skill}
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {result.benefits.length > 0 && (
-              <div>
-                <span className="text-gray-600">Benefits:</span>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {result.benefits.map((benefit) => (
-                    <span
-                      className="rounded bg-green-100 px-2 py-0.5 text-green-700 text-xs"
-                      key={benefit}
-                    >
-                      {benefit}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {result.relevantSDGs.length > 0 && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">UN SDGs:</span>
-                <span className="font-medium">
-                  {result.relevantSDGs.map((sdg) => `#${sdg}`).join(", ")}
-                </span>
-              </div>
-            )}
           </div>
         </div>
       )}

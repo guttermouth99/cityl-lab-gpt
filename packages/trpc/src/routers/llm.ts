@@ -11,6 +11,7 @@ export const llmRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      console.log(input, "input");
       return await analyzeJobPosting(input);
     }),
 });
