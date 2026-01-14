@@ -69,16 +69,102 @@ packages/
    bun install
    ```
 
-2. **Start development (all apps/packages):**
+2. **Set up environment variables** (see section below)
+
+3. **Start development (all apps/packages):**
 
    ```sh
    bun dev
    ```
 
-3. **Build everything:**
+4. **Build everything:**
    ```sh
    bun run build
    ```
+
+---
+
+## 🔐 Environment Variables
+
+This monorepo uses environment variables across different apps and packages. Place `.env` files in the **root directory** — Turborepo will automatically pass them to the appropriate packages.
+
+### Required Variables
+
+Create a `.env` file in the **root** of the project:
+
+```env
+# Database (required - used by packages/db)
+DATABASE_URL=postgresql://user:password@localhost:5432/baito
+
+# App URLs (required)
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Authentication (apps/web)
+
+```env
+# Better Auth
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=your-secret-key-here
+
+# OAuth Providers (optional - enable as needed)
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+```
+
+### Background Jobs (apps/worker)
+
+```env
+# Trigger.dev
+TRIGGER_API_KEY=tr_dev_xxx
+TRIGGER_API_URL=https://api.trigger.dev
+
+# Web Scraping
+JINA_API_KEY=jina_xxx
+
+# Job Feeds
+STEPSTONE_FEED_URL=https://...
+```
+
+### AI/LLM (packages/llm)
+
+```env
+# OpenAI API (used via AI SDK)
+OPENAI_API_KEY=sk-xxx
+```
+
+### Search (packages/search)
+
+```env
+# Typesense
+TYPESENSE_HOST=localhost
+TYPESENSE_PORT=8108
+TYPESENSE_PROTOCOL=http
+TYPESENSE_API_KEY=xyz
+```
+
+### Email (packages/email)
+
+```env
+# SendGrid
+SENDGRID_API_KEY=SG.xxx
+```
+
+### Summary by Location
+
+| Package/App | Variables |
+|-------------|-----------|
+| **Root** | `NODE_ENV`, `DATABASE_URL`, `NEXT_PUBLIC_APP_URL` |
+| **apps/web** | `BETTER_AUTH_*`, `GITHUB_*`, `GOOGLE_*` |
+| **apps/worker** | `TRIGGER_*`, `JINA_API_KEY`, `STEPSTONE_FEED_URL` |
+| **packages/db** | `DATABASE_URL` |
+| **packages/llm** | `OPENAI_API_KEY` |
+| **packages/search** | `TYPESENSE_*` |
+| **packages/email** | `SENDGRID_API_KEY` |
+
+> **Note:** All env vars should go in the root `.env` file. Turborepo handles passing them to the correct packages via `globalEnv` and `globalPassThroughEnv` in `turbo.json`.
 
 ---
 
