@@ -1,18 +1,11 @@
-import {
-  sendBatchTask
-} from "./chunk-GWR6GPKO.mjs";
+import { schedules_exports } from "./chunk-BNK46XDO.mjs";
+import { __name, init_esm } from "./chunk-CEVTQX7C.mjs";
+import { sendBatchTask } from "./chunk-GWR6GPKO.mjs";
 import {
   chunk,
   getUserAlerts,
-  getUsersForDailyAlerts
+  getUsersForDailyAlerts,
 } from "./chunk-OQADXJ3N.mjs";
-import {
-  schedules_exports
-} from "./chunk-BNK46XDO.mjs";
-import {
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
 
 // src/jobs/newsletter/daily-dispatch.ts
 init_esm();
@@ -34,7 +27,7 @@ var dailyDispatch = schedules_exports.task({
           userId: user.id,
           email: user.email,
           name: user.name,
-          alerts: alerts.filter((a) => a.isActive)
+          alerts: alerts.filter((a) => a.isActive),
         };
       })
     );
@@ -42,22 +35,20 @@ var dailyDispatch = schedules_exports.task({
     console.log(`${eligibleUsers.length} users have active alerts`);
     const batches = chunk(eligibleUsers, 100);
     console.log(`Split into ${batches.length} batches`);
-    const batchTasks = batches.map(
-      (batch, index) => sendBatchTask.trigger({
+    const batchTasks = batches.map((batch, index) =>
+      sendBatchTask.trigger({
         batchIndex: index,
         users: batch,
-        type: "daily"
+        type: "daily",
       })
     );
     await Promise.all(batchTasks);
     return {
       usersProcessed: eligibleUsers.length,
-      batches: batches.length
+      batches: batches.length,
     };
-  }, "run")
+  }, "run"),
 });
 
-export {
-  dailyDispatch
-};
+export { dailyDispatch };
 //# sourceMappingURL=chunk-FE7FXLSV.mjs.map

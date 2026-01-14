@@ -1,13 +1,8 @@
-import {
-  __commonJS,
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
+import { __commonJS, __name, init_esm } from "./chunk-CEVTQX7C.mjs";
 
 // ../../node_modules/@vercel/oidc/dist/token-error.js
 var require_token_error = __commonJS({
   "../../node_modules/@vercel/oidc/dist/token-error.js"(exports, module) {
-    "use strict";
     init_esm();
     var __defProp = Object.defineProperty;
     var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -18,17 +13,27 @@ var require_token_error = __commonJS({
         __defProp(target, name, { get: all[name], enumerable: true });
     }, "__export");
     var __copyProps = /* @__PURE__ */ __name((to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames(from))
+      if ((from && typeof from === "object") || typeof from === "function") {
+        for (const key of __getOwnPropNames(from))
           if (!__hasOwnProp.call(to, key) && key !== except)
-            __defProp(to, key, { get: /* @__PURE__ */ __name(() => from[key], "get"), enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+            __defProp(to, key, {
+              get: /* @__PURE__ */ __name(() => from[key], "get"),
+              enumerable:
+                !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+            });
       }
       return to;
     }, "__copyProps");
-    var __toCommonJS = /* @__PURE__ */ __name((mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod), "__toCommonJS");
+    var __toCommonJS = /* @__PURE__ */ __name(
+      (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod),
+      "__toCommonJS"
+    );
     var token_error_exports = {};
     __export(token_error_exports, {
-      VercelOidcTokenError: /* @__PURE__ */ __name(() => VercelOidcTokenError, "VercelOidcTokenError")
+      VercelOidcTokenError: /* @__PURE__ */ __name(
+        () => VercelOidcTokenError,
+        "VercelOidcTokenError"
+      ),
     });
     module.exports = __toCommonJS(token_error_exports);
     var VercelOidcTokenError = class extends Error {
@@ -47,10 +52,8 @@ var require_token_error = __commonJS({
         return `${this.name}: ${this.message}`;
       }
     };
-  }
+  },
 });
 
-export {
-  require_token_error
-};
+export { require_token_error };
 //# sourceMappingURL=chunk-FY4UMQ5W.mjs.map

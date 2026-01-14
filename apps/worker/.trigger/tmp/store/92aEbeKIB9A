@@ -1,16 +1,7 @@
-import {
-  processFeedBatch
-} from "./chunk-6D4G5P5M.mjs";
-import {
-  chunk
-} from "./chunk-OQADXJ3N.mjs";
-import {
-  schedules_exports
-} from "./chunk-BNK46XDO.mjs";
-import {
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
+import { processFeedBatch } from "./chunk-6D4G5P5M.mjs";
+import { schedules_exports } from "./chunk-BNK46XDO.mjs";
+import { __name, init_esm } from "./chunk-CEVTQX7C.mjs";
+import { chunk } from "./chunk-OQADXJ3N.mjs";
 
 // src/jobs/feeds/sync-stepstone.ts
 init_esm();
@@ -29,22 +20,20 @@ var syncStepstone = schedules_exports.task({
     console.log(`Found ${feedData.length} jobs in feed`);
     const batches = chunk(feedData, 50);
     console.log(`Split into ${batches.length} batches`);
-    const batchTasks = batches.map(
-      (batch, index) => processFeedBatch.trigger({
+    const batchTasks = batches.map((batch, index) =>
+      processFeedBatch.trigger({
         batchIndex: index,
         jobs: batch,
-        source: "stepstone"
+        source: "stepstone",
       })
     );
     await Promise.all(batchTasks);
     return {
       totalJobs: feedData.length,
-      batches: batches.length
+      batches: batches.length,
     };
-  }, "run")
+  }, "run"),
 });
 
-export {
-  syncStepstone
-};
+export { syncStepstone };
 //# sourceMappingURL=chunk-USRI2OJZ.mjs.map

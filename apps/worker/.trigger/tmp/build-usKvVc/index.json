@@ -1,9 +1,7 @@
 {
   "configPath": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/trigger.config.mjs",
-  "customConditions": [
-  ],
-  "queues": [
-  ],
+  "customConditions": [],
+  "queues": [],
   "runtime": "node",
   "runtimeVersion": "20.18.0",
   "tasks": [

@@ -1,14 +1,6 @@
-import {
-  require_token_util
-} from "./chunk-P5PUAH4D.mjs";
-import {
-  require_token_error
-} from "./chunk-FY4UMQ5W.mjs";
-import {
-  __commonJS,
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
+import { __commonJS, __name, init_esm } from "./chunk-CEVTQX7C.mjs";
+import { require_token_error } from "./chunk-FY4UMQ5W.mjs";
+import { require_token_util } from "./chunk-P5PUAH4D.mjs";
 
 // ../../node_modules/@vercel/oidc/dist/token.js
 var require_token = __commonJS({
@@ -23,17 +15,24 @@ var require_token = __commonJS({
         __defProp(target, name, { get: all[name], enumerable: true });
     }, "__export");
     var __copyProps = /* @__PURE__ */ __name((to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames(from))
+      if ((from && typeof from === "object") || typeof from === "function") {
+        for (const key of __getOwnPropNames(from))
           if (!__hasOwnProp.call(to, key) && key !== except)
-            __defProp(to, key, { get: /* @__PURE__ */ __name(() => from[key], "get"), enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+            __defProp(to, key, {
+              get: /* @__PURE__ */ __name(() => from[key], "get"),
+              enumerable:
+                !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+            });
       }
       return to;
     }, "__copyProps");
-    var __toCommonJS = /* @__PURE__ */ __name((mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod), "__toCommonJS");
+    var __toCommonJS = /* @__PURE__ */ __name(
+      (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod),
+      "__toCommonJS"
+    );
     var token_exports = {};
     __export(token_exports, {
-      refreshToken: /* @__PURE__ */ __name(() => refreshToken, "refreshToken")
+      refreshToken: /* @__PURE__ */ __name(() => refreshToken, "refreshToken"),
     });
     module.exports = __toCommonJS(token_exports);
     var import_token_error = require_token_error();
@@ -41,7 +40,12 @@ var require_token = __commonJS({
     async function refreshToken() {
       const { projectId, teamId } = (0, import_token_util.findProjectInfo)();
       let maybeToken = (0, import_token_util.loadToken)(projectId);
-      if (!maybeToken || (0, import_token_util.isExpired)((0, import_token_util.getTokenPayload)(maybeToken.token))) {
+      if (
+        !maybeToken ||
+        (0, import_token_util.isExpired)(
+          (0, import_token_util.getTokenPayload)(maybeToken.token)
+        )
+      ) {
         const authToken = await (0, import_token_util.getVercelCliToken)();
         if (!authToken) {
           throw new import_token_error.VercelOidcTokenError(
@@ -53,9 +57,15 @@ var require_token = __commonJS({
             "Failed to refresh OIDC token: Try re-linking your project with `vc link`"
           );
         }
-        maybeToken = await (0, import_token_util.getVercelOidcToken)(authToken, projectId, teamId);
+        maybeToken = await (0, import_token_util.getVercelOidcToken)(
+          authToken,
+          projectId,
+          teamId
+        );
         if (!maybeToken) {
-          throw new import_token_error.VercelOidcTokenError("Failed to refresh OIDC token");
+          throw new import_token_error.VercelOidcTokenError(
+            "Failed to refresh OIDC token"
+          );
         }
         (0, import_token_util.saveToken)(maybeToken, projectId);
       }
@@ -63,7 +73,7 @@ var require_token = __commonJS({
       return;
     }
     __name(refreshToken, "refreshToken");
-  }
+  },
 });
 export default require_token();
 //# sourceMappingURL=token-JBKVGPKS.mjs.map

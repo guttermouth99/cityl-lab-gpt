@@ -1,20 +1,15 @@
 {
-  "build": {
-  },
+  "build": {},
   "cliPackageVersion": "4.3.2",
   "config": {
-    "dirs": [
-      "./src/jobs"
-    ],
+    "dirs": ["./src/jobs"],
     "project": "proj_gpiqtfaeviaievzsiltt"
   },
   "configPath": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/trigger.config.mjs",
   "contentHash": "1b093496608b8d7d4811be83f4097b60",
-  "customConditions": [
-  ],
+  "customConditions": [],
   "deploy": {
-    "env": {
-    }
+    "env": {}
   },
   "environment": "dev",
   "externals": [
@@ -67,8 +62,7 @@
   ],
   "indexWorkerEntryPoint": "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/private/tmp/bunx-501-trigger.dev@latest/node_modules/trigger.dev/dist/esm/entryPoints/dev-index-worker.mjs",
   "otelImportHook": {
-    "include": [
-    ]
+    "include": []
   },
   "outputHashes": {
     "/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/.trigger/tmp/build-usKvVc/Users/lukas/Projects/baito3000/baito-turbo/apps/worker/src/jobs/classification/classify-job.mjs": "EvZ1lMZTMuU",

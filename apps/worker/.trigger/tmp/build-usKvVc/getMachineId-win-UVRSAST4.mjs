@@ -1,21 +1,18 @@
-import {
-  require_execAsync
-} from "./chunk-ABNPT2DH.mjs";
-import {
-  esm_exports,
-  init_esm as init_esm2
-} from "./chunk-6L5SD3AS.mjs";
+import { esm_exports, init_esm as init_esm2 } from "./chunk-6L5SD3AS.mjs";
+import { require_execAsync } from "./chunk-ABNPT2DH.mjs";
 import {
   __commonJS,
   __name,
   __require,
   __toCommonJS,
-  init_esm
+  init_esm,
 } from "./chunk-CEVTQX7C.mjs";
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@opentelemetry/resources/build/src/detectors/platform/node/machine-id/getMachineId-win.js
 var require_getMachineId_win = __commonJS({
-  "../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@opentelemetry/resources/build/src/detectors/platform/node/machine-id/getMachineId-win.js"(exports) {
+  "../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@opentelemetry/resources/build/src/detectors/platform/node/machine-id/getMachineId-win.js"(
+    exports
+  ) {
     init_esm();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getMachineId = void 0;
@@ -23,7 +20,8 @@ var require_getMachineId_win = __commonJS({
     var execAsync_1 = require_execAsync();
     var api_1 = (init_esm2(), __toCommonJS(esm_exports));
     async function getMachineId() {
-      const args = "QUERY HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography /v MachineGuid";
+      const args =
+        "QUERY HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography /v MachineGuid";
       let command = "%windir%\\System32\\REG.exe";
       if (process.arch === "ia32" && "PROCESSOR_ARCHITEW6432" in process.env) {
         command = "%windir%\\sysnative\\cmd.exe /c " + command;
@@ -41,7 +39,7 @@ var require_getMachineId_win = __commonJS({
     }
     __name(getMachineId, "getMachineId");
     exports.getMachineId = getMachineId;
-  }
+  },
 });
 export default require_getMachineId_win();
 //# sourceMappingURL=getMachineId-win-UVRSAST4.mjs.map

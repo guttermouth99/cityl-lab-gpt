@@ -1,17 +1,16 @@
-import {
-  esm_exports,
-  init_esm as init_esm2
-} from "./chunk-6L5SD3AS.mjs";
+import { esm_exports, init_esm as init_esm2 } from "./chunk-6L5SD3AS.mjs";
 import {
   __commonJS,
   __name,
   __toCommonJS,
-  init_esm
+  init_esm,
 } from "./chunk-CEVTQX7C.mjs";
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@opentelemetry/resources/build/src/detectors/platform/node/machine-id/getMachineId-unsupported.js
 var require_getMachineId_unsupported = __commonJS({
-  "../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@opentelemetry/resources/build/src/detectors/platform/node/machine-id/getMachineId-unsupported.js"(exports) {
+  "../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@opentelemetry/resources/build/src/detectors/platform/node/machine-id/getMachineId-unsupported.js"(
+    exports
+  ) {
     init_esm();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getMachineId = void 0;
@@ -22,7 +21,7 @@ var require_getMachineId_unsupported = __commonJS({
     }
     __name(getMachineId, "getMachineId");
     exports.getMachineId = getMachineId;
-  }
+  },
 });
 export default require_getMachineId_unsupported();
 //# sourceMappingURL=getMachineId-unsupported-AMDME3GX.mjs.map

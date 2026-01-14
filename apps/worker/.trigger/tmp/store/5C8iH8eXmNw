@@ -1,21 +1,16 @@
+import { task } from "./chunk-BNK46XDO.mjs";
+import { __name, init_esm } from "./chunk-CEVTQX7C.mjs";
 import {
   computeContentHashSync,
-  updateOrganization
+  updateOrganization,
 } from "./chunk-OQADXJ3N.mjs";
-import {
-  task
-} from "./chunk-BNK46XDO.mjs";
-import {
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
 
 // src/jobs/scraping/scrape-org-batch.ts
 init_esm();
 var scrapeOrgBatch = task({
   id: "scrape-org-batch",
   retry: {
-    maxAttempts: 2
+    maxAttempts: 2,
   },
   run: /* @__PURE__ */ __name(async (payload) => {
     const { organizations } = payload;
@@ -31,8 +26,8 @@ var scrapeOrgBatch = task({
       try {
         const response = await fetch(`https://r.jina.ai/${org.careerPageUrl}`, {
           headers: {
-            Authorization: `Bearer ${jinaApiKey}`
-          }
+            Authorization: `Bearer ${jinaApiKey}`,
+          },
         });
         if (!response.ok) {
           console.error(
@@ -48,7 +43,7 @@ var scrapeOrgBatch = task({
           continue;
         }
         await updateOrganization(org.id, {
-          contentHash: newContentHash
+          contentHash: newContentHash,
         });
         updated++;
       } catch (error) {
@@ -60,12 +55,10 @@ var scrapeOrgBatch = task({
       total: organizations.length,
       updated,
       unchanged,
-      errors
+      errors,
     };
-  }, "run")
+  }, "run"),
 });
 
-export {
-  scrapeOrgBatch
-};
+export { scrapeOrgBatch };
 //# sourceMappingURL=chunk-SCGQXJP2.mjs.map

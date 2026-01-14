@@ -1,7 +1,4 @@
-import {
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
+import { __name, init_esm } from "./chunk-CEVTQX7C.mjs";
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/error.js
 init_esm();
@@ -29,7 +26,7 @@ var SeqNumMismatchError = class extends S2Error {
       message: `${message}
 Expected sequence number: ${expectedSeqNum}`,
       code,
-      status
+      status,
     });
     this.name = "SeqNumMismatchError";
     this.expectedSeqNum = expectedSeqNum;
@@ -46,7 +43,7 @@ var FencingTokenMismatchError = class extends S2Error {
       message: `${message}
 Expected fencing token: ${expectedFencingToken}`,
       code,
-      status
+      status,
     });
     this.name = "FencingTokenMismatchError";
     this.expectedFencingToken = expectedFencingToken;
@@ -56,11 +53,15 @@ var RangeNotSatisfiableError = class extends S2Error {
   static {
     __name(this, "RangeNotSatisfiableError");
   }
-  constructor({ message = "Range not satisfiable: requested position is beyond the stream tail. Use 'clamp: true' to start from the tail instead.", code, status = 416 } = {}) {
+  constructor({
+    message = "Range not satisfiable: requested position is beyond the stream tail. Use 'clamp: true' to start from the tail instead.",
+    code,
+    status = 416,
+  } = {}) {
     super({
       message,
       code,
-      status
+      status,
     });
     this.name = "RangeNotSatisfiableError";
   }
@@ -72,7 +73,7 @@ function appendRecordMake(body, headers, timestamp) {
   return {
     body,
     headers,
-    timestamp
+    timestamp,
   };
 }
 __name(appendRecordMake, "appendRecordMake");
@@ -97,8 +98,12 @@ var AppendRecord = {
     const buffer = new Uint8Array(8);
     const view = new DataView(buffer.buffer);
     view.setBigUint64(0, BigInt(seqNum), false);
-    return AppendRecord.command(new TextEncoder().encode("trim"), buffer, timestamp);
-  }, "trim")
+    return AppendRecord.command(
+      new TextEncoder().encode("trim"),
+      buffer,
+      timestamp
+    );
+  }, "trim"),
 };
 function utf8ByteLength(str) {
   let bytes = 0;
@@ -108,10 +113,10 @@ function utf8ByteLength(str) {
       bytes += 1;
     } else if (code <= 2047) {
       bytes += 2;
-    } else if (code >= 55296 && code <= 56319) {
+    } else if (code >= 55_296 && code <= 56_319) {
       if (i + 1 < str.length) {
         const next = str.charCodeAt(i + 1);
-        if (next >= 56320 && next <= 57343) {
+        if (next >= 56_320 && next <= 57_343) {
           bytes += 4;
           i++;
         } else {
@@ -120,7 +125,7 @@ function utf8ByteLength(str) {
       } else {
         bytes += 3;
       }
-    } else if (code >= 56320 && code <= 57343) {
+    } else if (code >= 56_320 && code <= 57_343) {
       bytes += 3;
     } else {
       bytes += 3;
@@ -148,7 +153,11 @@ function meteredSizeBytes(record) {
       }, 0);
     }
   }
-  const bodySize = record.body ? typeof record.body === "string" ? utf8ByteLength(record.body) : record.body.length : 0;
+  const bodySize = record.body
+    ? typeof record.body === "string"
+      ? utf8ByteLength(record.body)
+      : record.body.length
+    : 0;
   return 8 + 2 * numHeaders + headersSize + bodySize;
 }
 __name(meteredSizeBytes, "meteredSizeBytes");
@@ -157,7 +166,13 @@ function computeAppendRecordFormat(record) {
   if (record.body && typeof record.body !== "string") {
     result = "bytes";
   }
-  if (record.headers && Array.isArray(record.headers) && record.headers.some(([k, v]) => typeof k !== "string" || typeof v !== "string")) {
+  if (
+    record.headers &&
+    Array.isArray(record.headers) &&
+    record.headers.some(
+      ([k, v]) => typeof k !== "string" || typeof v !== "string"
+    )
+  ) {
     result = "bytes";
   }
   return result;
@@ -170,7 +185,8 @@ init_esm();
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/core/auth.gen.js
 init_esm();
 var getAuthToken = /* @__PURE__ */ __name(async (auth, callback) => {
-  const token = typeof callback === "function" ? await callback(auth) : callback;
+  const token =
+    typeof callback === "function" ? await callback(auth) : callback;
   if (!token) {
     return;
   }
@@ -186,7 +202,13 @@ var getAuthToken = /* @__PURE__ */ __name(async (auth, callback) => {
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/core/bodySerializer.gen.js
 init_esm();
 var jsonBodySerializer = {
-  bodySerializer: /* @__PURE__ */ __name((body) => JSON.stringify(body, (_key, value2) => typeof value2 === "bigint" ? value2.toString() : value2), "bodySerializer")
+  bodySerializer: /* @__PURE__ */ __name(
+    (body) =>
+      JSON.stringify(body, (_key, value2) =>
+        typeof value2 === "bigint" ? value2.toString() : value2
+      ),
+    "bodySerializer"
+  ),
 };
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/core/pathSerializer.gen.js
@@ -227,75 +249,96 @@ var separatorObjectExplode = /* @__PURE__ */ __name((style) => {
       return "&";
   }
 }, "separatorObjectExplode");
-var serializeArrayParam = /* @__PURE__ */ __name(({ allowReserved, explode, name, style, value: value2 }) => {
-  if (!explode) {
-    const joinedValues2 = (allowReserved ? value2 : value2.map((v) => encodeURIComponent(v))).join(separatorArrayNoExplode(style));
-    switch (style) {
-      case "label":
-        return `.${joinedValues2}`;
-      case "matrix":
-        return `;${name}=${joinedValues2}`;
-      case "simple":
-        return joinedValues2;
-      default:
-        return `${name}=${joinedValues2}`;
+var serializeArrayParam = /* @__PURE__ */ __name(
+  ({ allowReserved, explode, name, style, value: value2 }) => {
+    if (!explode) {
+      const joinedValues2 = (
+        allowReserved ? value2 : value2.map((v) => encodeURIComponent(v))
+      ).join(separatorArrayNoExplode(style));
+      switch (style) {
+        case "label":
+          return `.${joinedValues2}`;
+        case "matrix":
+          return `;${name}=${joinedValues2}`;
+        case "simple":
+          return joinedValues2;
+        default:
+          return `${name}=${joinedValues2}`;
+      }
     }
-  }
-  const separator = separatorArrayExplode(style);
-  const joinedValues = value2.map((v) => {
-    if (style === "label" || style === "simple") {
-      return allowReserved ? v : encodeURIComponent(v);
+    const separator = separatorArrayExplode(style);
+    const joinedValues = value2
+      .map((v) => {
+        if (style === "label" || style === "simple") {
+          return allowReserved ? v : encodeURIComponent(v);
+        }
+        return serializePrimitiveParam({
+          allowReserved,
+          name,
+          value: v,
+        });
+      })
+      .join(separator);
+    return style === "label" || style === "matrix"
+      ? separator + joinedValues
+      : joinedValues;
+  },
+  "serializeArrayParam"
+);
+var serializePrimitiveParam = /* @__PURE__ */ __name(
+  ({ allowReserved, name, value: value2 }) => {
+    if (value2 === void 0 || value2 === null) {
+      return "";
     }
-    return serializePrimitiveParam({
-      allowReserved,
-      name,
-      value: v
-    });
-  }).join(separator);
-  return style === "label" || style === "matrix" ? separator + joinedValues : joinedValues;
-}, "serializeArrayParam");
-var serializePrimitiveParam = /* @__PURE__ */ __name(({ allowReserved, name, value: value2 }) => {
-  if (value2 === void 0 || value2 === null) {
-    return "";
-  }
-  if (typeof value2 === "object") {
-    throw new Error("Deeply-nested arrays/objects aren’t supported. Provide your own `querySerializer()` to handle these.");
-  }
-  return `${name}=${allowReserved ? value2 : encodeURIComponent(value2)}`;
-}, "serializePrimitiveParam");
-var serializeObjectParam = /* @__PURE__ */ __name(({ allowReserved, explode, name, style, value: value2, valueOnly }) => {
-  if (value2 instanceof Date) {
-    return valueOnly ? value2.toISOString() : `${name}=${value2.toISOString()}`;
-  }
-  if (style !== "deepObject" && !explode) {
-    let values = [];
-    Object.entries(value2).forEach(([key, v]) => {
-      values = [
-        ...values,
-        key,
-        allowReserved ? v : encodeURIComponent(v)
-      ];
-    });
-    const joinedValues2 = values.join(",");
-    switch (style) {
-      case "form":
-        return `${name}=${joinedValues2}`;
-      case "label":
-        return `.${joinedValues2}`;
-      case "matrix":
-        return `;${name}=${joinedValues2}`;
-      default:
-        return joinedValues2;
+    if (typeof value2 === "object") {
+      throw new Error(
+        "Deeply-nested arrays/objects aren’t supported. Provide your own `querySerializer()` to handle these."
+      );
     }
-  }
-  const separator = separatorObjectExplode(style);
-  const joinedValues = Object.entries(value2).map(([key, v]) => serializePrimitiveParam({
-    allowReserved,
-    name: style === "deepObject" ? `${name}[${key}]` : key,
-    value: v
-  })).join(separator);
-  return style === "label" || style === "matrix" ? separator + joinedValues : joinedValues;
-}, "serializeObjectParam");
+    return `${name}=${allowReserved ? value2 : encodeURIComponent(value2)}`;
+  },
+  "serializePrimitiveParam"
+);
+var serializeObjectParam = /* @__PURE__ */ __name(
+  ({ allowReserved, explode, name, style, value: value2, valueOnly }) => {
+    if (value2 instanceof Date) {
+      return valueOnly
+        ? value2.toISOString()
+        : `${name}=${value2.toISOString()}`;
+    }
+    if (style !== "deepObject" && !explode) {
+      let values = [];
+      Object.entries(value2).forEach(([key, v]) => {
+        values = [...values, key, allowReserved ? v : encodeURIComponent(v)];
+      });
+      const joinedValues2 = values.join(",");
+      switch (style) {
+        case "form":
+          return `${name}=${joinedValues2}`;
+        case "label":
+          return `.${joinedValues2}`;
+        case "matrix":
+          return `;${name}=${joinedValues2}`;
+        default:
+          return joinedValues2;
+      }
+    }
+    const separator = separatorObjectExplode(style);
+    const joinedValues = Object.entries(value2)
+      .map(([key, v]) =>
+        serializePrimitiveParam({
+          allowReserved,
+          name: style === "deepObject" ? `${name}[${key}]` : key,
+          value: v,
+        })
+      )
+      .join(separator);
+    return style === "label" || style === "matrix"
+      ? separator + joinedValues
+      : joinedValues;
+  },
+  "serializeObjectParam"
+);
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/core/utils.gen.js
 init_esm();
@@ -324,53 +367,68 @@ var defaultPathSerializer = /* @__PURE__ */ __name(({ path, url: _url }) => {
         continue;
       }
       if (Array.isArray(value2)) {
-        url = url.replace(match, serializeArrayParam({ explode, name, style, value: value2 }));
+        url = url.replace(
+          match,
+          serializeArrayParam({ explode, name, style, value: value2 })
+        );
         continue;
       }
       if (typeof value2 === "object") {
-        url = url.replace(match, serializeObjectParam({
-          explode,
-          name,
-          style,
-          value: value2,
-          valueOnly: true
-        }));
+        url = url.replace(
+          match,
+          serializeObjectParam({
+            explode,
+            name,
+            style,
+            value: value2,
+            valueOnly: true,
+          })
+        );
         continue;
       }
       if (style === "matrix") {
-        url = url.replace(match, `;${serializePrimitiveParam({
-          name,
-          value: value2
-        })}`);
+        url = url.replace(
+          match,
+          `;${serializePrimitiveParam({
+            name,
+            value: value2,
+          })}`
+        );
         continue;
       }
-      const replaceValue = encodeURIComponent(style === "label" ? `.${value2}` : value2);
+      const replaceValue = encodeURIComponent(
+        style === "label" ? `.${value2}` : value2
+      );
       url = url.replace(match, replaceValue);
     }
   }
   return url;
 }, "defaultPathSerializer");
-var getUrl = /* @__PURE__ */ __name(({ baseUrl, path, query, querySerializer, url: _url }) => {
-  const pathUrl = _url.startsWith("/") ? _url : `/${_url}`;
-  let url = (baseUrl ?? "") + pathUrl;
-  if (path) {
-    url = defaultPathSerializer({ path, url });
-  }
-  let search = query ? querySerializer(query) : "";
-  if (search.startsWith("?")) {
-    search = search.substring(1);
-  }
-  if (search) {
-    url += `?${search}`;
-  }
-  return url;
-}, "getUrl");
+var getUrl = /* @__PURE__ */ __name(
+  ({ baseUrl, path, query, querySerializer, url: _url }) => {
+    const pathUrl = _url.startsWith("/") ? _url : `/${_url}`;
+    let url = (baseUrl ?? "") + pathUrl;
+    if (path) {
+      url = defaultPathSerializer({ path, url });
+    }
+    let search = query ? querySerializer(query) : "";
+    if (search.startsWith("?")) {
+      search = search.substring(1);
+    }
+    if (search) {
+      url += `?${search}`;
+    }
+    return url;
+  },
+  "getUrl"
+);
 function getValidRequestBody(options) {
   const hasBody = options.body !== void 0;
   const isSerializedBody = hasBody && options.bodySerializer;
   if (isSerializedBody) {
     if ("serializedBody" in options) {
-      const hasSerializedBody = options.serializedBody !== void 0 && options.serializedBody !== "";
+      const hasSerializedBody =
+        options.serializedBody !== void 0 && options.serializedBody !== "";
       return hasSerializedBody ? options.serializedBody : null;
     }
     return options.body !== "" ? options.body : null;
@@ -383,53 +441,53 @@ function getValidRequestBody(options) {
 __name(getValidRequestBody, "getValidRequestBody");
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/client/utils.gen.js
-var createQuerySerializer = /* @__PURE__ */ __name(({ parameters = {}, ...args } = {}) => {
-  const querySerializer = /* @__PURE__ */ __name((queryParams) => {
-    const search = [];
-    if (queryParams && typeof queryParams === "object") {
-      for (const name in queryParams) {
-        const value2 = queryParams[name];
-        if (value2 === void 0 || value2 === null) {
-          continue;
-        }
-        const options = parameters[name] || args;
-        if (Array.isArray(value2)) {
-          const serializedArray = serializeArrayParam({
-            allowReserved: options.allowReserved,
-            explode: true,
-            name,
-            style: "form",
-            value: value2,
-            ...options.array
-          });
-          if (serializedArray)
-            search.push(serializedArray);
-        } else if (typeof value2 === "object") {
-          const serializedObject = serializeObjectParam({
-            allowReserved: options.allowReserved,
-            explode: true,
-            name,
-            style: "deepObject",
-            value: value2,
-            ...options.object
-          });
-          if (serializedObject)
-            search.push(serializedObject);
-        } else {
-          const serializedPrimitive = serializePrimitiveParam({
-            allowReserved: options.allowReserved,
-            name,
-            value: value2
-          });
-          if (serializedPrimitive)
-            search.push(serializedPrimitive);
+var createQuerySerializer = /* @__PURE__ */ __name(
+  ({ parameters = {}, ...args } = {}) => {
+    const querySerializer = /* @__PURE__ */ __name((queryParams) => {
+      const search = [];
+      if (queryParams && typeof queryParams === "object") {
+        for (const name in queryParams) {
+          const value2 = queryParams[name];
+          if (value2 === void 0 || value2 === null) {
+            continue;
+          }
+          const options = parameters[name] || args;
+          if (Array.isArray(value2)) {
+            const serializedArray = serializeArrayParam({
+              allowReserved: options.allowReserved,
+              explode: true,
+              name,
+              style: "form",
+              value: value2,
+              ...options.array,
+            });
+            if (serializedArray) search.push(serializedArray);
+          } else if (typeof value2 === "object") {
+            const serializedObject = serializeObjectParam({
+              allowReserved: options.allowReserved,
+              explode: true,
+              name,
+              style: "deepObject",
+              value: value2,
+              ...options.object,
+            });
+            if (serializedObject) search.push(serializedObject);
+          } else {
+            const serializedPrimitive = serializePrimitiveParam({
+              allowReserved: options.allowReserved,
+              name,
+              value: value2,
+            });
+            if (serializedPrimitive) search.push(serializedPrimitive);
+          }
         }
       }
-    }
-    return search.join("&");
-  }, "querySerializer");
-  return querySerializer;
-}, "createQuerySerializer");
+      return search.join("&");
+    }, "querySerializer");
+    return querySerializer;
+  },
+  "createQuerySerializer"
+);
 var getParseAs = /* @__PURE__ */ __name((contentType) => {
   if (!contentType) {
     return "stream";
@@ -438,13 +496,20 @@ var getParseAs = /* @__PURE__ */ __name((contentType) => {
   if (!cleanContent) {
     return;
   }
-  if (cleanContent.startsWith("application/json") || cleanContent.endsWith("+json")) {
+  if (
+    cleanContent.startsWith("application/json") ||
+    cleanContent.endsWith("+json")
+  ) {
     return "json";
   }
   if (cleanContent === "multipart/form-data") {
     return "formData";
   }
-  if (["application/", "audio/", "image/", "video/"].some((type) => cleanContent.startsWith(type))) {
+  if (
+    ["application/", "audio/", "image/", "video/"].some((type) =>
+      cleanContent.startsWith(type)
+    )
+  ) {
     return "blob";
   }
   if (cleanContent.startsWith("text/")) {
@@ -456,7 +521,11 @@ var checkForExistence = /* @__PURE__ */ __name((options, name) => {
   if (!name) {
     return false;
   }
-  if (options.headers.has(name) || options.query?.[name] || options.headers.get("Cookie")?.includes(`${name}=`)) {
+  if (
+    options.headers.has(name) ||
+    options.query?.[name] ||
+    options.headers.get("Cookie")?.includes(`${name}=`)
+  ) {
     return true;
   }
   return false;
@@ -488,13 +557,20 @@ var setAuthParams = /* @__PURE__ */ __name(async ({ security, ...options }) => {
     }
   }
 }, "setAuthParams");
-var buildUrl = /* @__PURE__ */ __name((options) => getUrl({
-  baseUrl: options.baseUrl,
-  path: options.path,
-  query: options.query,
-  querySerializer: typeof options.querySerializer === "function" ? options.querySerializer : createQuerySerializer(options.querySerializer),
-  url: options.url
-}), "buildUrl");
+var buildUrl = /* @__PURE__ */ __name(
+  (options) =>
+    getUrl({
+      baseUrl: options.baseUrl,
+      path: options.path,
+      query: options.query,
+      querySerializer:
+        typeof options.querySerializer === "function"
+          ? options.querySerializer
+          : createQuerySerializer(options.querySerializer),
+      url: options.url,
+    }),
+  "buildUrl"
+);
 var mergeConfigs = /* @__PURE__ */ __name((a, b) => {
   const config = { ...a, ...b };
   if (config.baseUrl?.endsWith("/")) {
@@ -516,7 +592,10 @@ var mergeHeaders = /* @__PURE__ */ __name((...headers) => {
     if (!header) {
       continue;
     }
-    const iterator = header instanceof Headers ? headersEntries(header) : Object.entries(header);
+    const iterator =
+      header instanceof Headers
+        ? headersEntries(header)
+        : Object.entries(header);
     for (const [key, value2] of iterator) {
       if (value2 === null) {
         mergedHeaders.delete(key);
@@ -525,7 +604,10 @@ var mergeHeaders = /* @__PURE__ */ __name((...headers) => {
           mergedHeaders.append(key, v);
         }
       } else if (value2 !== void 0) {
-        mergedHeaders.set(key, typeof value2 === "object" ? JSON.stringify(value2) : value2);
+        mergedHeaders.set(
+          key,
+          typeof value2 === "object" ? JSON.stringify(value2) : value2
+        );
       }
     }
   }
@@ -568,154 +650,188 @@ var Interceptors = class {
     return this.fns.length - 1;
   }
 };
-var createInterceptors = /* @__PURE__ */ __name(() => ({
-  error: new Interceptors(),
-  request: new Interceptors(),
-  response: new Interceptors()
-}), "createInterceptors");
+var createInterceptors = /* @__PURE__ */ __name(
+  () => ({
+    error: new Interceptors(),
+    request: new Interceptors(),
+    response: new Interceptors(),
+  }),
+  "createInterceptors"
+);
 var defaultQuerySerializer = createQuerySerializer({
   allowReserved: false,
   array: {
     explode: true,
-    style: "form"
+    style: "form",
   },
   object: {
     explode: true,
-    style: "deepObject"
-  }
+    style: "deepObject",
+  },
 });
 var defaultHeaders = {
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 };
-var createConfig = /* @__PURE__ */ __name((override = {}) => ({
-  ...jsonBodySerializer,
-  headers: defaultHeaders,
-  parseAs: "auto",
-  querySerializer: defaultQuerySerializer,
-  ...override
-}), "createConfig");
+var createConfig = /* @__PURE__ */ __name(
+  (override = {}) => ({
+    ...jsonBodySerializer,
+    headers: defaultHeaders,
+    parseAs: "auto",
+    querySerializer: defaultQuerySerializer,
+    ...override,
+  }),
+  "createConfig"
+);
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/client/client.gen.js
 init_esm();
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/core/serverSentEvents.gen.js
 init_esm();
-var createSseClient = /* @__PURE__ */ __name(({ onRequest, onSseError, onSseEvent, responseTransformer, responseValidator, sseDefaultRetryDelay, sseMaxRetryAttempts, sseMaxRetryDelay, sseSleepFn, url, ...options }) => {
-  let lastEventId;
-  const sleep = sseSleepFn ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
-  const createStream2 = /* @__PURE__ */ __name(async function* () {
-    let retryDelay = sseDefaultRetryDelay ?? 3e3;
-    let attempt = 0;
-    const signal = options.signal ?? new AbortController().signal;
-    while (true) {
-      if (signal.aborted)
-        break;
-      attempt++;
-      const headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers);
-      if (lastEventId !== void 0) {
-        headers.set("Last-Event-ID", lastEventId);
-      }
-      try {
-        const requestInit = {
-          redirect: "follow",
-          ...options,
-          body: options.serializedBody,
-          headers,
-          signal
-        };
-        let request = new Request(url, requestInit);
-        if (onRequest) {
-          request = await onRequest(url, requestInit);
+var createSseClient = /* @__PURE__ */ __name(
+  ({
+    onRequest,
+    onSseError,
+    onSseEvent,
+    responseTransformer,
+    responseValidator,
+    sseDefaultRetryDelay,
+    sseMaxRetryAttempts,
+    sseMaxRetryDelay,
+    sseSleepFn,
+    url,
+    ...options
+  }) => {
+    let lastEventId;
+    const sleep =
+      sseSleepFn ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+    const createStream2 = /* @__PURE__ */ __name(async function* () {
+      let retryDelay = sseDefaultRetryDelay ?? 3e3;
+      let attempt = 0;
+      const signal = options.signal ?? new AbortController().signal;
+      while (true) {
+        if (signal.aborted) break;
+        attempt++;
+        const headers =
+          options.headers instanceof Headers
+            ? options.headers
+            : new Headers(options.headers);
+        if (lastEventId !== void 0) {
+          headers.set("Last-Event-ID", lastEventId);
         }
-        const _fetch = options.fetch ?? globalThis.fetch;
-        const response = await _fetch(request);
-        if (!response.ok)
-          throw new Error(`SSE failed: ${response.status} ${response.statusText}`);
-        if (!response.body)
-          throw new Error("No body in SSE response");
-        const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
-        let buffer = "";
-        const abortHandler = /* @__PURE__ */ __name(() => {
-          try {
-            reader.cancel();
-          } catch {
-          }
-        }, "abortHandler");
-        signal.addEventListener("abort", abortHandler);
         try {
-          while (true) {
-            const { done, value: value2 } = await reader.read();
-            if (done)
-              break;
-            buffer += value2;
-            const chunks = buffer.split("\n\n");
-            buffer = chunks.pop() ?? "";
-            for (const chunk of chunks) {
-              const lines = chunk.split("\n");
-              const dataLines = [];
-              let eventName;
-              for (const line of lines) {
-                if (line.startsWith("data:")) {
-                  dataLines.push(line.replace(/^data:\s*/, ""));
-                } else if (line.startsWith("event:")) {
-                  eventName = line.replace(/^event:\s*/, "");
-                } else if (line.startsWith("id:")) {
-                  lastEventId = line.replace(/^id:\s*/, "");
-                } else if (line.startsWith("retry:")) {
-                  const parsed = Number.parseInt(line.replace(/^retry:\s*/, ""), 10);
-                  if (!Number.isNaN(parsed)) {
-                    retryDelay = parsed;
+          const requestInit = {
+            redirect: "follow",
+            ...options,
+            body: options.serializedBody,
+            headers,
+            signal,
+          };
+          let request = new Request(url, requestInit);
+          if (onRequest) {
+            request = await onRequest(url, requestInit);
+          }
+          const _fetch = options.fetch ?? globalThis.fetch;
+          const response = await _fetch(request);
+          if (!response.ok)
+            throw new Error(
+              `SSE failed: ${response.status} ${response.statusText}`
+            );
+          if (!response.body) throw new Error("No body in SSE response");
+          const reader = response.body
+            .pipeThrough(new TextDecoderStream())
+            .getReader();
+          let buffer = "";
+          const abortHandler = /* @__PURE__ */ __name(() => {
+            try {
+              reader.cancel();
+            } catch {}
+          }, "abortHandler");
+          signal.addEventListener("abort", abortHandler);
+          try {
+            while (true) {
+              const { done, value: value2 } = await reader.read();
+              if (done) break;
+              buffer += value2;
+              const chunks = buffer.split("\n\n");
+              buffer = chunks.pop() ?? "";
+              for (const chunk of chunks) {
+                const lines = chunk.split("\n");
+                const dataLines = [];
+                let eventName;
+                for (const line of lines) {
+                  if (line.startsWith("data:")) {
+                    dataLines.push(line.replace(/^data:\s*/, ""));
+                  } else if (line.startsWith("event:")) {
+                    eventName = line.replace(/^event:\s*/, "");
+                  } else if (line.startsWith("id:")) {
+                    lastEventId = line.replace(/^id:\s*/, "");
+                  } else if (line.startsWith("retry:")) {
+                    const parsed = Number.parseInt(
+                      line.replace(/^retry:\s*/, ""),
+                      10
+                    );
+                    if (!Number.isNaN(parsed)) {
+                      retryDelay = parsed;
+                    }
                   }
                 }
-              }
-              let data;
-              let parsedJson = false;
-              if (dataLines.length) {
-                const rawData = dataLines.join("\n");
-                try {
-                  data = JSON.parse(rawData);
-                  parsedJson = true;
-                } catch {
-                  data = rawData;
+                let data;
+                let parsedJson = false;
+                if (dataLines.length) {
+                  const rawData = dataLines.join("\n");
+                  try {
+                    data = JSON.parse(rawData);
+                    parsedJson = true;
+                  } catch {
+                    data = rawData;
+                  }
                 }
-              }
-              if (parsedJson) {
-                if (responseValidator) {
-                  await responseValidator(data);
+                if (parsedJson) {
+                  if (responseValidator) {
+                    await responseValidator(data);
+                  }
+                  if (responseTransformer) {
+                    data = await responseTransformer(data);
+                  }
                 }
-                if (responseTransformer) {
-                  data = await responseTransformer(data);
+                onSseEvent?.({
+                  data,
+                  event: eventName,
+                  id: lastEventId,
+                  retry: retryDelay,
+                });
+                if (dataLines.length) {
+                  yield data;
                 }
-              }
-              onSseEvent?.({
-                data,
-                event: eventName,
-                id: lastEventId,
-                retry: retryDelay
-              });
-              if (dataLines.length) {
-                yield data;
               }
             }
+          } finally {
+            signal.removeEventListener("abort", abortHandler);
+            reader.releaseLock();
           }
-        } finally {
-          signal.removeEventListener("abort", abortHandler);
-          reader.releaseLock();
-        }
-        break;
-      } catch (error) {
-        onSseError?.(error);
-        if (sseMaxRetryAttempts !== void 0 && attempt >= sseMaxRetryAttempts) {
           break;
+        } catch (error) {
+          onSseError?.(error);
+          if (
+            sseMaxRetryAttempts !== void 0 &&
+            attempt >= sseMaxRetryAttempts
+          ) {
+            break;
+          }
+          const backoff = Math.min(
+            retryDelay * 2 ** (attempt - 1),
+            sseMaxRetryDelay ?? 3e4
+          );
+          await sleep(backoff);
         }
-        const backoff = Math.min(retryDelay * 2 ** (attempt - 1), sseMaxRetryDelay ?? 3e4);
-        await sleep(backoff);
       }
-    }
-  }, "createStream");
-  const stream = createStream2();
-  return { stream };
-}, "createSseClient");
+    }, "createStream");
+    const stream = createStream2();
+    return { stream };
+  },
+  "createSseClient"
+);
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/client/client.gen.js
 var createClient = /* @__PURE__ */ __name((config = {}) => {
@@ -732,12 +848,12 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
       ...options,
       fetch: options.fetch ?? _config.fetch ?? globalThis.fetch,
       headers: mergeHeaders(_config.headers, options.headers),
-      serializedBody: void 0
+      serializedBody: void 0,
     };
     if (opts.security) {
       await setAuthParams({
         ...opts,
-        security: opts.security
+        security: opts.security,
       });
     }
     if (opts.requestValidator) {
@@ -757,7 +873,7 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
     const requestInit = {
       redirect: "follow",
       ...opts,
-      body: getValidRequestBody(opts)
+      body: getValidRequestBody(opts),
     };
     let request2 = new Request(url, requestInit);
     for (const fn of interceptors.request.fns) {
@@ -774,11 +890,17 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
     }
     const result = {
       request: request2,
-      response
+      response,
     };
     if (response.ok) {
-      const parseAs = (opts.parseAs === "auto" ? getParseAs(response.headers.get("Content-Type")) : opts.parseAs) ?? "json";
-      if (response.status === 204 || response.headers.get("Content-Length") === "0") {
+      const parseAs =
+        (opts.parseAs === "auto"
+          ? getParseAs(response.headers.get("Content-Type"))
+          : opts.parseAs) ?? "json";
+      if (
+        response.status === 204 ||
+        response.headers.get("Content-Length") === "0"
+      ) {
         let emptyData;
         switch (parseAs) {
           case "arrayBuffer":
@@ -797,10 +919,12 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
             emptyData = {};
             break;
         }
-        return opts.responseStyle === "data" ? emptyData : {
-          data: emptyData,
-          ...result
-        };
+        return opts.responseStyle === "data"
+          ? emptyData
+          : {
+              data: emptyData,
+              ...result,
+            };
       }
       let data;
       switch (parseAs) {
@@ -812,10 +936,12 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
           data = await response[parseAs]();
           break;
         case "stream":
-          return opts.responseStyle === "data" ? response.body : {
-            data: response.body,
-            ...result
-          };
+          return opts.responseStyle === "data"
+            ? response.body
+            : {
+                data: response.body,
+                ...result,
+              };
       }
       if (parseAs === "json") {
         if (opts.responseValidator) {
@@ -825,17 +951,18 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
           data = await opts.responseTransformer(data);
         }
       }
-      return opts.responseStyle === "data" ? data : {
-        data,
-        ...result
-      };
+      return opts.responseStyle === "data"
+        ? data
+        : {
+            data,
+            ...result,
+          };
     }
     const textError = await response.text();
     let jsonError;
     try {
       jsonError = JSON.parse(textError);
-    } catch {
-    }
+    } catch {}
     const error = jsonError ?? textError;
     let finalError = error;
     for (const fn of interceptors.error.fns) {
@@ -847,31 +974,39 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
     if (opts.throwOnError) {
       throw finalError;
     }
-    return opts.responseStyle === "data" ? void 0 : {
-      error: finalError,
-      ...result
-    };
+    return opts.responseStyle === "data"
+      ? void 0
+      : {
+          error: finalError,
+          ...result,
+        };
   }, "request");
-  const makeMethodFn = /* @__PURE__ */ __name((method) => (options) => request({ ...options, method }), "makeMethodFn");
-  const makeSseFn = /* @__PURE__ */ __name((method) => async (options) => {
-    const { opts, url } = await beforeRequest(options);
-    return createSseClient({
-      ...opts,
-      body: opts.body,
-      headers: opts.headers,
-      method,
-      onRequest: /* @__PURE__ */ __name(async (url2, init) => {
-        let request2 = new Request(url2, init);
-        for (const fn of interceptors.request.fns) {
-          if (fn) {
-            request2 = await fn(request2, opts);
+  const makeMethodFn = /* @__PURE__ */ __name(
+    (method) => (options) => request({ ...options, method }),
+    "makeMethodFn"
+  );
+  const makeSseFn = /* @__PURE__ */ __name(
+    (method) => async (options) => {
+      const { opts, url } = await beforeRequest(options);
+      return createSseClient({
+        ...opts,
+        body: opts.body,
+        headers: opts.headers,
+        method,
+        onRequest: /* @__PURE__ */ __name(async (url2, init) => {
+          let request2 = new Request(url2, init);
+          for (const fn of interceptors.request.fns) {
+            if (fn) {
+              request2 = await fn(request2, opts);
+            }
           }
-        }
-        return request2;
-      }, "onRequest"),
-      url
-    });
-  }, "makeSseFn");
+          return request2;
+        }, "onRequest"),
+        url,
+      });
+    },
+    "makeSseFn"
+  );
   return {
     buildUrl,
     connect: makeMethodFn("CONNECT"),
@@ -895,9 +1030,9 @@ var createClient = /* @__PURE__ */ __name((config = {}) => {
       patch: makeSseFn("PATCH"),
       post: makeSseFn("POST"),
       put: makeSseFn("PUT"),
-      trace: makeSseFn("TRACE")
+      trace: makeSseFn("TRACE"),
     },
-    trace: makeMethodFn("TRACE")
+    trace: makeMethodFn("TRACE"),
   };
 }, "createClient");
 
@@ -917,7 +1052,7 @@ var proto = {
   },
   [NodeInspectSymbol]() {
     return "<redacted>";
-  }
+  },
 };
 var make = /* @__PURE__ */ __name((value2) => {
   const redacted = Object.create(proto);
@@ -927,9 +1062,8 @@ var make = /* @__PURE__ */ __name((value2) => {
 var value = /* @__PURE__ */ __name((self) => {
   if (redactedRegistry.has(self)) {
     return redactedRegistry.get(self);
-  } else {
-    throw new Error("Unable to get redacted value");
   }
+  throw new Error("Unable to get redacted value");
 }, "value");
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/index.js
@@ -964,10 +1098,13 @@ var BatchTransform = class extends TransformStream {
       }, "transform"),
       flush: /* @__PURE__ */ __name(() => {
         this.flush();
-      }, "flush")
+      }, "flush"),
     });
     this.maxBatchRecords = Math.min(args?.maxBatchRecords ?? 1e3, 1e3);
-    this.maxBatchBytes = Math.min(args?.maxBatchBytes ?? 1024 * 1024, 1024 * 1024);
+    this.maxBatchBytes = Math.min(
+      args?.maxBatchBytes ?? 1024 * 1024,
+      1024 * 1024
+    );
     this.lingerDuration = args?.lingerDurationMillis ?? 5;
     this.fencing_token = args?.fencing_token;
     this.next_match_seq_num = args?.match_seq_num;
@@ -976,14 +1113,16 @@ var BatchTransform = class extends TransformStream {
     const recordSize = meteredSizeBytes(record);
     if (recordSize > this.maxBatchBytes) {
       throw new S2Error({
-        message: `Record size ${recordSize} bytes exceeds maximum batch size of ${this.maxBatchBytes} bytes`
+        message: `Record size ${recordSize} bytes exceeds maximum batch size of ${this.maxBatchBytes} bytes`,
       });
     }
     if (this.currentBatch.length === 0 && this.lingerDuration > 0) {
       this.startLingerTimer();
     }
-    const wouldExceedRecords = this.currentBatch.length + 1 > this.maxBatchRecords;
-    const wouldExceedBytes = this.currentBatchSize + recordSize > this.maxBatchBytes;
+    const wouldExceedRecords =
+      this.currentBatch.length + 1 > this.maxBatchRecords;
+    const wouldExceedBytes =
+      this.currentBatchSize + recordSize > this.maxBatchBytes;
     if (wouldExceedRecords || wouldExceedBytes) {
       this.flush();
       if (this.lingerDuration > 0) {
@@ -1009,7 +1148,7 @@ var BatchTransform = class extends TransformStream {
     }
     if (this.controller) {
       const batch = {
-        records: [...this.currentBatch]
+        records: [...this.currentBatch],
       };
       if (this.fencing_token !== void 0) {
         batch.fencing_token = this.fencing_token;
@@ -1050,9 +1189,11 @@ init_esm();
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/client.gen.js
 init_esm();
-var client = createClient(createConfig({
-  baseUrl: "https://aws.s2.dev/v1"
-}));
+var client = createClient(
+  createConfig({
+    baseUrl: "https://aws.s2.dev/v1",
+  })
+);
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/generated/sdk.gen.js
 var listAccessTokens = /* @__PURE__ */ __name((options) => {
@@ -1060,11 +1201,11 @@ var listAccessTokens = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/access-tokens",
-    ...options
+    ...options,
   });
 }, "listAccessTokens");
 var issueAccessToken = /* @__PURE__ */ __name((options) => {
@@ -1072,15 +1213,15 @@ var issueAccessToken = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/access-tokens",
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 }, "issueAccessToken");
 var revokeAccessToken = /* @__PURE__ */ __name((options) => {
@@ -1088,11 +1229,11 @@ var revokeAccessToken = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/access-tokens/{id}",
-    ...options
+    ...options,
   });
 }, "revokeAccessToken");
 var listBasins = /* @__PURE__ */ __name((options) => {
@@ -1100,11 +1241,11 @@ var listBasins = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/basins",
-    ...options
+    ...options,
   });
 }, "listBasins");
 var createBasin = /* @__PURE__ */ __name((options) => {
@@ -1112,15 +1253,15 @@ var createBasin = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/basins",
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 }, "createBasin");
 var deleteBasin = /* @__PURE__ */ __name((options) => {
@@ -1128,11 +1269,11 @@ var deleteBasin = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/basins/{basin}",
-    ...options
+    ...options,
   });
 }, "deleteBasin");
 var getBasinConfig = /* @__PURE__ */ __name((options) => {
@@ -1140,11 +1281,11 @@ var getBasinConfig = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/basins/{basin}",
-    ...options
+    ...options,
   });
 }, "getBasinConfig");
 var reconfigureBasin = /* @__PURE__ */ __name((options) => {
@@ -1152,15 +1293,15 @@ var reconfigureBasin = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/basins/{basin}",
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 }, "reconfigureBasin");
 var accountMetrics = /* @__PURE__ */ __name((options) => {
@@ -1168,11 +1309,11 @@ var accountMetrics = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/metrics",
-    ...options
+    ...options,
   });
 }, "accountMetrics");
 var basinMetrics = /* @__PURE__ */ __name((options) => {
@@ -1180,11 +1321,11 @@ var basinMetrics = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/metrics/{basin}",
-    ...options
+    ...options,
   });
 }, "basinMetrics");
 var streamMetrics = /* @__PURE__ */ __name((options) => {
@@ -1192,11 +1333,11 @@ var streamMetrics = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/metrics/{basin}/{stream}",
-    ...options
+    ...options,
   });
 }, "streamMetrics");
 var listStreams = /* @__PURE__ */ __name((options) => {
@@ -1204,11 +1345,11 @@ var listStreams = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams",
-    ...options
+    ...options,
   });
 }, "listStreams");
 var createStream = /* @__PURE__ */ __name((options) => {
@@ -1216,15 +1357,15 @@ var createStream = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams",
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 }, "createStream");
 var deleteStream = /* @__PURE__ */ __name((options) => {
@@ -1232,11 +1373,11 @@ var deleteStream = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams/{stream}",
-    ...options
+    ...options,
   });
 }, "deleteStream");
 var getStreamConfig = /* @__PURE__ */ __name((options) => {
@@ -1244,11 +1385,11 @@ var getStreamConfig = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams/{stream}",
-    ...options
+    ...options,
   });
 }, "getStreamConfig");
 var reconfigureStream = /* @__PURE__ */ __name((options) => {
@@ -1256,15 +1397,15 @@ var reconfigureStream = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams/{stream}",
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 }, "reconfigureStream");
 var read = /* @__PURE__ */ __name((options) => {
@@ -1272,11 +1413,11 @@ var read = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams/{stream}/records",
-    ...options
+    ...options,
   });
 }, "read");
 var append = /* @__PURE__ */ __name((options) => {
@@ -1284,15 +1425,15 @@ var append = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams/{stream}/records",
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 }, "append");
 var checkTail = /* @__PURE__ */ __name((options) => {
@@ -1300,11 +1441,11 @@ var checkTail = /* @__PURE__ */ __name((options) => {
     security: [
       {
         scheme: "bearer",
-        type: "http"
-      }
+        type: "http",
+      },
     ],
     url: "/streams/{stream}/records/tail",
-    ...options
+    ...options,
   });
 }, "checkTail");
 
@@ -1328,13 +1469,13 @@ var S2AccessTokens = class {
     const response = await listAccessTokens({
       client: this.client,
       query: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -1351,13 +1492,13 @@ var S2AccessTokens = class {
     const response = await issueAccessToken({
       client: this.client,
       body: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -1371,13 +1512,13 @@ var S2AccessTokens = class {
     const response = await revokeAccessToken({
       client: this.client,
       path: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -1437,8 +1578,8 @@ var encodeToBase64 = /* @__PURE__ */ __name((bytes) => {
   let i;
   for (i = 2; i < length; i += 3) {
     result += base64abc[bytes[i - 2] >> 2];
-    result += base64abc[(bytes[i - 2] & 3) << 4 | bytes[i - 1] >> 4];
-    result += base64abc[(bytes[i - 1] & 15) << 2 | bytes[i] >> 6];
+    result += base64abc[((bytes[i - 2] & 3) << 4) | (bytes[i - 1] >> 4)];
+    result += base64abc[((bytes[i - 1] & 15) << 2) | (bytes[i] >> 6)];
     result += base64abc[bytes[i] & 63];
   }
   if (i === length + 1) {
@@ -1448,7 +1589,7 @@ var encodeToBase64 = /* @__PURE__ */ __name((bytes) => {
   }
   if (i === length) {
     result += base64abc[bytes[i - 2] >> 2];
-    result += base64abc[(bytes[i - 2] & 3) << 4 | bytes[i - 1] >> 4];
+    result += base64abc[((bytes[i - 2] & 3) << 4) | (bytes[i - 1] >> 4)];
     result += base64abc[(bytes[i - 1] & 15) << 2];
     result += "=";
   }
@@ -1461,16 +1602,28 @@ var decodeFromBase64 = /* @__PURE__ */ __name((str) => {
     throw new Error(`Length must be a multiple of 4, but is ${length}`);
   }
   const index = stripped.indexOf("=");
-  if (index !== -1 && (index < length - 2 || index === length - 2 && stripped[length - 1] !== "=")) {
+  if (
+    index !== -1 &&
+    (index < length - 2 ||
+      (index === length - 2 && stripped[length - 1] !== "="))
+  ) {
     throw new Error("Found a '=' character, but it is not at the end");
   }
   try {
-    const missingOctets = stripped.endsWith("==") ? 2 : stripped.endsWith("=") ? 1 : 0;
+    const missingOctets = stripped.endsWith("==")
+      ? 2
+      : stripped.endsWith("=")
+        ? 1
+        : 0;
     const result = new Uint8Array(3 * (length / 4) - missingOctets);
     for (let i = 0, j = 0; i < length; i += 4, j += 3) {
-      const buffer = getBase64Code(stripped.charCodeAt(i)) << 18 | getBase64Code(stripped.charCodeAt(i + 1)) << 12 | getBase64Code(stripped.charCodeAt(i + 2)) << 6 | getBase64Code(stripped.charCodeAt(i + 3));
+      const buffer =
+        (getBase64Code(stripped.charCodeAt(i)) << 18) |
+        (getBase64Code(stripped.charCodeAt(i + 1)) << 12) |
+        (getBase64Code(stripped.charCodeAt(i + 2)) << 6) |
+        getBase64Code(stripped.charCodeAt(i + 3));
       result[j] = buffer >> 16;
-      result[j + 1] = buffer >> 8 & 255;
+      result[j + 1] = (buffer >> 8) & 255;
       result[j + 2] = buffer & 255;
     }
     return result;
@@ -1478,7 +1631,10 @@ var decodeFromBase64 = /* @__PURE__ */ __name((str) => {
     throw new Error(e instanceof Error ? e.message : "Invalid input");
   }
 }, "decodeFromBase64");
-var stripCrlf = /* @__PURE__ */ __name((str) => str.replace(/[\n\r]/g, ""), "stripCrlf");
+var stripCrlf = /* @__PURE__ */ __name(
+  (str) => str.replace(/[\n\r]/g, ""),
+  "stripCrlf"
+);
 function getBase64Code(charCode) {
   if (charCode >= base64codes.length) {
     throw new TypeError(`Invalid character ${String.fromCharCode(charCode)}`);
@@ -1554,132 +1710,16 @@ var base64abc = [
   "8",
   "9",
   "+",
-  "/"
+  "/",
 ];
 var base64codes = [
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  62,
-  255,
-  255,
-  255,
-  63,
-  52,
-  53,
-  54,
-  55,
-  56,
-  57,
-  58,
-  59,
-  60,
-  61,
-  255,
-  255,
-  255,
-  0,
-  255,
-  255,
-  255,
-  0,
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  19,
-  20,
-  21,
-  22,
-  23,
-  24,
-  25,
-  255,
-  255,
-  255,
-  255,
-  255,
-  255,
-  26,
-  27,
-  28,
-  29,
-  30,
-  31,
-  32,
-  33,
-  34,
-  35,
-  36,
-  37,
-  38,
-  39,
-  40,
-  41,
-  42,
-  43,
-  44,
-  45,
-  46,
-  47,
-  48,
-  49,
-  50,
-  51
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255,
+  255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255,
+  255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+  21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32,
+  33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
 ];
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/lib/event-stream.js
@@ -1698,8 +1738,7 @@ var EventStream = class extends ReadableStream {
             const match = findBoundary(buffer);
             if (!match) {
               const chunk = await upstream.read();
-              if (chunk.done)
-                return downstream.close();
+              if (chunk.done) return downstream.close();
               buffer = concatBuffer(buffer, chunk.value);
               continue;
             }
@@ -1724,7 +1763,10 @@ var EventStream = class extends ReadableStream {
           await upstream.cancel(e);
         }
       },
-      cancel: /* @__PURE__ */ __name((reason) => upstream.cancel(reason), "cancel")
+      cancel: /* @__PURE__ */ __name(
+        (reason) => upstream.cancel(reason),
+        "cancel"
+      ),
     });
   }
   async [Symbol.asyncDispose]() {
@@ -1733,8 +1775,7 @@ var EventStream = class extends ReadableStream {
   // Polyfill for older browsers
   [Symbol.asyncIterator]() {
     const fn = ReadableStream.prototype[Symbol.asyncIterator];
-    if (typeof fn === "function")
-      return fn.call(this);
+    if (typeof fn === "function") return fn.call(this);
     const reader = this.getReader();
     return {
       next: /* @__PURE__ */ __name(async () => {
@@ -1757,7 +1798,7 @@ var EventStream = class extends ReadableStream {
       }, "return"),
       [Symbol.asyncIterator]() {
         return this;
-      }
+      },
     };
   }
 };
@@ -1771,7 +1812,13 @@ __name(concatBuffer, "concatBuffer");
 function findBoundary(buf) {
   const len = buf.length;
   for (let i = 0; i < len; i++) {
-    if (i <= len - 4 && buf[i] === 13 && buf[i + 1] === 10 && buf[i + 2] === 13 && buf[i + 3] === 10) {
+    if (
+      i <= len - 4 &&
+      buf[i] === 13 &&
+      buf[i + 1] === 10 &&
+      buf[i + 2] === 13 &&
+      buf[i + 3] === 10
+    ) {
       return { index: i, length: 4 };
     }
     if (i <= len - 2 && buf[i] === 13 && buf[i + 1] === 13) {
@@ -1791,28 +1838,21 @@ function parseMessage(chunk, parse) {
   const ret = {};
   let ignore = true;
   for (const line of lines) {
-    if (!line || line.startsWith(":"))
-      continue;
+    if (!line || line.startsWith(":")) continue;
     ignore = false;
     const i = line.indexOf(":");
     const field = line.slice(0, i);
     const value2 = line[i + 1] === " " ? line.slice(i + 2) : line.slice(i + 1);
-    if (field === "data")
-      dataLines.push(value2);
-    else if (field === "event")
-      ret.event = value2;
-    else if (field === "id")
-      ret.id = value2;
+    if (field === "data") dataLines.push(value2);
+    else if (field === "event") ret.event = value2;
+    else if (field === "id") ret.id = value2;
     else if (field === "retry") {
       const n = Number(value2);
-      if (!isNaN(n))
-        ret.retry = n;
+      if (!isNaN(n)) ret.retry = n;
     }
   }
-  if (ignore)
-    return;
-  if (dataLines.length)
-    ret.data = dataLines.join("\n");
+  if (ignore) return;
+  if (dataLines.length) ret.data = dataLines.join("\n");
   return parse(ret);
 }
 __name(parseMessage, "parseMessage");
@@ -1824,26 +1864,25 @@ async function streamRead(stream, client2, args, options) {
   const response = await read({
     client: client2,
     path: {
-      stream
+      stream,
     },
     headers: {
-      ...as === "bytes" ? { "s2-format": "base64" } : {}
+      ...(as === "bytes" ? { "s2-format": "base64" } : {}),
     },
     query: queryParams,
-    ...options
+    ...options,
   });
   if (response.error) {
     if ("message" in response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
-      });
-    } else {
-      throw new RangeNotSatisfiableError({
-        status: response.response.status
+        status: response.response.status,
       });
     }
+    throw new RangeNotSatisfiableError({
+      status: response.response.status,
+    });
   }
   if (args?.as === "bytes") {
     const res = {
@@ -1851,20 +1890,21 @@ async function streamRead(stream, client2, args, options) {
       records: response.data.records?.map((record) => ({
         ...record,
         body: record.body ? decodeFromBase64(record.body) : void 0,
-        headers: record.headers?.map((header) => header.map((h) => decodeFromBase64(h)))
-      }))
-    };
-    return res;
-  } else {
-    const res = {
-      ...response.data,
-      records: response.data.records.map((record) => ({
-        ...record,
-        headers: record.headers ? Object.fromEntries(record.headers) : void 0
-      }))
+        headers: record.headers?.map((header) =>
+          header.map((h) => decodeFromBase64(h))
+        ),
+      })),
     };
     return res;
   }
+  const res = {
+    ...response.data,
+    records: response.data.records.map((record) => ({
+      ...record,
+      headers: record.headers ? Object.fromEntries(record.headers) : void 0,
+    })),
+  };
+  return res;
 }
 __name(streamRead, "streamRead");
 async function streamAppend(stream, client2, records, args, options) {
@@ -1878,40 +1918,46 @@ async function streamAppend(stream, client2, records, args, options) {
   }
   if (batchMeteredSize > 1024 * 1024) {
     throw new S2Error({
-      message: `Batch size ${batchMeteredSize} bytes exceeds maximum of 1 MiB (1048576 bytes)`
+      message: `Batch size ${batchMeteredSize} bytes exceeds maximum of 1 MiB (1048576 bytes)`,
     });
   }
   if (recordsArray.length > 1e3) {
     throw new S2Error({
-      message: `Batch of ${recordsArray.length} exceeds maximum batch size of 1000 records`
+      message: `Batch of ${recordsArray.length} exceeds maximum batch size of 1000 records`,
     });
   }
-  let encodedRecords = [];
-  let hasAnyBytesRecords = false;
+  const encodedRecords = [];
+  const hasAnyBytesRecords = false;
   for (const record of recordsArray) {
     const format = computeAppendRecordFormat(record);
     if (format === "bytes") {
       const formattedRecord = record;
       const encodedRecord = {
         ...formattedRecord,
-        body: formattedRecord.body ? encodeToBase64(formattedRecord.body) : void 0,
-        headers: formattedRecord.headers?.map((header) => header.map((h) => encodeToBase64(h)))
+        body: formattedRecord.body
+          ? encodeToBase64(formattedRecord.body)
+          : void 0,
+        headers: formattedRecord.headers?.map((header) =>
+          header.map((h) => encodeToBase64(h))
+        ),
       };
       encodedRecords.push(encodedRecord);
     } else {
       const normalizeHeaders = /* @__PURE__ */ __name((headers) => {
         if (headers === void 0) {
           return void 0;
-        } else if (Array.isArray(headers)) {
-          return headers;
-        } else {
-          return Object.entries(headers);
         }
+        if (Array.isArray(headers)) {
+          return headers;
+        }
+        return Object.entries(headers);
       }, "normalizeHeaders");
       const formattedRecord = record;
       const encodedRecord = {
         ...formattedRecord,
-        headers: formattedRecord.headers ? normalizeHeaders(formattedRecord.headers) : void 0
+        headers: formattedRecord.headers
+          ? normalizeHeaders(formattedRecord.headers)
+          : void 0,
       };
       encodedRecords.push(encodedRecord);
     }
@@ -1919,47 +1965,46 @@ async function streamAppend(stream, client2, records, args, options) {
   const response = await append({
     client: client2,
     path: {
-      stream
+      stream,
     },
     body: {
       fencing_token: args?.fencing_token,
       match_seq_num: args?.match_seq_num,
-      records: encodedRecords
+      records: encodedRecords,
     },
     headers: {
-      ...hasAnyBytesRecords ? { "s2-format": "base64" } : {}
+      ...(hasAnyBytesRecords ? { "s2-format": "base64" } : {}),
     },
-    ...options
+    ...options,
   });
   if (response.error) {
     if ("message" in response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
-    } else {
-      if ("seq_num_mismatch" in response.error) {
-        throw new SeqNumMismatchError({
-          message: "Append condition failed: sequence number mismatch",
-          code: "APPEND_CONDITION_FAILED",
-          status: response.response.status,
-          expectedSeqNum: response.error.seq_num_mismatch
-        });
-      } else if ("fencing_token_mismatch" in response.error) {
-        throw new FencingTokenMismatchError({
-          message: "Append condition failed: fencing token mismatch",
-          code: "APPEND_CONDITION_FAILED",
-          status: response.response.status,
-          expectedFencingToken: response.error.fencing_token_mismatch
-        });
-      } else {
-        throw new S2Error({
-          message: "Append condition failed",
-          status: response.response.status
-        });
-      }
     }
+    if ("seq_num_mismatch" in response.error) {
+      throw new SeqNumMismatchError({
+        message: "Append condition failed: sequence number mismatch",
+        code: "APPEND_CONDITION_FAILED",
+        status: response.response.status,
+        expectedSeqNum: response.error.seq_num_mismatch,
+      });
+    }
+    if ("fencing_token_mismatch" in response.error) {
+      throw new FencingTokenMismatchError({
+        message: "Append condition failed: fencing token mismatch",
+        code: "APPEND_CONDITION_FAILED",
+        status: response.response.status,
+        expectedFencingToken: response.error.fencing_token_mismatch,
+      });
+    }
+    throw new S2Error({
+      message: "Append condition failed",
+      status: response.response.status,
+    });
   }
   return response.data;
 }
@@ -1968,39 +2013,38 @@ __name(streamAppend, "streamAppend");
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/lib/stream/transport/fetch/index.js
 var FetchReadSession = class _FetchReadSession extends EventStream {
   static {
-    __name(this, "FetchReadSession");
+    __name(_FetchReadSession, "FetchReadSession");
   }
   static async create(client2, name, args, options) {
     const { as, ...queryParams } = args ?? {};
     const response = await read({
       client: client2,
       path: {
-        stream: name
+        stream: name,
       },
       headers: {
         accept: "text/event-stream",
-        ...as === "bytes" ? { "s2-format": "base64" } : {}
+        ...(as === "bytes" ? { "s2-format": "base64" } : {}),
       },
       query: queryParams,
       parseAs: "stream",
-      ...options
+      ...options,
     });
     if (response.error) {
       if ("message" in response.error) {
         throw new S2Error({
           message: response.error.message,
           code: response.error.code ?? void 0,
-          status: response.response.status
-        });
-      } else {
-        throw new RangeNotSatisfiableError({
-          status: response.response.status
+          status: response.response.status,
         });
       }
+      throw new RangeNotSatisfiableError({
+        status: response.response.status,
+      });
     }
     if (!response.response.body) {
       throw new S2Error({
-        message: "No body in SSE response"
+        message: "No body in SSE response",
       });
     }
     const format = args?.as ?? "string";
@@ -2018,18 +2062,21 @@ var FetchReadSession = class _FetchReadSession extends EventStream {
               records: rawBatch.records.map((record) => ({
                 ...record,
                 body: record.body ? decodeFromBase64(record.body) : void 0,
-                headers: record.headers?.map((header) => header.map((h) => decodeFromBase64(h)))
-              }))
-            };
-          } else {
-            return {
-              ...rawBatch,
-              records: rawBatch.records.map((record) => ({
-                ...record,
-                headers: record.headers ? Object.fromEntries(record.headers) : void 0
-              }))
+                headers: record.headers?.map((header) =>
+                  header.map((h) => decodeFromBase64(h))
+                ),
+              })),
             };
           }
+          return {
+            ...rawBatch,
+            records: rawBatch.records.map((record) => ({
+              ...record,
+              headers: record.headers
+                ? Object.fromEntries(record.headers)
+                : void 0,
+            })),
+          };
         })();
         if (batch.tail) {
           this._lastReadPosition = batch.tail;
@@ -2054,7 +2101,7 @@ var AcksStream = class extends ReadableStream {
     super({
       start: /* @__PURE__ */ __name((controller) => {
         setController(controller);
-      }, "start")
+      }, "start"),
     });
   }
   async [Symbol.asyncDispose]() {
@@ -2063,8 +2110,7 @@ var AcksStream = class extends ReadableStream {
   // Polyfill for older browsers
   [Symbol.asyncIterator]() {
     const fn = ReadableStream.prototype[Symbol.asyncIterator];
-    if (typeof fn === "function")
-      return fn.call(this);
+    if (typeof fn === "function") return fn.call(this);
     const reader = this.getReader();
     return {
       next: /* @__PURE__ */ __name(async () => {
@@ -2087,13 +2133,13 @@ var AcksStream = class extends ReadableStream {
       }, "return"),
       [Symbol.asyncIterator]() {
         return this;
-      }
+      },
     };
   }
 };
 var FetchAppendSession = class _FetchAppendSession {
   static {
-    __name(this, "FetchAppendSession");
+    __name(_FetchAppendSession, "FetchAppendSession");
   }
   _lastAckedPosition = void 0;
   queue = [];
@@ -2113,16 +2159,26 @@ var FetchAppendSession = class _FetchAppendSession {
   readable;
   writable;
   static async create(stream, transportConfig, sessionOptions, requestOptions) {
-    return new _FetchAppendSession(stream, transportConfig, sessionOptions, requestOptions);
+    return new _FetchAppendSession(
+      stream,
+      transportConfig,
+      sessionOptions,
+      requestOptions
+    );
   }
   constructor(stream, transportConfig, sessionOptions, requestOptions) {
     this.options = requestOptions;
     this.stream = stream;
     this.maxQueuedBytes = sessionOptions?.maxQueuedBytes ?? 10 * 1024 * 1024;
-    this.client = createClient(createConfig({
-      baseUrl: transportConfig.baseUrl,
-      auth: /* @__PURE__ */ __name(() => value(transportConfig.accessToken), "auth")
-    }));
+    this.client = createClient(
+      createConfig({
+        baseUrl: transportConfig.baseUrl,
+        auth: /* @__PURE__ */ __name(
+          () => value(transportConfig.accessToken),
+          "auth"
+        ),
+      })
+    );
     this._readable = new AcksStream((controller) => {
       this.acksController = controller;
     });
@@ -2137,15 +2193,22 @@ var FetchAppendSession = class _FetchAppendSession {
         for (const record of chunk.records) {
           batchMeteredSize += meteredSizeBytes(record);
         }
-        while (this.queuedBytes + batchMeteredSize > this.maxQueuedBytes && !this.closed) {
+        while (
+          this.queuedBytes + batchMeteredSize > this.maxQueuedBytes &&
+          !this.closed
+        ) {
           await new Promise((resolve) => {
             this.waitingForCapacity.push(resolve);
           });
         }
-        this.submit(chunk.records, {
-          fencing_token: chunk.fencing_token ?? void 0,
-          match_seq_num: chunk.match_seq_num ?? void 0
-        }, batchMeteredSize);
+        this.submit(
+          chunk.records,
+          {
+            fencing_token: chunk.fencing_token ?? void 0,
+            match_seq_num: chunk.match_seq_num ?? void 0,
+          },
+          batchMeteredSize
+        );
       }, "write"),
       close: /* @__PURE__ */ __name(async () => {
         this.closed = true;
@@ -2156,7 +2219,7 @@ var FetchAppendSession = class _FetchAppendSession {
         this.queue = [];
         this.queuedBytes = 0;
         const error = new S2Error({
-          message: `AppendSession was aborted: ${reason}`
+          message: `AppendSession was aborted: ${reason}`,
         });
         for (const resolver of this.pendingResolvers) {
           resolver.reject(error);
@@ -2166,7 +2229,7 @@ var FetchAppendSession = class _FetchAppendSession {
           resolver();
         }
         this.waitingForCapacity = [];
-      }, "abort")
+      }, "abort"),
     });
     this.writable = this._writable;
   }
@@ -2193,13 +2256,17 @@ var FetchAppendSession = class _FetchAppendSession {
    */
   submit(records, args, precalculatedSize) {
     if (this.closed) {
-      return Promise.reject(new S2Error({ message: "AppendSession is closed" }));
+      return Promise.reject(
+        new S2Error({ message: "AppendSession is closed" })
+      );
     }
     const recordsArray = Array.isArray(records) ? records : [records];
     if (recordsArray.length > 1e3) {
-      return Promise.reject(new S2Error({
-        message: `Batch of ${recordsArray.length} exceeds maximum batch size of 1000 records`
-      }));
+      return Promise.reject(
+        new S2Error({
+          message: `Batch of ${recordsArray.length} exceeds maximum batch size of 1000 records`,
+        })
+      );
     }
     let batchMeteredSize = precalculatedSize ?? 0;
     if (batchMeteredSize === 0) {
@@ -2208,16 +2275,18 @@ var FetchAppendSession = class _FetchAppendSession {
       }
     }
     if (batchMeteredSize > 1024 * 1024) {
-      return Promise.reject(new S2Error({
-        message: `Batch size ${batchMeteredSize} bytes exceeds maximum of 1 MiB (1048576 bytes)`
-      }));
+      return Promise.reject(
+        new S2Error({
+          message: `Batch size ${batchMeteredSize} bytes exceeds maximum of 1 MiB (1048576 bytes)`,
+        })
+      );
     }
     return new Promise((resolve, reject) => {
       this.queue.push({
         records: recordsArray,
         fencing_token: args?.fencing_token,
         match_seq_num: args?.match_seq_num,
-        meteredSize: batchMeteredSize
+        meteredSize: batchMeteredSize,
       });
       this.queuedBytes += batchMeteredSize;
       this.pendingResolvers.push({ resolve, reject });
@@ -2235,10 +2304,16 @@ var FetchAppendSession = class _FetchAppendSession {
       const args = this.queue.shift();
       const resolver = this.pendingResolvers.shift();
       try {
-        const ack = await streamAppend(this.stream, this.client, args.records, {
-          fencing_token: args.fencing_token,
-          match_seq_num: args.match_seq_num
-        }, this.options);
+        const ack = await streamAppend(
+          this.stream,
+          this.client,
+          args.records,
+          {
+            fencing_token: args.fencing_token,
+            match_seq_num: args.match_seq_num,
+          },
+          this.options
+        );
         this._lastAckedPosition = ack;
         if (this.acksController) {
           this.acksController.enqueue(ack);
@@ -2291,14 +2366,21 @@ var FetchTransport = class {
   client;
   transportConfig;
   constructor(config) {
-    this.client = createClient(createConfig({
-      baseUrl: config.baseUrl,
-      auth: /* @__PURE__ */ __name(() => value(config.accessToken), "auth")
-    }));
+    this.client = createClient(
+      createConfig({
+        baseUrl: config.baseUrl,
+        auth: /* @__PURE__ */ __name(() => value(config.accessToken), "auth"),
+      })
+    );
     this.transportConfig = config;
   }
   async makeAppendSession(stream, sessionOptions, requestOptions) {
-    return FetchAppendSession.create(stream, this.transportConfig, sessionOptions, requestOptions);
+    return FetchAppendSession.create(
+      stream,
+      this.transportConfig,
+      sessionOptions,
+      requestOptions
+    );
   }
   async makeReadSession(stream, args, options) {
     return FetchReadSession.create(this.client, stream, args, options);
@@ -2309,7 +2391,8 @@ var FetchTransport = class {
 async function createSessionTransport(config) {
   if (config?.forceTransport === "fetch") {
     return new FetchTransport(config);
-  } else if (config?.forceTransport === "s2s") {
+  }
+  if (config?.forceTransport === "s2s") {
     const { S2STransport } = await import("./s2s-OXA5IQJ2.mjs");
     return new S2STransport(config);
   }
@@ -2353,15 +2436,15 @@ var S2Stream = class {
     const response = await checkTail({
       client: this.client,
       path: {
-        stream: this.name
+        stream: this.name,
       },
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2414,7 +2497,11 @@ var S2Stream = class {
    */
   async appendSession(sessionOptions, requestOptions) {
     const transport = await this.getTransport();
-    return await transport.makeAppendSession(this.name, sessionOptions, requestOptions);
+    return await transport.makeAppendSession(
+      this.name,
+      sessionOptions,
+      requestOptions
+    );
   }
 };
 
@@ -2439,13 +2526,13 @@ var S2Streams = class {
     const response = await listStreams({
       client: this.client,
       query: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2460,13 +2547,13 @@ var S2Streams = class {
     const response = await createStream({
       client: this.client,
       body: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2480,13 +2567,13 @@ var S2Streams = class {
     const response = await getStreamConfig({
       client: this.client,
       path: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2500,13 +2587,13 @@ var S2Streams = class {
     const response = await deleteStream({
       client: this.client,
       path: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2522,13 +2609,13 @@ var S2Streams = class {
       client: this.client,
       path: args,
       body: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2557,13 +2644,18 @@ var S2Basin = class {
     this.name = name;
     this.transportConfig = {
       baseUrl: options.baseUrl,
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     };
-    this.client = createClient(createConfig({
-      baseUrl: options.baseUrl,
-      auth: /* @__PURE__ */ __name(() => value(this.transportConfig.accessToken), "auth"),
-      headers: options.includeBasinHeader ? { "s2-basin": name } : {}
-    }));
+    this.client = createClient(
+      createConfig({
+        baseUrl: options.baseUrl,
+        auth: /* @__PURE__ */ __name(
+          () => value(this.transportConfig.accessToken),
+          "auth"
+        ),
+        headers: options.includeBasinHeader ? { "s2-basin": name } : {},
+      })
+    );
     this.streams = new S2Streams(this.client);
   }
   /**
@@ -2573,7 +2665,7 @@ var S2Basin = class {
   stream(name, options) {
     return new S2Stream(name, this.client, {
       ...this.transportConfig,
-      forceTransport: options?.forceTransport
+      forceTransport: options?.forceTransport,
     });
   }
 };
@@ -2599,13 +2691,13 @@ var S2Basins = class {
     const response = await listBasins({
       client: this.client,
       query: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2621,13 +2713,13 @@ var S2Basins = class {
     const response = await createBasin({
       client: this.client,
       body: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2641,13 +2733,13 @@ var S2Basins = class {
     const response = await getBasinConfig({
       client: this.client,
       path: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2661,13 +2753,13 @@ var S2Basins = class {
     const response = await deleteBasin({
       client: this.client,
       path: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2683,13 +2775,13 @@ var S2Basins = class {
       client: this.client,
       path: args,
       body: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2718,13 +2810,13 @@ var S2Metrics = class {
     const response = await accountMetrics({
       client: this.client,
       query: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2743,13 +2835,13 @@ var S2Metrics = class {
       client: this.client,
       path: args,
       query: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2769,13 +2861,13 @@ var S2Metrics = class {
       client: this.client,
       path: args,
       query: args,
-      ...options
+      ...options,
     });
     if (response.error) {
       throw new S2Error({
         message: response.error.message,
         code: response.error.code ?? void 0,
-        status: response.response.status
+        status: response.response.status,
       });
     }
     return response.data;
@@ -2784,7 +2876,10 @@ var S2Metrics = class {
 
 // ../../../../../../../private/tmp/bunx-501-trigger.dev@latest/node_modules/@trigger.dev/core/node_modules/@s2-dev/streamstore/dist/esm/s2.js
 var defaultBaseUrl = "https://aws.s2.dev/v1";
-var defaultMakeBasinBaseUrl = /* @__PURE__ */ __name((basin) => `https://${basin}.b.aws.s2.dev/v1`, "defaultMakeBasinBaseUrl");
+var defaultMakeBasinBaseUrl = /* @__PURE__ */ __name(
+  (basin) => `https://${basin}.b.aws.s2.dev/v1`,
+  "defaultMakeBasinBaseUrl"
+);
 var S2 = class {
   static {
     __name(this, "S2");
@@ -2810,10 +2905,12 @@ var S2 = class {
    */
   constructor(options) {
     this.accessToken = make(options.accessToken);
-    this.client = createClient(createConfig({
-      baseUrl: options.baseUrl ?? defaultBaseUrl,
-      auth: /* @__PURE__ */ __name(() => value(this.accessToken), "auth")
-    }));
+    this.client = createClient(
+      createConfig({
+        baseUrl: options.baseUrl ?? defaultBaseUrl,
+        auth: /* @__PURE__ */ __name(() => value(this.accessToken), "auth"),
+      })
+    );
     this.basins = new S2Basins(this.client);
     this.accessTokens = new S2AccessTokens(this.client);
     this.metrics = new S2Metrics(this.client);
@@ -2829,7 +2926,7 @@ var S2 = class {
     return new S2Basin(name, {
       accessToken: this.accessToken,
       baseUrl: this.makeBasinBaseUrl(name),
-      includeBasinHeader: this.includeBasinHeader
+      includeBasinHeader: this.includeBasinHeader,
     });
   }
 };
@@ -2842,6 +2939,6 @@ export {
   createConfig,
   createClient,
   value,
-  S2
+  S2,
 };
 //# sourceMappingURL=chunk-XBM3AXTW.mjs.map

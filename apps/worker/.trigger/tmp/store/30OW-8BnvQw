@@ -1,6 +1,4 @@
-import {
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
+import { init_esm } from "./chunk-CEVTQX7C.mjs";
 
 // ../../packages/db/src/index.ts
 init_esm();

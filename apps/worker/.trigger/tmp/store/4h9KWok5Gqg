@@ -1,17 +1,9 @@
-import {
-  require_token_error
-} from "./chunk-FY4UMQ5W.mjs";
-import {
-  __commonJS,
-  __name,
-  __require,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
+import { __commonJS, __name, __require, init_esm } from "./chunk-CEVTQX7C.mjs";
+import { require_token_error } from "./chunk-FY4UMQ5W.mjs";
 
 // ../../node_modules/@vercel/oidc/dist/token-io.js
 var require_token_io = __commonJS({
   "../../node_modules/@vercel/oidc/dist/token-io.js"(exports, module) {
-    "use strict";
     init_esm();
     var __create = Object.create;
     var __defProp = Object.defineProperty;
@@ -24,26 +16,44 @@ var require_token_io = __commonJS({
         __defProp(target, name, { get: all[name], enumerable: true });
     }, "__export");
     var __copyProps = /* @__PURE__ */ __name((to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames(from))
+      if ((from && typeof from === "object") || typeof from === "function") {
+        for (const key of __getOwnPropNames(from))
           if (!__hasOwnProp.call(to, key) && key !== except)
-            __defProp(to, key, { get: /* @__PURE__ */ __name(() => from[key], "get"), enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+            __defProp(to, key, {
+              get: /* @__PURE__ */ __name(() => from[key], "get"),
+              enumerable:
+                !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+            });
       }
       return to;
     }, "__copyProps");
-    var __toESM = /* @__PURE__ */ __name((mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-      // If the importer is in node compatibility mode or this is not an ESM
-      // file that has been converted to a CommonJS file using a Babel-
-      // compatible transform (i.e. "__esModule" has not been set), then set
-      // "default" to the CommonJS "module.exports" for node compatibility.
-      isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-      mod
-    )), "__toESM");
-    var __toCommonJS = /* @__PURE__ */ __name((mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod), "__toCommonJS");
+    var __toESM = /* @__PURE__ */ __name(
+      (mod, isNodeMode, target) => (
+        (target = mod != null ? __create(__getProtoOf(mod)) : {}),
+        __copyProps(
+          // If the importer is in node compatibility mode or this is not an ESM
+          // file that has been converted to a CommonJS file using a Babel-
+          // compatible transform (i.e. "__esModule" has not been set), then set
+          // "default" to the CommonJS "module.exports" for node compatibility.
+          isNodeMode || !mod || !mod.__esModule
+            ? __defProp(target, "default", { value: mod, enumerable: true })
+            : target,
+          mod
+        )
+      ),
+      "__toESM"
+    );
+    var __toCommonJS = /* @__PURE__ */ __name(
+      (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod),
+      "__toCommonJS"
+    );
     var token_io_exports = {};
     __export(token_io_exports, {
       findRootDir: /* @__PURE__ */ __name(() => findRootDir, "findRootDir"),
-      getUserDataDir: /* @__PURE__ */ __name(() => getUserDataDir, "getUserDataDir")
+      getUserDataDir: /* @__PURE__ */ __name(
+        () => getUserDataDir,
+        "getUserDataDir"
+      ),
     });
     module.exports = __toCommonJS(token_io_exports);
     var import_path = __toESM(__require("path"));
@@ -74,9 +84,15 @@ var require_token_io = __commonJS({
       }
       switch (import_os.default.platform()) {
         case "darwin":
-          return import_path.default.join(import_os.default.homedir(), "Library/Application Support");
+          return import_path.default.join(
+            import_os.default.homedir(),
+            "Library/Application Support"
+          );
         case "linux":
-          return import_path.default.join(import_os.default.homedir(), ".local/share");
+          return import_path.default.join(
+            import_os.default.homedir(),
+            ".local/share"
+          );
         case "win32":
           if (process.env.LOCALAPPDATA) {
             return process.env.LOCALAPPDATA;
@@ -87,13 +103,12 @@ var require_token_io = __commonJS({
       }
     }
     __name(getUserDataDir, "getUserDataDir");
-  }
+  },
 });
 
 // ../../node_modules/@vercel/oidc/dist/auth-config.js
 var require_auth_config = __commonJS({
   "../../node_modules/@vercel/oidc/dist/auth-config.js"(exports, module) {
-    "use strict";
     init_esm();
     var __create = Object.create;
     var __defProp = Object.defineProperty;
@@ -106,27 +121,51 @@ var require_auth_config = __commonJS({
         __defProp(target, name, { get: all[name], enumerable: true });
     }, "__export");
     var __copyProps = /* @__PURE__ */ __name((to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames(from))
+      if ((from && typeof from === "object") || typeof from === "function") {
+        for (const key of __getOwnPropNames(from))
           if (!__hasOwnProp.call(to, key) && key !== except)
-            __defProp(to, key, { get: /* @__PURE__ */ __name(() => from[key], "get"), enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+            __defProp(to, key, {
+              get: /* @__PURE__ */ __name(() => from[key], "get"),
+              enumerable:
+                !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+            });
       }
       return to;
     }, "__copyProps");
-    var __toESM = /* @__PURE__ */ __name((mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-      // If the importer is in node compatibility mode or this is not an ESM
-      // file that has been converted to a CommonJS file using a Babel-
-      // compatible transform (i.e. "__esModule" has not been set), then set
-      // "default" to the CommonJS "module.exports" for node compatibility.
-      isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-      mod
-    )), "__toESM");
-    var __toCommonJS = /* @__PURE__ */ __name((mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod), "__toCommonJS");
+    var __toESM = /* @__PURE__ */ __name(
+      (mod, isNodeMode, target) => (
+        (target = mod != null ? __create(__getProtoOf(mod)) : {}),
+        __copyProps(
+          // If the importer is in node compatibility mode or this is not an ESM
+          // file that has been converted to a CommonJS file using a Babel-
+          // compatible transform (i.e. "__esModule" has not been set), then set
+          // "default" to the CommonJS "module.exports" for node compatibility.
+          isNodeMode || !mod || !mod.__esModule
+            ? __defProp(target, "default", { value: mod, enumerable: true })
+            : target,
+          mod
+        )
+      ),
+      "__toESM"
+    );
+    var __toCommonJS = /* @__PURE__ */ __name(
+      (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod),
+      "__toCommonJS"
+    );
     var auth_config_exports = {};
     __export(auth_config_exports, {
-      isValidAccessToken: /* @__PURE__ */ __name(() => isValidAccessToken, "isValidAccessToken"),
-      readAuthConfig: /* @__PURE__ */ __name(() => readAuthConfig, "readAuthConfig"),
-      writeAuthConfig: /* @__PURE__ */ __name(() => writeAuthConfig, "writeAuthConfig")
+      isValidAccessToken: /* @__PURE__ */ __name(
+        () => isValidAccessToken,
+        "isValidAccessToken"
+      ),
+      readAuthConfig: /* @__PURE__ */ __name(
+        () => readAuthConfig,
+        "readAuthConfig"
+      ),
+      writeAuthConfig: /* @__PURE__ */ __name(
+        () => writeAuthConfig,
+        "writeAuthConfig"
+      ),
     });
     module.exports = __toCommonJS(auth_config_exports);
     var fs = __toESM(__require("fs"));
@@ -164,25 +203,24 @@ var require_auth_config = __commonJS({
       if (!fs.existsSync(authDir)) {
         fs.mkdirSync(authDir, { mode: 504, recursive: true });
       }
-      fs.writeFileSync(authPath, JSON.stringify(config, null, 2), { mode: 384 });
+      fs.writeFileSync(authPath, JSON.stringify(config, null, 2), {
+        mode: 384,
+      });
     }
     __name(writeAuthConfig, "writeAuthConfig");
     function isValidAccessToken(authConfig) {
-      if (!authConfig.token)
-        return false;
-      if (typeof authConfig.expiresAt !== "number")
-        return true;
+      if (!authConfig.token) return false;
+      if (typeof authConfig.expiresAt !== "number") return true;
       const nowInSeconds = Math.floor(Date.now() / 1e3);
       return authConfig.expiresAt >= nowInSeconds;
     }
     __name(isValidAccessToken, "isValidAccessToken");
-  }
+  },
 });
 
 // ../../node_modules/@vercel/oidc/dist/oauth.js
 var require_oauth = __commonJS({
   "../../node_modules/@vercel/oidc/dist/oauth.js"(exports, module) {
-    "use strict";
     init_esm();
     var __defProp = Object.defineProperty;
     var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -193,18 +231,31 @@ var require_oauth = __commonJS({
         __defProp(target, name, { get: all[name], enumerable: true });
     }, "__export");
     var __copyProps = /* @__PURE__ */ __name((to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames(from))
+      if ((from && typeof from === "object") || typeof from === "function") {
+        for (const key of __getOwnPropNames(from))
           if (!__hasOwnProp.call(to, key) && key !== except)
-            __defProp(to, key, { get: /* @__PURE__ */ __name(() => from[key], "get"), enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+            __defProp(to, key, {
+              get: /* @__PURE__ */ __name(() => from[key], "get"),
+              enumerable:
+                !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+            });
       }
       return to;
     }, "__copyProps");
-    var __toCommonJS = /* @__PURE__ */ __name((mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod), "__toCommonJS");
+    var __toCommonJS = /* @__PURE__ */ __name(
+      (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod),
+      "__toCommonJS"
+    );
     var oauth_exports = {};
     __export(oauth_exports, {
-      processTokenResponse: /* @__PURE__ */ __name(() => processTokenResponse, "processTokenResponse"),
-      refreshTokenRequest: /* @__PURE__ */ __name(() => refreshTokenRequest, "refreshTokenRequest")
+      processTokenResponse: /* @__PURE__ */ __name(
+        () => processTokenResponse,
+        "processTokenResponse"
+      ),
+      refreshTokenRequest: /* @__PURE__ */ __name(
+        () => refreshTokenRequest,
+        "refreshTokenRequest"
+      ),
     });
     module.exports = __toCommonJS(oauth_exports);
     var import_os = __require("os");
@@ -218,7 +269,7 @@ var require_oauth = __commonJS({
       }
       const discoveryUrl = `${VERCEL_ISSUER}/.well-known/openid-configuration`;
       const response = await fetch(discoveryUrl, {
-        headers: { "user-agent": userAgent }
+        headers: { "user-agent": userAgent },
       });
       if (!response.ok) {
         throw new Error("Failed to discover OAuth endpoints");
@@ -238,20 +289,23 @@ var require_oauth = __commonJS({
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "user-agent": userAgent
+          "user-agent": userAgent,
         },
         body: new URLSearchParams({
           client_id: VERCEL_CLI_CLIENT_ID,
           grant_type: "refresh_token",
-          ...options
-        })
+          ...options,
+        }),
       });
     }
     __name(refreshTokenRequest, "refreshTokenRequest");
     async function processTokenResponse(response) {
       const json = await response.json();
       if (!response.ok) {
-        const errorMsg = typeof json === "object" && json && "error" in json ? String(json.error) : "Token refresh failed";
+        const errorMsg =
+          typeof json === "object" && json && "error" in json
+            ? String(json.error)
+            : "Token refresh failed";
         return [new Error(errorMsg)];
       }
       if (typeof json !== "object" || json === null) {
@@ -269,7 +323,7 @@ var require_oauth = __commonJS({
       return [null, json];
     }
     __name(processTokenResponse, "processTokenResponse");
-  }
+  },
 });
 
 // ../../node_modules/@vercel/oidc/dist/token-util.js
@@ -287,33 +341,66 @@ var require_token_util = __commonJS({
         __defProp(target, name, { get: all[name], enumerable: true });
     }, "__export");
     var __copyProps = /* @__PURE__ */ __name((to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames(from))
+      if ((from && typeof from === "object") || typeof from === "function") {
+        for (const key of __getOwnPropNames(from))
           if (!__hasOwnProp.call(to, key) && key !== except)
-            __defProp(to, key, { get: /* @__PURE__ */ __name(() => from[key], "get"), enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+            __defProp(to, key, {
+              get: /* @__PURE__ */ __name(() => from[key], "get"),
+              enumerable:
+                !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+            });
       }
       return to;
     }, "__copyProps");
-    var __toESM = /* @__PURE__ */ __name((mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-      // If the importer is in node compatibility mode or this is not an ESM
-      // file that has been converted to a CommonJS file using a Babel-
-      // compatible transform (i.e. "__esModule" has not been set), then set
-      // "default" to the CommonJS "module.exports" for node compatibility.
-      isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-      mod
-    )), "__toESM");
-    var __toCommonJS = /* @__PURE__ */ __name((mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod), "__toCommonJS");
+    var __toESM = /* @__PURE__ */ __name(
+      (mod, isNodeMode, target) => (
+        (target = mod != null ? __create(__getProtoOf(mod)) : {}),
+        __copyProps(
+          // If the importer is in node compatibility mode or this is not an ESM
+          // file that has been converted to a CommonJS file using a Babel-
+          // compatible transform (i.e. "__esModule" has not been set), then set
+          // "default" to the CommonJS "module.exports" for node compatibility.
+          isNodeMode || !mod || !mod.__esModule
+            ? __defProp(target, "default", { value: mod, enumerable: true })
+            : target,
+          mod
+        )
+      ),
+      "__toESM"
+    );
+    var __toCommonJS = /* @__PURE__ */ __name(
+      (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod),
+      "__toCommonJS"
+    );
     var token_util_exports = {};
     __export(token_util_exports, {
-      assertVercelOidcTokenResponse: /* @__PURE__ */ __name(() => assertVercelOidcTokenResponse, "assertVercelOidcTokenResponse"),
-      findProjectInfo: /* @__PURE__ */ __name(() => findProjectInfo, "findProjectInfo"),
-      getTokenPayload: /* @__PURE__ */ __name(() => getTokenPayload, "getTokenPayload"),
-      getVercelCliToken: /* @__PURE__ */ __name(() => getVercelCliToken, "getVercelCliToken"),
-      getVercelDataDir: /* @__PURE__ */ __name(() => getVercelDataDir, "getVercelDataDir"),
-      getVercelOidcToken: /* @__PURE__ */ __name(() => getVercelOidcToken, "getVercelOidcToken"),
+      assertVercelOidcTokenResponse: /* @__PURE__ */ __name(
+        () => assertVercelOidcTokenResponse,
+        "assertVercelOidcTokenResponse"
+      ),
+      findProjectInfo: /* @__PURE__ */ __name(
+        () => findProjectInfo,
+        "findProjectInfo"
+      ),
+      getTokenPayload: /* @__PURE__ */ __name(
+        () => getTokenPayload,
+        "getTokenPayload"
+      ),
+      getVercelCliToken: /* @__PURE__ */ __name(
+        () => getVercelCliToken,
+        "getVercelCliToken"
+      ),
+      getVercelDataDir: /* @__PURE__ */ __name(
+        () => getVercelDataDir,
+        "getVercelDataDir"
+      ),
+      getVercelOidcToken: /* @__PURE__ */ __name(
+        () => getVercelOidcToken,
+        "getVercelOidcToken"
+      ),
       isExpired: /* @__PURE__ */ __name(() => isExpired, "isExpired"),
       loadToken: /* @__PURE__ */ __name(() => loadToken, "loadToken"),
-      saveToken: /* @__PURE__ */ __name(() => saveToken, "saveToken")
+      saveToken: /* @__PURE__ */ __name(() => saveToken, "saveToken"),
     });
     module.exports = __toCommonJS(token_util_exports);
     var path = __toESM(__require("path"));
@@ -345,16 +432,17 @@ var require_token_util = __commonJS({
       }
       try {
         const tokenResponse = await (0, import_oauth.refreshTokenRequest)({
-          refresh_token: authConfig.refreshToken
+          refresh_token: authConfig.refreshToken,
         });
-        const [tokensError, tokens] = await (0, import_oauth.processTokenResponse)(tokenResponse);
+        const [tokensError, tokens] = await (0,
+        import_oauth.processTokenResponse)(tokenResponse);
         if (tokensError || !tokens) {
           (0, import_auth_config.writeAuthConfig)({});
           return null;
         }
         const updatedConfig = {
           token: tokens.access_token,
-          expiresAt: Math.floor(Date.now() / 1e3) + tokens.expires_in
+          expiresAt: Math.floor(Date.now() / 1e3) + tokens.expires_in,
         };
         if (tokens.refresh_token) {
           updatedConfig.refreshToken = tokens.refresh_token;
@@ -372,8 +460,8 @@ var require_token_util = __commonJS({
       const res = await fetch(url, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${authToken}`
-        }
+          Authorization: `Bearer ${authToken}`,
+        },
       });
       if (!res.ok) {
         throw new import_token_error.VercelOidcTokenError(
@@ -460,7 +548,7 @@ var require_token_util = __commonJS({
       }
       const base64 = tokenParts[1].replace(/-/g, "+").replace(/_/g, "/");
       const padded = base64.padEnd(
-        base64.length + (4 - base64.length % 4) % 4,
+        base64.length + ((4 - (base64.length % 4)) % 4),
         "="
       );
       return JSON.parse(Buffer.from(padded, "base64").toString("utf8"));
@@ -470,10 +558,8 @@ var require_token_util = __commonJS({
       return token.exp * 1e3 < Date.now();
     }
     __name(isExpired, "isExpired");
-  }
+  },
 });
 
-export {
-  require_token_util
-};
+export { require_token_util };
 //# sourceMappingURL=chunk-P5PUAH4D.mjs.map

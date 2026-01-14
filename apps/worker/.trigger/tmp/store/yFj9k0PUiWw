@@ -1,24 +1,19 @@
+import { task } from "./chunk-BNK46XDO.mjs";
+import { __name, init_esm } from "./chunk-CEVTQX7C.mjs";
 import {
   computeContentHashSync,
   createJob,
   createOrganization,
   findDuplicateJob,
-  findOrMatchOrganization
+  findOrMatchOrganization,
 } from "./chunk-OQADXJ3N.mjs";
-import {
-  task
-} from "./chunk-BNK46XDO.mjs";
-import {
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
 
 // src/jobs/feeds/process-feed-batch.ts
 init_esm();
 var processFeedBatch = task({
   id: "process-feed-batch",
   retry: {
-    maxAttempts: 3
+    maxAttempts: 3,
   },
   run: /* @__PURE__ */ __name(async (payload) => {
     const { batchIndex, jobs, source } = payload;
@@ -30,12 +25,12 @@ var processFeedBatch = task({
       try {
         let org = await findOrMatchOrganization({
           name: feedJob.organizationName,
-          url: feedJob.url
+          url: feedJob.url,
         });
         if (!org) {
           org = await createOrganization({
             name: feedJob.organizationName,
-            url: feedJob.url
+            url: feedJob.url,
           });
         }
         const contentHash = computeContentHashSync(
@@ -52,7 +47,7 @@ var processFeedBatch = task({
           description: feedJob.description,
           externalId: feedJob.externalId,
           source,
-          sourceFeed: source
+          sourceFeed: source,
         });
         created++;
       } catch (error) {
@@ -65,12 +60,10 @@ var processFeedBatch = task({
       processed: jobs.length,
       created,
       skipped,
-      errors
+      errors,
     };
-  }, "run")
+  }, "run"),
 });
 
-export {
-  processFeedBatch
-};
+export { processFeedBatch };
 //# sourceMappingURL=chunk-6D4G5P5M.mjs.map

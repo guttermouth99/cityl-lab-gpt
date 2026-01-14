@@ -1,14 +1,6 @@
-import {
-  expireOldJobs,
-  getExpiredJobsCount
-} from "./chunk-OQADXJ3N.mjs";
-import {
-  schedules_exports
-} from "./chunk-BNK46XDO.mjs";
-import {
-  __name,
-  init_esm
-} from "./chunk-CEVTQX7C.mjs";
+import { schedules_exports } from "./chunk-BNK46XDO.mjs";
+import { __name, init_esm } from "./chunk-CEVTQX7C.mjs";
+import { expireOldJobs, getExpiredJobsCount } from "./chunk-OQADXJ3N.mjs";
 
 // src/jobs/maintenance/expire-jobs.ts
 init_esm();
@@ -26,12 +18,10 @@ var expireJobsTask = schedules_exports.task({
     await expireOldJobs(/* @__PURE__ */ new Date());
     console.log(`Expired ${expiredCount} jobs`);
     return {
-      expired: expiredCount
+      expired: expiredCount,
     };
-  }, "run")
+  }, "run"),
 });
 
-export {
-  expireJobsTask
-};
+export { expireJobsTask };
 //# sourceMappingURL=chunk-6DZ3YKXK.mjs.map
