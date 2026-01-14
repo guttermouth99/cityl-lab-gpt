@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:trigger.dev)",
+      "Bash(bun install:*)",
+      "Bash(bun run:*)",
+      "WebSearch",
+      "Bash(bun tsc:*)",
+      "mcp__trigger__list_orgs",
+      "mcp__trigger__create_project_in_org",
+      "Bash(timeout 10 bun dev:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
