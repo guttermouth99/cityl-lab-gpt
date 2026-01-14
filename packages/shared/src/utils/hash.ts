@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 /**
  * Generate a content hash for change detection.
  * Used to detect when job/organization content has changed.
@@ -11,12 +13,10 @@ export async function computeContentHash(content: string): Promise<string> {
 }
 
 /**
- * Synchronous hash using Bun's built-in hasher (for server-side use)
+ * Synchronous hash using Node.js crypto (works in both Node.js and Bun)
  */
 export function computeContentHashSync(content: string): string {
-  const hasher = new Bun.CryptoHasher("sha256");
-  hasher.update(content);
-  return hasher.digest("hex");
+  return createHash("sha256").update(content).digest("hex");
 }
 
 /**
