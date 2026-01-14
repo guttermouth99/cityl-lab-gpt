@@ -1,14 +1,14 @@
 {
-  "extends": "@template/typescript-config/backend.json",
+  "extends": "@baito/typescript-config/backend.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@template/store/*": ["../../packages/store/src/*"],
-      "@template/auth/*": ["../../packages/auth/src/*"],
-      "@template/trpc/*": ["../../packages/trpc/src/*"],
-      "@template/backend-common/*": ["../../packages/trpc/backend-common/src/*"],
-      "@template/common/*": ["../../packages/trpc/common/src/*"]
+      "@baito/db/*": ["../../packages/db/src/*"],
+      "@baito/shared/*": ["../../packages/shared/src/*"],
+      "@baito/email/*": ["../../packages/email/src/*"],
+      "@baito/llm/*": ["../../packages/llm/src/*"],
+      "@baito/search/*": ["../../packages/search/src/*"]
     },
     "outDir": "dist"
   }

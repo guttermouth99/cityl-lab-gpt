@@ -1,9 +1,9 @@
 {
-  "extends": "@template/typescript-config/react-library.json",
+  "extends": "@baito/typescript-config/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@template/ui/*": ["./src/*"]
+      "@baito/ui/*": ["./src/*"]
     }
   },
   "include": ["."],

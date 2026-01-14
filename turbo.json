@@ -1,24 +1,34 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalEnv": ["NODE_ENV", "DATABASE_URL", "NEXT_PUBLIC_APP_URL", "NEXT_PUBLIC_API_URL"],
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "NEXT_PUBLIC_APP_URL"
+  ],
   "globalPassThroughEnv": [
-    "PORT",
-    "REDIS_URL",
-    "JWT_SECRET",
-    "FRONTEND_URL",
-    "BETTER_AUTH_URL",
     "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL",
     "GITHUB_CLIENT_ID",
     "GITHUB_CLIENT_SECRET",
     "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET"
+    "GOOGLE_CLIENT_SECRET",
+    "TYPESENSE_HOST",
+    "TYPESENSE_PORT",
+    "TYPESENSE_API_KEY",
+    "SENDGRID_API_KEY",
+    "OPENAI_API_KEY",
+    "TRIGGER_API_KEY",
+    "TRIGGER_API_URL",
+    "STEPSTONE_FEED_URL",
+    "JINA_API_KEY"
   ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -26,7 +36,6 @@
     "lint:fix": {
       "dependsOn": ["^lint"]
     },
-
     "check-types": {
       "dependsOn": ["^check-types"]
     },
@@ -38,12 +47,14 @@
       "cache": false
     },
     "db:migrate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:studio": {
       "cache": false,
       "persistent": true
-    },
-    "db:seed": {
-      "persistent": true,
-      "cache": false
     }
   }
 }

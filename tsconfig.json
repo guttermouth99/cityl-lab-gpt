@@ -1,1 +1,1 @@
-{ "extends": "@template/typescript-config/base.json" }
+{ "extends": "@baito/typescript-config/base.json" }

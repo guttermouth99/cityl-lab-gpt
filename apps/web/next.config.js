@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@template/ui'],
+  transpilePackages: ['@baito/ui', '@baito/db', '@baito/shared', '@baito/search'],
   cacheComponents: true,
 }
 

@@ -3,7 +3,7 @@
 import React from 'react'
 import { motion } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
-import { cn } from '@template/ui/lib/utils'
+import { cn } from '@baito/ui/lib/utils'
 
 interface FeatureCardProps {
   title: string

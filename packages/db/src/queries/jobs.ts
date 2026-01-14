@@ -1,0 +1,190 @@
+import { eq, and, desc, sql, ilike, or, inArray, lt, gt } from 'drizzle-orm'
+import { db } from '../client'
+import { jobs, jobLocations } from '../schema/jobs'
+import { organizations } from '../schema/organizations'
+import { generateSlug, generateJobSlug, computeContentHashSync } from '@baito/shared'
+import type { JobStatus, JobSource } from '@baito/shared'
+
+export interface CreateJobInput {
+  organizationId: string
+  title: string
+  description: string
+  externalId?: string | null
+  source?: JobSource
+  sourceFeed?: string | null
+  jobType?: string | null
+  jobBranch?: string | null
+  remoteType?: string | null
+  experienceLevel?: string | null
+  packageType?: string | null
+  expiresAt?: Date | null
+}
+
+export interface JobFilters {
+  status?: JobStatus
+  source?: JobSource
+  organizationId?: string
+  jobType?: string
+  jobBranch?: string
+  remoteType?: string
+  experienceLevel?: string
+  search?: string
+  limit?: number
+  offset?: number
+}
+
+export async function getJobById(id: string) {
+  return db.query.jobs.findFirst({
+    where: eq(jobs.id, id),
+    with: {
+      organization: true,
+      locations: true,
+    },
+  })
+}
+
+export async function getJobBySlug(slug: string) {
+  return db.query.jobs.findFirst({
+    where: eq(jobs.slug, slug),
+    with: {
+      organization: true,
+      locations: true,
+    },
+  })
+}
+
+export async function getJobsByOrganization(organizationId: string, limit = 50) {
+  return db.query.jobs.findMany({
+    where: eq(jobs.organizationId, organizationId),
+    orderBy: [desc(jobs.createdAt)],
+    limit,
+    with: {
+      locations: true,
+    },
+  })
+}
+
+export async function getActiveJobs(filters: JobFilters = {}) {
+  const conditions = [eq(jobs.status, 'active')]
+
+  if (filters.organizationId) {
+    conditions.push(eq(jobs.organizationId, filters.organizationId))
+  }
+  if (filters.source) {
+    conditions.push(eq(jobs.source, filters.source))
+  }
+  if (filters.jobType) {
+    conditions.push(eq(jobs.jobType, filters.jobType as any))
+  }
+  if (filters.jobBranch) {
+    conditions.push(eq(jobs.jobBranch, filters.jobBranch as any))
+  }
+  if (filters.remoteType) {
+    conditions.push(eq(jobs.remoteType, filters.remoteType as any))
+  }
+  if (filters.experienceLevel) {
+    conditions.push(eq(jobs.experienceLevel, filters.experienceLevel as any))
+  }
+  if (filters.search) {
+    conditions.push(
+      or(
+        ilike(jobs.title, `%${filters.search}%`),
+        ilike(jobs.description, `%${filters.search}%`),
+      )!,
+    )
+  }
+
+  return db.query.jobs.findMany({
+    where: and(...conditions),
+    orderBy: [desc(jobs.boostedAt), desc(jobs.createdAt)],
+    limit: filters.limit ?? 50,
+    offset: filters.offset ?? 0,
+    with: {
+      organization: true,
+      locations: true,
+    },
+  })
+}
+
+export async function createJob(input: CreateJobInput) {
+  const id = crypto.randomUUID()
+  
+  // Get organization for slug generation
+  const org = await db.query.organizations.findFirst({
+    where: eq(organizations.id, input.organizationId),
+  })
+  
+  const slug = generateJobSlug(input.title, org?.name ?? 'unknown')
+  const contentHash = computeContentHashSync(`${input.title}|${input.description}|${input.organizationId}`)
+
+  const [job] = await db
+    .insert(jobs)
+    .values({
+      id,
+      slug,
+      contentHash,
+      organizationId: input.organizationId,
+      title: input.title,
+      description: input.description,
+      externalId: input.externalId ?? null,
+      source: input.source ?? 'organic',
+      sourceFeed: input.sourceFeed ?? null,
+      jobType: input.jobType as any,
+      jobBranch: input.jobBranch as any,
+      remoteType: input.remoteType as any,
+      experienceLevel: input.experienceLevel as any,
+      packageType: input.packageType as any,
+      expiresAt: input.expiresAt ?? null,
+    })
+    .returning()
+
+  return job
+}
+
+export async function updateJobStatus(id: string, status: JobStatus) {
+  const [updated] = await db
+    .update(jobs)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(jobs.id, id))
+    .returning()
+
+  return updated
+}
+
+export async function findDuplicateJob(contentHash: string, organizationId: string) {
+  return db.query.jobs.findFirst({
+    where: and(
+      eq(jobs.contentHash, contentHash),
+      eq(jobs.organizationId, organizationId),
+    ),
+  })
+}
+
+export async function expireOldJobs(olderThan: Date) {
+  const [result] = await db
+    .update(jobs)
+    .set({ status: 'expired', updatedAt: new Date() })
+    .where(
+      and(
+        eq(jobs.status, 'active'),
+        lt(jobs.expiresAt, olderThan),
+      ),
+    )
+    .returning({ id: jobs.id })
+
+  return result
+}
+
+export async function getExpiredJobsCount() {
+  const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(jobs)
+    .where(
+      and(
+        eq(jobs.status, 'active'),
+        lt(jobs.expiresAt, new Date()),
+      ),
+    )
+
+  return result[0]?.count ?? 0
+}

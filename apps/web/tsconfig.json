@@ -1,14 +1,13 @@
 {
-  "extends": "@template/typescript-config/nextjs.json",
+  "extends": "@baito/typescript-config/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@template/ui/*": ["../../packages/ui/src/*"],
-      "@template/store/*": ["../../packages/store/src/*"],
-      "@template/auth/*": ["../../packages/auth/src/*"],
-      "@template/trpc/*": ["../../packages/trpc/src/*"],
-      "@template/common/*": ["../../packages/common/src/*"]
+      "@baito/ui/*": ["../../packages/ui/src/*"],
+      "@baito/db/*": ["../../packages/db/src/*"],
+      "@baito/shared/*": ["../../packages/shared/src/*"],
+      "@baito/search/*": ["../../packages/search/src/*"]
     },
     "plugins": [
       {

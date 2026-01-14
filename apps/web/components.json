@@ -12,8 +12,8 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@template/ui/lib/utils",
-    "ui": "@template/ui/components",
+    "utils": "@baito/ui/lib/utils",
+    "ui": "@baito/ui/components",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

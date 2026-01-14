@@ -1,0 +1,13 @@
+{
+  "name": "@baito/tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./base.ts",
+  "exports": {
+    ".": "./base.ts"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.1.13"
+  }
+}

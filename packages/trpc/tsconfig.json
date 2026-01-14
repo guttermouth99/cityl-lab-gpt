@@ -1,7 +1,0 @@
-{
-  "extends": "@template/typescript-config/backend.json",
-  "compilerOptions": {
-    "types": ["bun"]
-  },
-  "exclude": ["node_modules"]
-}
