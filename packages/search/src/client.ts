@@ -1,9 +1,9 @@
-import Typesense from 'typesense'
+import Typesense from "typesense";
 
-const typesenseHost = process.env.TYPESENSE_HOST || 'localhost'
-const typesensePort = parseInt(process.env.TYPESENSE_PORT || '8108', 10)
-const typesenseProtocol = process.env.TYPESENSE_PROTOCOL || 'http'
-const typesenseApiKey = process.env.TYPESENSE_API_KEY || 'xyz'
+const typesenseHost = process.env.TYPESENSE_HOST || "localhost";
+const typesensePort = Number.parseInt(process.env.TYPESENSE_PORT || "8108", 10);
+const typesenseProtocol = process.env.TYPESENSE_PROTOCOL || "http";
+const typesenseApiKey = process.env.TYPESENSE_API_KEY || "xyz";
 
 export const typesenseClient = new Typesense.Client({
   nodes: [
@@ -15,6 +15,6 @@ export const typesenseClient = new Typesense.Client({
   ],
   apiKey: typesenseApiKey,
   connectionTimeoutSeconds: 10,
-})
+});
 
-export type TypesenseClient = typeof typesenseClient
+export type TypesenseClient = typeof typesenseClient;

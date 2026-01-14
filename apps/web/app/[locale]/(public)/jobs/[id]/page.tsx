@@ -1,37 +1,44 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { ArrowLeft, MapPin, Clock, Building2, ExternalLink } from 'lucide-react'
+import {
+  ArrowLeft,
+  Building2,
+  Clock,
+  ExternalLink,
+  MapPin,
+} from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 interface JobPageProps {
-  params: Promise<{ locale: string; id: string }>
+  params: Promise<{ locale: string; id: string }>;
 }
 
-export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
-  const { id } = await params
-  
+export async function generateMetadata({
+  params,
+}: JobPageProps): Promise<Metadata> {
+  const { id } = await params;
+
   // In a real implementation, fetch job from database
   // For now, return placeholder metadata
   return {
     title: `Job: ${id}`,
-    description: 'Job description placeholder',
-  }
+    description: "Job description placeholder",
+  };
 }
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { locale, id } = await params
-  
+  const { locale, id } = await params;
+
   // In a real implementation, fetch job from database
   // For now, showing placeholder content
   const job = {
-    title: 'Sample Job Title',
+    title: "Sample Job Title",
     organization: {
-      name: 'Sample Organization',
-      slug: 'sample-org',
+      name: "Sample Organization",
+      slug: "sample-org",
     },
-    location: 'Berlin, Germany',
-    remoteType: 'Hybrid',
-    jobType: 'Full Time',
+    location: "Berlin, Germany",
+    remoteType: "Hybrid",
+    jobType: "Full Time",
     description: `
 # About the Role
 
@@ -56,15 +63,15 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
 - Benefit 3
     `,
     createdAt: new Date(),
-    externalUrl: 'https://example.com/apply',
-  }
+    externalUrl: "https://example.com/apply",
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Back Link */}
       <Link
-        href={`/${locale}/jobs`}
         className="mb-6 inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
+        href={`/${locale}/jobs`}
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Jobs
@@ -74,10 +81,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
         {/* Main Content */}
         <div className="lg:col-span-2">
           <div className="rounded-lg border bg-white p-8">
-            <h1 className="mb-2 text-3xl font-bold text-gray-900">{job.title}</h1>
+            <h1 className="mb-2 font-bold text-3xl text-gray-900">
+              {job.title}
+            </h1>
             <Link
+              className="text-green-600 text-lg hover:underline"
               href={`/${locale}/orga/${job.organization.slug}`}
-              className="text-lg text-green-600 hover:underline"
             >
               {job.organization.name}
             </Link>
@@ -101,7 +110,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
 
             {/* Job Description */}
             <div className="prose max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: job.description.replace(/\n/g, '<br/>') }} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: job.description.replace(/\n/g, "<br/>"),
+                }}
+              />
             </div>
           </div>
         </div>
@@ -109,20 +122,22 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 rounded-lg border bg-white p-6">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Apply Now</h2>
+            <h2 className="mb-4 font-semibold text-gray-900 text-lg">
+              Apply Now
+            </h2>
             <a
-              href={job.externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-6 py-3 font-medium text-white transition-colors hover:bg-green-700"
+              href={job.externalUrl}
+              rel="noopener noreferrer"
+              target="_blank"
             >
               Apply
               <ExternalLink className="h-4 w-4" />
             </a>
-            
+
             <hr className="my-4" />
 
-            <div className="space-y-3 text-sm text-gray-600">
+            <div className="space-y-3 text-gray-600 text-sm">
               <div className="flex justify-between">
                 <span>Posted</span>
                 <span className="font-medium text-gray-900">
@@ -135,12 +150,14 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
               </div>
               <div className="flex justify-between">
                 <span>Location</span>
-                <span className="font-medium text-gray-900">{job.remoteType}</span>
+                <span className="font-medium text-gray-900">
+                  {job.remoteType}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

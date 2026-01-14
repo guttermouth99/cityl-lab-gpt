@@ -20,13 +20,16 @@ function getBaseUrl() {
 }
 
 /**
- * Server-side tRPC caller for direct procedure calls in RSC
+ * Create a server-side tRPC caller for direct procedure calls in RSC.
+ * Usage: const caller = await createCaller(); const result = await caller.jobs.list();
  */
-export const trpcCaller = cache(async () => {
-  const createCaller = createCallerFactory(appRouter);
+const _createCaller = createCallerFactory(appRouter);
+type Caller = Awaited<ReturnType<typeof _createCaller>>;
+
+export async function createCaller(): Promise<Caller> {
   const context = await createTRPCContext();
-  return createCaller(context);
-});
+  return _createCaller(context);
+}
 
 /**
  * tRPC options proxy for prefetching queries in RSC

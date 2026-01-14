@@ -1,56 +1,65 @@
-import '@baito/ui/globals.css'
-import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import { hasLocale, NextIntlClientProvider } from 'next-intl'
-import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server'
-import { routing } from '@/i18n/routing'
+import "@baito/ui/globals.css";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import {
+  getMessages,
+  getTranslations,
+  setRequestLocale,
+} from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'Metadata' })
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
 
   return {
-    metadataBase: new URL('https://baito.jobs'),
+    metadataBase: new URL("https://baito.jobs"),
     title: {
-      default: t('title'),
-      template: '%s | Baito Jobs',
+      default: t("title"),
+      template: "%s | Baito Jobs",
     },
-    description: t('description'),
-  }
+    description: t("description"),
+  };
 }
 
 interface LocaleLayoutProps {
-  children: React.ReactNode
-  params: Promise<{ locale: string }>
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }
 
-export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
-  const { locale } = await params
+export default async function LocaleLayout({
+  children,
+  params,
+}: LocaleLayoutProps) {
+  const { locale } = await params;
 
   // Validate locale
   if (!hasLocale(routing.locales, locale)) {
-    notFound()
+    notFound();
   }
 
   // Enable static rendering
-  setRequestLocale(locale)
+  setRequestLocale(locale);
 
   // Get messages for client components
-  const messages = await getMessages()
+  const messages = await getMessages();
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
-  )
+  );
 }
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
+  return routing.locales.map((locale) => ({ locale }));
 }

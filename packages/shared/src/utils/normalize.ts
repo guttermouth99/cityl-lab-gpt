@@ -2,16 +2,14 @@
  * Normalize a string for comparison and storage.
  */
 export function normalizeString(input: string): string {
-  return input
-    .trim()
-    .replace(/\s+/g, ' ')
+  return input.trim().replace(/\s+/g, " ");
 }
 
 /**
  * Normalize an email address.
  */
 export function normalizeEmail(email: string): string {
-  return email.toLowerCase().trim()
+  return email.toLowerCase().trim();
 }
 
 /**
@@ -19,18 +17,18 @@ export function normalizeEmail(email: string): string {
  */
 export function normalizeUrl(url: string): string {
   try {
-    const parsed = new URL(url)
+    const parsed = new URL(url);
     // Remove www. prefix for consistency
-    parsed.hostname = parsed.hostname.replace(/^www\./, '')
+    parsed.hostname = parsed.hostname.replace(/^www\./, "");
     // Remove trailing slash
-    let normalized = parsed.toString()
-    if (normalized.endsWith('/')) {
-      normalized = normalized.slice(0, -1)
+    let normalized = parsed.toString();
+    if (normalized.endsWith("/")) {
+      normalized = normalized.slice(0, -1);
     }
-    return normalized
+    return normalized;
   } catch {
     // If URL is invalid, return as-is
-    return url.trim()
+    return url.trim();
   }
 }
 
@@ -39,10 +37,10 @@ export function normalizeUrl(url: string): string {
  */
 export function extractDomain(url: string): string | null {
   try {
-    const parsed = new URL(url)
-    return parsed.hostname.replace(/^www\./, '')
+    const parsed = new URL(url);
+    return parsed.hostname.replace(/^www\./, "");
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -52,10 +50,10 @@ export function extractDomain(url: string): string | null {
 export function normalizeOrgName(name: string): string {
   return name
     .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/[^\w\s]/g, '')
-    .replace(/\b(gmbh|ag|inc|ltd|llc|e\.?v\.?|e\.?g\.?)\b/gi, '')
-    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[^\w\s]/g, "")
+    .replace(/\b(gmbh|ag|inc|ltd|llc|e\.?v\.?|e\.?g\.?)\b/gi, "")
+    .trim();
 }
 
 /**
@@ -64,10 +62,10 @@ export function normalizeOrgName(name: string): string {
 export function normalizeJobTitle(title: string): string {
   return title
     .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/\(m\/w\/d\)/gi, '')
-    .replace(/\(m\/f\/d\)/gi, '')
-    .replace(/\(all genders\)/gi, '')
-    .replace(/[^\w\s]/g, '')
-    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\(m\/w\/d\)/gi, "")
+    .replace(/\(m\/f\/d\)/gi, "")
+    .replace(/\(all genders\)/gi, "")
+    .replace(/[^\w\s]/g, "")
+    .trim();
 }

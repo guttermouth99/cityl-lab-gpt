@@ -10,29 +10,28 @@ import {
   Preview,
   Section,
   Text,
-} from '@react-email/components'
-import * as React from 'react'
+} from "@react-email/components";
 
 interface WeeklyDigestEmailProps {
-  userName: string
-  totalNewJobs: number
+  userName: string;
+  totalNewJobs: number;
   topJobs: {
-    id: string
-    title: string
-    slug: string
-    organizationName: string
-    location?: string
-  }[]
-  topCategories: { name: string; count: number }[]
-  unsubscribeUrl: string
+    id: string;
+    title: string;
+    slug: string;
+    organizationName: string;
+    location?: string;
+  }[];
+  topCategories: { name: string; count: number }[];
+  unsubscribeUrl: string;
 }
 
 export function WeeklyDigestEmail({
-  userName = 'there',
+  userName = "there",
   totalNewJobs = 0,
   topJobs = [],
   topCategories = [],
-  unsubscribeUrl = '#',
+  unsubscribeUrl = "#",
 }: WeeklyDigestEmailProps) {
   return (
     <Html>
@@ -41,12 +40,13 @@ export function WeeklyDigestEmail({
       <Body style={main}>
         <Container style={container}>
           <Heading style={heading}>🌱 Weekly Job Digest</Heading>
-          
+
           <Text style={paragraph}>Hi {userName},</Text>
-          
+
           <Text style={paragraph}>
-            Here's your weekly roundup of impact jobs. This week we added{' '}
-            <strong>{totalNewJobs} new positions</strong> across various organizations.
+            Here's your weekly roundup of impact jobs. This week we added{" "}
+            <strong>{totalNewJobs} new positions</strong> across various
+            organizations.
           </Text>
 
           {topJobs.length > 0 && (
@@ -57,7 +57,10 @@ export function WeeklyDigestEmail({
               <Section style={jobsSection}>
                 {topJobs.map((job) => (
                   <div key={job.id} style={jobCard}>
-                    <Link href={`https://baito.jobs/jobs/${job.slug}`} style={jobTitle}>
+                    <Link
+                      href={`https://baito.jobs/jobs/${job.slug}`}
+                      style={jobTitle}
+                    >
                       {job.title}
                     </Link>
                     <Text style={jobMeta}>
@@ -86,7 +89,7 @@ export function WeeklyDigestEmail({
           )}
 
           <Section style={buttonSection}>
-            <Button style={button} href="https://baito.jobs/jobs">
+            <Button href="https://baito.jobs/jobs" style={button}>
               Explore All Jobs
             </Button>
           </Section>
@@ -94,7 +97,7 @@ export function WeeklyDigestEmail({
           <Hr style={hr} />
 
           <Text style={footer}>
-            You're receiving this weekly digest.{' '}
+            You're receiving this weekly digest.{" "}
             <Link href={unsubscribeUrl} style={link}>
               Manage your email preferences
             </Link>
@@ -103,116 +106,117 @@ export function WeeklyDigestEmail({
         </Container>
       </Body>
     </Html>
-  )
+  );
 }
 
-export default WeeklyDigestEmail
+export default WeeklyDigestEmail;
 
 // Styles
 const main = {
-  backgroundColor: '#f6f9fc',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-}
+  backgroundColor: "#f6f9fc",
+  fontFamily:
+    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+};
 
 const container = {
-  backgroundColor: '#ffffff',
-  margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
-  maxWidth: '600px',
-}
+  backgroundColor: "#ffffff",
+  margin: "0 auto",
+  padding: "20px 0 48px",
+  marginBottom: "64px",
+  maxWidth: "600px",
+};
 
 const heading = {
-  fontSize: '24px',
-  letterSpacing: '-0.5px',
-  lineHeight: '1.3',
-  fontWeight: '700',
-  color: '#10b981',
-  padding: '17px 0 0',
-  textAlign: 'center' as const,
-}
+  fontSize: "24px",
+  letterSpacing: "-0.5px",
+  lineHeight: "1.3",
+  fontWeight: "700",
+  color: "#10b981",
+  padding: "17px 0 0",
+  textAlign: "center" as const,
+};
 
 const subheading = {
-  fontSize: '18px',
-  fontWeight: '600',
-  color: '#1f2937',
-  padding: '0 40px',
-  marginTop: '24px',
-  marginBottom: '12px',
-}
+  fontSize: "18px",
+  fontWeight: "600",
+  color: "#1f2937",
+  padding: "0 40px",
+  marginTop: "24px",
+  marginBottom: "12px",
+};
 
 const paragraph = {
-  margin: '0 0 15px',
-  fontSize: '15px',
-  lineHeight: '1.4',
-  color: '#3c4149',
-  padding: '0 40px',
-}
+  margin: "0 0 15px",
+  fontSize: "15px",
+  lineHeight: "1.4",
+  color: "#3c4149",
+  padding: "0 40px",
+};
 
 const jobsSection = {
-  padding: '0 40px',
-}
+  padding: "0 40px",
+};
 
 const jobCard = {
-  backgroundColor: '#f9fafb',
-  borderRadius: '8px',
-  padding: '16px',
-  marginBottom: '12px',
-  border: '1px solid #e5e7eb',
-}
+  backgroundColor: "#f9fafb",
+  borderRadius: "8px",
+  padding: "16px",
+  marginBottom: "12px",
+  border: "1px solid #e5e7eb",
+};
 
 const jobTitle = {
-  fontSize: '16px',
-  fontWeight: '600',
-  color: '#10b981',
-  textDecoration: 'none',
-}
+  fontSize: "16px",
+  fontWeight: "600",
+  color: "#10b981",
+  textDecoration: "none",
+};
 
 const jobMeta = {
-  fontSize: '14px',
-  color: '#6b7280',
-  margin: '4px 0 0',
-}
+  fontSize: "14px",
+  color: "#6b7280",
+  margin: "4px 0 0",
+};
 
 const categoriesSection = {
-  padding: '0 40px',
-}
+  padding: "0 40px",
+};
 
 const categoryItem = {
-  fontSize: '14px',
-  color: '#4b5563',
-  margin: '4px 0',
-}
+  fontSize: "14px",
+  color: "#4b5563",
+  margin: "4px 0",
+};
 
 const buttonSection = {
-  padding: '27px 0 27px',
-  textAlign: 'center' as const,
-}
+  padding: "27px 0 27px",
+  textAlign: "center" as const,
+};
 
 const button = {
-  backgroundColor: '#10b981',
-  borderRadius: '8px',
-  color: '#fff',
-  fontSize: '15px',
-  fontWeight: '600',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'inline-block',
-  padding: '12px 24px',
-}
+  backgroundColor: "#10b981",
+  borderRadius: "8px",
+  color: "#fff",
+  fontSize: "15px",
+  fontWeight: "600",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "inline-block",
+  padding: "12px 24px",
+};
 
 const hr = {
-  borderColor: '#e6ebf1',
-  margin: '20px 0',
-}
+  borderColor: "#e6ebf1",
+  margin: "20px 0",
+};
 
 const footer = {
-  color: '#8898aa',
-  fontSize: '12px',
-  lineHeight: '16px',
-  padding: '0 40px',
-}
+  color: "#8898aa",
+  fontSize: "12px",
+  lineHeight: "16px",
+  padding: "0 40px",
+};
 
 const link = {
-  color: '#10b981',
-}
+  color: "#10b981",
+};

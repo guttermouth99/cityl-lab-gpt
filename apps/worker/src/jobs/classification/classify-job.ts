@@ -1,33 +1,33 @@
-import { task } from '@trigger.dev/sdk/v3'
-import { classifyJob as classifyJobLLM } from '@baito/llm'
-import { getJobById } from '@baito/db/queries'
-import { db } from '@baito/db'
-import { jobs } from '@baito/db/schema'
-import { eq } from 'drizzle-orm'
+import { db } from "@baito/db";
+import { getJobById } from "@baito/db/queries";
+import { jobs } from "@baito/db/schema";
+import { classifyJob as classifyJobLLM } from "@baito/llm";
+import { task } from "@trigger.dev/sdk";
+import { eq } from "drizzle-orm";
 
 export const classifyJobTask = task({
-  id: 'classify-job',
+  id: "classify-job",
   retry: {
     maxAttempts: 3,
   },
   run: async (payload: { jobId: string }) => {
-    const { jobId } = payload
-    
-    const job = await getJobById(jobId)
+    const { jobId } = payload;
+
+    const job = await getJobById(jobId);
     if (!job) {
-      throw new Error(`Job ${jobId} not found`)
+      throw new Error(`Job ${jobId} not found`);
     }
 
-    console.log(`Classifying job: ${job.title}`)
+    console.log(`Classifying job: ${job.title}`);
 
     // Use LLM to classify the job
     const result = await classifyJobLLM({
       title: job.title,
       description: job.description,
       organizationName: job.organization?.name,
-    })
+    });
 
-    console.log(`Classification result:`, result)
+    console.log("Classification result:", result);
 
     // Update the job with classification
     await db
@@ -39,12 +39,12 @@ export const classifyJobTask = task({
         experienceLevel: result.experienceLevel as any,
         updatedAt: new Date(),
       })
-      .where(eq(jobs.id, jobId))
+      .where(eq(jobs.id, jobId));
 
     return {
       jobId,
       title: job.title,
       classification: result,
-    }
+    };
   },
-})
+});

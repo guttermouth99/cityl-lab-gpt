@@ -1,32 +1,37 @@
-import { task } from '@trigger.dev/sdk/v3'
-import { createJob, findDuplicateJob, findOrMatchOrganization, createOrganization } from '@baito/db/queries'
-import { computeContentHashSync, generateSlug } from '@baito/shared'
+import {
+  createJob,
+  createOrganization,
+  findDuplicateJob,
+  findOrMatchOrganization,
+} from "@baito/db/queries";
+import { computeContentHashSync } from "@baito/shared";
+import { task } from "@trigger.dev/sdk";
 
 interface FeedJob {
-  externalId: string
-  title: string
-  description: string
-  organizationName: string
-  url: string
-  location?: string
+  externalId: string;
+  title: string;
+  description: string;
+  organizationName: string;
+  url: string;
+  location?: string;
 }
 
 export const processFeedBatch = task({
-  id: 'process-feed-batch',
+  id: "process-feed-batch",
   retry: {
     maxAttempts: 3,
   },
   run: async (payload: {
-    batchIndex: number
-    jobs: FeedJob[]
-    source: string
+    batchIndex: number;
+    jobs: FeedJob[];
+    source: string;
   }) => {
-    const { batchIndex, jobs, source } = payload
-    console.log(`Processing batch ${batchIndex} with ${jobs.length} jobs`)
+    const { batchIndex, jobs, source } = payload;
+    console.log(`Processing batch ${batchIndex} with ${jobs.length} jobs`);
 
-    let created = 0
-    let skipped = 0
-    let errors = 0
+    let created = 0;
+    let skipped = 0;
+    let errors = 0;
 
     for (const feedJob of jobs) {
       try {
@@ -34,24 +39,24 @@ export const processFeedBatch = task({
         let org = await findOrMatchOrganization({
           name: feedJob.organizationName,
           url: feedJob.url,
-        })
+        });
 
         if (!org) {
           org = await createOrganization({
             name: feedJob.organizationName,
             url: feedJob.url,
-          })
+          });
         }
 
         // Check for duplicates
         const contentHash = computeContentHashSync(
-          `${feedJob.title}|${feedJob.description}|${org.id}`,
-        )
+          `${feedJob.title}|${feedJob.description}|${org.id}`
+        );
 
-        const duplicate = await findDuplicateJob(contentHash, org.id)
+        const duplicate = await findDuplicateJob(contentHash, org.id);
         if (duplicate) {
-          skipped++
-          continue
+          skipped++;
+          continue;
         }
 
         // Create the job
@@ -62,12 +67,12 @@ export const processFeedBatch = task({
           externalId: feedJob.externalId,
           source: source as any,
           sourceFeed: source,
-        })
+        });
 
-        created++
+        created++;
       } catch (error) {
-        console.error(`Error processing job ${feedJob.externalId}:`, error)
-        errors++
+        console.error(`Error processing job ${feedJob.externalId}:`, error);
+        errors++;
       }
     }
 
@@ -77,6 +82,6 @@ export const processFeedBatch = task({
       created,
       skipped,
       errors,
-    }
+    };
   },
-})
+});

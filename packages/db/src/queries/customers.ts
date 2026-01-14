@@ -1,13 +1,13 @@
-import { eq, and, desc } from 'drizzle-orm'
-import { db } from '../client'
-import { customers } from '../schema/customers'
-import type { CustomerPlan, CustomerStatus } from '@baito/shared'
+import type { CustomerPlan, CustomerStatus } from "@baito/shared";
+import { desc, eq } from "drizzle-orm";
+import { db } from "../client";
+import { customers } from "../schema/customers";
 
 export interface CreateCustomerInput {
-  userId: string
-  organizationId: string
-  plan?: CustomerPlan
-  billingEmail?: string | null
+  userId: string;
+  organizationId: string;
+  plan?: CustomerPlan;
+  billingEmail?: string | null;
 }
 
 export async function getCustomerById(id: string) {
@@ -17,7 +17,7 @@ export async function getCustomerById(id: string) {
       user: true,
       organization: true,
     },
-  })
+  });
 }
 
 export async function getCustomerByUserId(userId: string) {
@@ -26,7 +26,7 @@ export async function getCustomerByUserId(userId: string) {
     with: {
       organization: true,
     },
-  })
+  });
 }
 
 export async function getCustomerByOrganizationId(organizationId: string) {
@@ -35,11 +35,11 @@ export async function getCustomerByOrganizationId(organizationId: string) {
     with: {
       user: true,
     },
-  })
+  });
 }
 
 export async function createCustomer(input: CreateCustomerInput) {
-  const id = crypto.randomUUID()
+  const id = crypto.randomUUID();
 
   const [customer] = await db
     .insert(customers)
@@ -47,12 +47,12 @@ export async function createCustomer(input: CreateCustomerInput) {
       id,
       userId: input.userId,
       organizationId: input.organizationId,
-      plan: input.plan ?? 'starter',
+      plan: input.plan ?? "starter",
       billingEmail: input.billingEmail ?? null,
     })
-    .returning()
+    .returning();
 
-  return customer
+  return customer;
 }
 
 export async function updateCustomerPlan(id: string, plan: CustomerPlan) {
@@ -60,7 +60,7 @@ export async function updateCustomerPlan(id: string, plan: CustomerPlan) {
     starter: 5,
     professional: 25,
     enterprise: 100,
-  }
+  };
 
   const [updated] = await db
     .update(customers)
@@ -70,9 +70,9 @@ export async function updateCustomerPlan(id: string, plan: CustomerPlan) {
       updatedAt: new Date(),
     })
     .where(eq(customers.id, id))
-    .returning()
+    .returning();
 
-  return updated
+  return updated;
 }
 
 export async function updateCustomerStatus(id: string, status: CustomerStatus) {
@@ -83,17 +83,17 @@ export async function updateCustomerStatus(id: string, status: CustomerStatus) {
       updatedAt: new Date(),
     })
     .where(eq(customers.id, id))
-    .returning()
+    .returning();
 
-  return updated
+  return updated;
 }
 
 export async function incrementJobsUsed(id: string) {
   const customer = await db.query.customers.findFirst({
     where: eq(customers.id, id),
-  })
+  });
 
-  if (!customer) return null
+  if (!customer) return null;
 
   const [updated] = await db
     .update(customers)
@@ -102,17 +102,17 @@ export async function incrementJobsUsed(id: string) {
       updatedAt: new Date(),
     })
     .where(eq(customers.id, id))
-    .returning()
+    .returning();
 
-  return updated
+  return updated;
 }
 
 export async function decrementJobsUsed(id: string) {
   const customer = await db.query.customers.findFirst({
     where: eq(customers.id, id),
-  })
+  });
 
-  if (!customer || customer.jobsUsed <= 0) return null
+  if (!customer || customer.jobsUsed <= 0) return null;
 
   const [updated] = await db
     .update(customers)
@@ -121,23 +121,26 @@ export async function decrementJobsUsed(id: string) {
       updatedAt: new Date(),
     })
     .where(eq(customers.id, id))
-    .returning()
+    .returning();
 
-  return updated
+  return updated;
 }
 
 export async function canCustomerPostJob(id: string): Promise<boolean> {
   const customer = await db.query.customers.findFirst({
     where: eq(customers.id, id),
-  })
+  });
 
-  if (!customer) return false
-  if (customer.status !== 'active') return false
+  if (!customer) return false;
+  if (customer.status !== "active") return false;
 
-  return customer.jobsUsed < customer.jobsLimit
+  return customer.jobsUsed < customer.jobsLimit;
 }
 
-export async function setStripeCustomerId(id: string, stripeCustomerId: string) {
+export async function setStripeCustomerId(
+  id: string,
+  stripeCustomerId: string
+) {
   const [updated] = await db
     .update(customers)
     .set({
@@ -145,18 +148,18 @@ export async function setStripeCustomerId(id: string, stripeCustomerId: string) 
       updatedAt: new Date(),
     })
     .where(eq(customers.id, id))
-    .returning()
+    .returning();
 
-  return updated
+  return updated;
 }
 
 export async function getActiveCustomers() {
   return db.query.customers.findMany({
-    where: eq(customers.status, 'active'),
+    where: eq(customers.status, "active"),
     orderBy: [desc(customers.createdAt)],
     with: {
       user: true,
       organization: true,
     },
-  })
+  });
 }

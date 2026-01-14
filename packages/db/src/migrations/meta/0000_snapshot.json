@@ -95,12 +95,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -172,12 +168,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -187,9 +179,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -269,9 +259,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -417,16 +405,12 @@
         "organization_slug_unique": {
           "name": "organization_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         },
         "organization_domain_unique": {
           "name": "organization_domain_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "domain"
-          ]
+          "columns": ["domain"]
         }
       },
       "policies": {},
@@ -492,12 +476,8 @@
           "name": "job_location_job_id_job_id_fk",
           "tableFrom": "job_location",
           "tableTo": "job",
-          "columnsFrom": [
-            "job_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["job_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -657,12 +637,8 @@
           "name": "job_organization_id_organization_id_fk",
           "tableFrom": "job",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -672,9 +648,7 @@
         "job_slug_unique": {
           "name": "job_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -738,12 +712,8 @@
           "name": "alert_user_id_user_id_fk",
           "tableFrom": "alert",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -796,12 +766,8 @@
           "name": "sent_job_user_id_user_id_fk",
           "tableFrom": "sent_job",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -809,12 +775,8 @@
           "name": "sent_job_job_id_job_id_fk",
           "tableFrom": "sent_job",
           "tableTo": "job",
-          "columnsFrom": [
-            "job_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["job_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -822,12 +784,8 @@
           "name": "sent_job_alert_id_alert_id_fk",
           "tableFrom": "sent_job",
           "tableTo": "alert",
-          "columnsFrom": [
-            "alert_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["alert_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -923,12 +881,8 @@
           "name": "customer_user_id_user_id_fk",
           "tableFrom": "customer",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -936,12 +890,8 @@
           "name": "customer_organization_id_organization_id_fk",
           "tableFrom": "customer",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -957,33 +907,17 @@
     "public.alert_frequency": {
       "name": "alert_frequency",
       "schema": "public",
-      "values": [
-        "daily",
-        "weekly",
-        "instant",
-        "none"
-      ]
+      "values": ["daily", "weekly", "instant", "none"]
     },
     "public.user_role": {
       "name": "user_role",
       "schema": "public",
-      "values": [
-        "user",
-        "customer",
-        "admin"
-      ]
+      "values": ["user", "customer", "admin"]
     },
     "public.experience_level": {
       "name": "experience_level",
       "schema": "public",
-      "values": [
-        "entry",
-        "junior",
-        "mid",
-        "senior",
-        "lead",
-        "executive"
-      ]
+      "values": ["entry", "junior", "mid", "senior", "lead", "executive"]
     },
     "public.job_branch": {
       "name": "job_branch",
@@ -1009,25 +943,12 @@
     "public.job_source": {
       "name": "job_source",
       "schema": "public",
-      "values": [
-        "organic",
-        "paid",
-        "cpa",
-        "flatrate",
-        "agency",
-        "scraped"
-      ]
+      "values": ["organic", "paid", "cpa", "flatrate", "agency", "scraped"]
     },
     "public.job_status": {
       "name": "job_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "pending",
-        "active",
-        "expired",
-        "archived"
-      ]
+      "values": ["draft", "pending", "active", "expired", "archived"]
     },
     "public.job_type": {
       "name": "job_type",
@@ -1045,39 +966,22 @@
     "public.package_type": {
       "name": "package_type",
       "schema": "public",
-      "values": [
-        "basic",
-        "standard",
-        "premium",
-        "featured"
-      ]
+      "values": ["basic", "standard", "premium", "featured"]
     },
     "public.remote_type": {
       "name": "remote_type",
       "schema": "public",
-      "values": [
-        "onsite",
-        "remote",
-        "hybrid"
-      ]
+      "values": ["onsite", "remote", "hybrid"]
     },
     "public.customer_plan": {
       "name": "customer_plan",
       "schema": "public",
-      "values": [
-        "starter",
-        "professional",
-        "enterprise"
-      ]
+      "values": ["starter", "professional", "enterprise"]
     },
     "public.customer_status": {
       "name": "customer_status",
       "schema": "public",
-      "values": [
-        "active",
-        "suspended",
-        "cancelled"
-      ]
+      "values": ["active", "suspended", "cancelled"]
     }
   },
   "schemas": {},

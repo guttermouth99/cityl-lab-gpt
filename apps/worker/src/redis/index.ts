@@ -1,5 +1,6 @@
-import { redisClient } from '@template/backend-common/redis'
-
-export const redis = redisClient('worker')
-
-await redis.connect()
+// Redis client placeholder - add ioredis dependency when needed
+export const redis = {
+  connect: async () => {
+    console.log("[Redis] Connection not configured");
+  },
+};

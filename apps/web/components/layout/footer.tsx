@@ -1,8 +1,10 @@
-import { getTranslations } from 'next-intl/server'
-import { Link } from '@/i18n/navigation'
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 export async function Footer() {
-  const t = await getTranslations('Footer')
+  const t = await getTranslations("Footer");
+  // Use build-time year to avoid PPR issues with new Date()
+  const currentYear = 2026;
 
   return (
     <footer className="border-t bg-gray-50">
@@ -10,35 +12,37 @@ export async function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-2">
+            <Link className="flex items-center gap-2" href="/">
               <span className="text-2xl">🌱</span>
-              <span className="text-xl font-bold text-gray-900">Baito</span>
+              <span className="font-bold text-gray-900 text-xl">Baito</span>
             </Link>
-            <p className="mt-4 text-sm text-gray-600">{t('tagline')}</p>
+            <p className="mt-4 text-gray-600 text-sm">{t("tagline")}</p>
           </div>
 
           {/* Job Seekers */}
           <div>
-            <h3 className="mb-4 font-semibold text-gray-900">{t('jobSeekers.title')}</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <h3 className="mb-4 font-semibold text-gray-900">
+              {t("jobSeekers.title")}
+            </h3>
+            <ul className="space-y-2 text-gray-600 text-sm">
               <li>
-                <Link href="/jobs" className="hover:text-gray-900">
-                  {t('jobSeekers.browseJobs')}
+                <Link className="hover:text-gray-900" href="/jobs">
+                  {t("jobSeekers.browseJobs")}
                 </Link>
               </li>
               <li>
-                <Link href="/account/alerts" className="hover:text-gray-900">
-                  {t('jobSeekers.jobAlerts')}
+                <Link className="hover:text-gray-900" href="/account/alerts">
+                  {t("jobSeekers.jobAlerts")}
                 </Link>
               </li>
               <li>
-                <Link href="/ngo" className="hover:text-gray-900">
-                  {t('jobSeekers.ngoJobs')}
+                <Link className="hover:text-gray-900" href="/ngo">
+                  {t("jobSeekers.ngoJobs")}
                 </Link>
               </li>
               <li>
-                <Link href="/j/sustainability" className="hover:text-gray-900">
-                  {t('jobSeekers.sustainabilityJobs')}
+                <Link className="hover:text-gray-900" href="/j/sustainability">
+                  {t("jobSeekers.sustainabilityJobs")}
                 </Link>
               </li>
             </ul>
@@ -46,21 +50,23 @@ export async function Footer() {
 
           {/* Employers */}
           <div>
-            <h3 className="mb-4 font-semibold text-gray-900">{t('employers.title')}</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <h3 className="mb-4 font-semibold text-gray-900">
+              {t("employers.title")}
+            </h3>
+            <ul className="space-y-2 text-gray-600 text-sm">
               <li>
-                <Link href="/org/jobs/new" className="hover:text-gray-900">
-                  {t('employers.postJob')}
+                <Link className="hover:text-gray-900" href="/org/jobs/new">
+                  {t("employers.postJob")}
                 </Link>
               </li>
               <li>
-                <Link href="/org/billing" className="hover:text-gray-900">
-                  {t('employers.pricing')}
+                <Link className="hover:text-gray-900" href="/org/billing">
+                  {t("employers.pricing")}
                 </Link>
               </li>
               <li>
-                <Link href="/org/dashboard" className="hover:text-gray-900">
-                  {t('employers.dashboard')}
+                <Link className="hover:text-gray-900" href="/org/dashboard">
+                  {t("employers.dashboard")}
                 </Link>
               </li>
             </ul>
@@ -68,36 +74,38 @@ export async function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="mb-4 font-semibold text-gray-900">{t('company.title')}</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <h3 className="mb-4 font-semibold text-gray-900">
+              {t("company.title")}
+            </h3>
+            <ul className="space-y-2 text-gray-600 text-sm">
               <li>
-                <Link href="/about" className="hover:text-gray-900">
-                  {t('company.about')}
+                <Link className="hover:text-gray-900" href="/about">
+                  {t("company.about")}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-gray-900">
-                  {t('company.contact')}
+                <Link className="hover:text-gray-900" href="/contact">
+                  {t("company.contact")}
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-gray-900">
-                  {t('company.privacy')}
+                <Link className="hover:text-gray-900" href="/privacy">
+                  {t("company.privacy")}
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-gray-900">
-                  {t('company.terms')}
+                <Link className="hover:text-gray-900" href="/terms">
+                  {t("company.terms")}
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 border-t pt-8 text-center text-sm text-gray-600">
-          <p>{t('copyright', { year: new Date().getFullYear() })}</p>
+        <div className="mt-12 border-t pt-8 text-center text-gray-600 text-sm">
+          <p>{t("copyright", { year: currentYear })}</p>
         </div>
       </div>
     </footer>
-  )
+  );
 }

@@ -3,11 +3,11 @@
  */
 export function parseStructuredOutput<T>(content: string, defaults: T): T {
   try {
-    const parsed = JSON.parse(content)
-    return { ...defaults, ...parsed }
+    const parsed = JSON.parse(content);
+    return { ...defaults, ...parsed };
   } catch (error) {
-    console.error('Failed to parse LLM output:', error)
-    return defaults
+    console.error("Failed to parse LLM output:", error);
+    return defaults;
   }
 }
 
@@ -16,13 +16,13 @@ export function parseStructuredOutput<T>(content: string, defaults: T): T {
  */
 export function validateEnum<T extends string>(
   value: unknown,
-  allowedValues: readonly T[],
+  allowedValues: readonly T[]
 ): T | null {
-  if (typeof value !== 'string') return null
+  if (typeof value !== "string") return null;
   if (allowedValues.includes(value as T)) {
-    return value as T
+    return value as T;
   }
-  return null
+  return null;
 }
 
 /**
@@ -30,7 +30,7 @@ export function validateEnum<T extends string>(
  */
 export function cleanLLMOutput(text: string): string {
   return text
-    .replace(/```json\n?/g, '')
-    .replace(/```\n?/g, '')
-    .trim()
+    .replace(/```json\n?/g, "")
+    .replace(/```\n?/g, "")
+    .trim();
 }

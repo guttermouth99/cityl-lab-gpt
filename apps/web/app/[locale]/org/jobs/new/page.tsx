@@ -1,34 +1,36 @@
-import { Metadata } from 'next'
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Post a Job',
-  description: 'Create a new job posting',
-}
+  title: "Post a Job",
+  description: "Create a new job posting",
+};
 
 export default function NewJobPage() {
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">Post a New Job</h1>
+      <h1 className="mb-6 font-bold text-2xl text-gray-900">Post a New Job</h1>
 
       <form className="space-y-6">
         <div className="rounded-lg border bg-white p-6">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Job Details</h2>
-          
+          <h2 className="mb-4 font-semibold text-gray-900 text-lg">
+            Job Details
+          </h2>
+
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-1 block font-medium text-gray-700 text-sm">
                 Job Title *
               </label>
               <input
-                type="text"
                 className="w-full rounded-lg border px-4 py-2"
                 placeholder="e.g., Sustainability Manager"
                 required
+                type="text"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-1 block font-medium text-gray-700 text-sm">
                 Description *
               </label>
               <textarea
@@ -40,7 +42,7 @@ export default function NewJobPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1 block font-medium text-gray-700 text-sm">
                   Job Type
                 </label>
                 <select className="w-full rounded-lg border px-4 py-2">
@@ -51,7 +53,7 @@ export default function NewJobPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1 block font-medium text-gray-700 text-sm">
                   Remote Type
                 </label>
                 <select className="w-full rounded-lg border px-4 py-2">
@@ -63,24 +65,24 @@ export default function NewJobPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-1 block font-medium text-gray-700 text-sm">
                 Location
               </label>
               <input
-                type="text"
                 className="w-full rounded-lg border px-4 py-2"
                 placeholder="e.g., Berlin, Germany"
+                type="text"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-1 block font-medium text-gray-700 text-sm">
                 Application URL
               </label>
               <input
-                type="url"
                 className="w-full rounded-lg border px-4 py-2"
                 placeholder="https://your-company.com/apply"
+                type="url"
               />
             </div>
           </div>
@@ -88,19 +90,19 @@ export default function NewJobPage() {
 
         <div className="flex justify-end gap-4">
           <button
-            type="button"
             className="rounded-lg border px-6 py-2 font-medium text-gray-700 hover:bg-gray-50"
+            type="button"
           >
             Save as Draft
           </button>
           <button
-            type="submit"
             className="rounded-lg bg-green-600 px-6 py-2 font-medium text-white hover:bg-green-700"
+            type="submit"
           >
             Publish Job
           </button>
         </div>
       </form>
     </div>
-  )
+  );
 }

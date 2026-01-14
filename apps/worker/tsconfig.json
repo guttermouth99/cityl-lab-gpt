@@ -10,6 +10,7 @@
       "@baito/llm/*": ["../../packages/llm/src/*"],
       "@baito/search/*": ["../../packages/search/src/*"]
     },
-    "outDir": "dist"
+    "outDir": "dist",
+    "strictNullChecks": true
   }
 }

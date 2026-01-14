@@ -1,16 +1,19 @@
-import { setRequestLocale } from 'next-intl/server'
-import { Header } from '@/components/layout/header'
-import { Link } from '@/i18n/navigation'
-import { Building2, Briefcase, CreditCard, Settings } from 'lucide-react'
+import { Briefcase, Building2, CreditCard, Settings } from "lucide-react";
+import { setRequestLocale } from "next-intl/server";
+import { Header } from "@/components/layout/header";
+import { Link } from "@/i18n/navigation";
 
 interface CustomerLayoutProps {
-  children: React.ReactNode
-  params: Promise<{ locale: string }>
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }
 
-export default async function CustomerLayout({ children, params }: CustomerLayoutProps) {
-  const { locale } = await params
-  setRequestLocale(locale)
+export default async function CustomerLayout({
+  children,
+  params,
+}: CustomerLayoutProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
 
   // TODO: Check authentication and customer role
   // const session = await getSession()
@@ -25,34 +28,36 @@ export default async function CustomerLayout({ children, params }: CustomerLayou
         {/* Sidebar */}
         <aside className="w-64 border-r bg-gray-50 p-4">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Customer Portal</h2>
-            <p className="text-sm text-gray-600">Manage your job postings</p>
+            <h2 className="font-semibold text-gray-900 text-lg">
+              Customer Portal
+            </h2>
+            <p className="text-gray-600 text-sm">Manage your job postings</p>
           </div>
           <nav className="space-y-2">
             <Link
-              href="/org/dashboard"
               className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+              href="/org/dashboard"
             >
               <Building2 className="h-5 w-5" />
               Dashboard
             </Link>
             <Link
-              href="/org/jobs"
               className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+              href="/org/jobs"
             >
               <Briefcase className="h-5 w-5" />
               My Jobs
             </Link>
             <Link
-              href="/org/billing"
               className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+              href="/org/billing"
             >
               <CreditCard className="h-5 w-5" />
               Billing
             </Link>
             <Link
-              href="/org/organization"
               className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100"
+              href="/org/organization"
             >
               <Settings className="h-5 w-5" />
               Organization
@@ -62,5 +67,5 @@ export default async function CustomerLayout({ children, params }: CustomerLayou
         <main className="flex-1 p-8">{children}</main>
       </div>
     </>
-  )
+  );
 }

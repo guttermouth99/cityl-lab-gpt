@@ -1,31 +1,31 @@
-import { pgTable, text, boolean, timestamp, jsonb } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
-import { users } from './users'
-import { jobs } from './jobs'
+import { relations } from "drizzle-orm";
+import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { jobs } from "./jobs";
+import { users } from "./users";
 
 // Alert filters type
 export interface AlertFilters {
-  keywords?: string[]
-  jobTypes?: string[]
-  jobBranches?: string[]
-  remoteTypes?: string[]
-  experienceLevels?: string[]
-  locations?: string[]
-  organizations?: string[]
+  keywords?: string[];
+  jobTypes?: string[];
+  jobBranches?: string[];
+  remoteTypes?: string[];
+  experienceLevels?: string[];
+  locations?: string[];
+  organizations?: string[];
 }
 
 // Alerts table
-export const alerts = pgTable('alert', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
+export const alerts = pgTable("alert", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
-  filters: jsonb('filters').$type<AlertFilters>().notNull().default({}),
-  isActive: boolean('is_active').notNull().default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  filters: jsonb("filters").$type<AlertFilters>().notNull().default({}),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
 
 export const alertsRelations = relations(alerts, ({ one, many }) => ({
   user: one(users, {
@@ -33,20 +33,22 @@ export const alertsRelations = relations(alerts, ({ one, many }) => ({
     references: [users.id],
   }),
   sentJobs: many(sentJobs),
-}))
+}));
 
 // Sent Jobs - track which jobs were sent to which users
-export const sentJobs = pgTable('sent_job', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
+export const sentJobs = pgTable("sent_job", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  jobId: text('job_id')
+    .references(() => users.id, { onDelete: "cascade" }),
+  jobId: text("job_id")
     .notNull()
-    .references(() => jobs.id, { onDelete: 'cascade' }),
-  alertId: text('alert_id').references(() => alerts.id, { onDelete: 'set null' }),
-  sentAt: timestamp('sent_at').notNull().defaultNow(),
-})
+    .references(() => jobs.id, { onDelete: "cascade" }),
+  alertId: text("alert_id").references(() => alerts.id, {
+    onDelete: "set null",
+  }),
+  sentAt: timestamp("sent_at").notNull().defaultNow(),
+});
 
 export const sentJobsRelations = relations(sentJobs, ({ one }) => ({
   user: one(users, {
@@ -61,4 +63,4 @@ export const sentJobsRelations = relations(sentJobs, ({ one }) => ({
     fields: [sentJobs.alertId],
     references: [alerts.id],
   }),
-}))
+}));

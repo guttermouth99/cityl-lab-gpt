@@ -1,14 +1,14 @@
-import { task, schedules } from '@trigger.dev/sdk/v3'
-import { db } from '@baito/db'
-import { jobs } from '@baito/db/schema'
-import { eq, and, sql } from 'drizzle-orm'
+import { db } from "@baito/db";
+import { jobs } from "@baito/db/schema";
+import { schedules } from "@trigger.dev/sdk";
+import { and, eq, sql } from "drizzle-orm";
 
 export const detectDuplicates = schedules.task({
-  id: 'detect-duplicates',
+  id: "detect-duplicates",
   // Run weekly on Sundays at 2 AM
-  cron: '0 2 * * 0',
+  cron: "0 2 * * 0",
   run: async () => {
-    console.log('Starting duplicate detection')
+    console.log("Starting duplicate detection");
 
     // Find jobs with duplicate content hashes
     const duplicates = await db
@@ -17,13 +17,13 @@ export const detectDuplicates = schedules.task({
         count: sql<number>`count(*)`,
       })
       .from(jobs)
-      .where(eq(jobs.status, 'active'))
+      .where(eq(jobs.status, "active"))
       .groupBy(jobs.contentHash)
-      .having(sql`count(*) > 1`)
+      .having(sql`count(*) > 1`);
 
-    console.log(`Found ${duplicates.length} duplicate groups`)
+    console.log(`Found ${duplicates.length} duplicate groups`);
 
-    let archived = 0
+    let archived = 0;
 
     for (const dup of duplicates) {
       // Get all jobs with this content hash
@@ -31,30 +31,27 @@ export const detectDuplicates = schedules.task({
         .select()
         .from(jobs)
         .where(
-          and(
-            eq(jobs.contentHash, dup.contentHash),
-            eq(jobs.status, 'active'),
-          ),
+          and(eq(jobs.contentHash, dup.contentHash), eq(jobs.status, "active"))
         )
-        .orderBy(jobs.createdAt)
+        .orderBy(jobs.createdAt);
 
       // Keep the oldest, archive the rest
-      const [oldest, ...rest] = dupJobs
-      
+      const [oldest, ...rest] = dupJobs;
+
       for (const job of rest) {
         await db
           .update(jobs)
-          .set({ status: 'archived', updatedAt: new Date() })
-          .where(eq(jobs.id, job.id))
-        archived++
+          .set({ status: "archived", updatedAt: new Date() })
+          .where(eq(jobs.id, job.id));
+        archived++;
       }
     }
 
-    console.log(`Archived ${archived} duplicate jobs`)
+    console.log(`Archived ${archived} duplicate jobs`);
 
     return {
       duplicateGroups: duplicates.length,
       archived,
-    }
+    };
   },
-})
+});

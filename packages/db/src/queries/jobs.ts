@@ -1,36 +1,36 @@
-import { eq, and, desc, sql, ilike, or, inArray, lt, gt } from 'drizzle-orm'
-import { db } from '../client'
-import { jobs, jobLocations } from '../schema/jobs'
-import { organizations } from '../schema/organizations'
-import { generateSlug, generateJobSlug, computeContentHashSync } from '@baito/shared'
-import type { JobStatus, JobSource } from '@baito/shared'
+import type { JobSource, JobStatus } from "@baito/shared";
+import { computeContentHashSync, generateJobSlug } from "@baito/shared";
+import { and, desc, eq, ilike, lt, or, sql } from "drizzle-orm";
+import { db } from "../client";
+import { jobs } from "../schema/jobs";
+import { organizations } from "../schema/organizations";
 
 export interface CreateJobInput {
-  organizationId: string
-  title: string
-  description: string
-  externalId?: string | null
-  source?: JobSource
-  sourceFeed?: string | null
-  jobType?: string | null
-  jobBranch?: string | null
-  remoteType?: string | null
-  experienceLevel?: string | null
-  packageType?: string | null
-  expiresAt?: Date | null
+  organizationId: string;
+  title: string;
+  description: string;
+  externalId?: string | null;
+  source?: JobSource;
+  sourceFeed?: string | null;
+  jobType?: string | null;
+  jobBranch?: string | null;
+  remoteType?: string | null;
+  experienceLevel?: string | null;
+  packageType?: string | null;
+  expiresAt?: Date | null;
 }
 
 export interface JobFilters {
-  status?: JobStatus
-  source?: JobSource
-  organizationId?: string
-  jobType?: string
-  jobBranch?: string
-  remoteType?: string
-  experienceLevel?: string
-  search?: string
-  limit?: number
-  offset?: number
+  status?: JobStatus;
+  source?: JobSource;
+  organizationId?: string;
+  jobType?: string;
+  jobBranch?: string;
+  remoteType?: string;
+  experienceLevel?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export async function getJobById(id: string) {
@@ -40,7 +40,7 @@ export async function getJobById(id: string) {
       organization: true,
       locations: true,
     },
-  })
+  });
 }
 
 export async function getJobBySlug(slug: string) {
@@ -50,10 +50,13 @@ export async function getJobBySlug(slug: string) {
       organization: true,
       locations: true,
     },
-  })
+  });
 }
 
-export async function getJobsByOrganization(organizationId: string, limit = 50) {
+export async function getJobsByOrganization(
+  organizationId: string,
+  limit = 50
+) {
   return db.query.jobs.findMany({
     where: eq(jobs.organizationId, organizationId),
     orderBy: [desc(jobs.createdAt)],
@@ -61,37 +64,37 @@ export async function getJobsByOrganization(organizationId: string, limit = 50) 
     with: {
       locations: true,
     },
-  })
+  });
 }
 
 export async function getActiveJobs(filters: JobFilters = {}) {
-  const conditions = [eq(jobs.status, 'active')]
+  const conditions = [eq(jobs.status, "active")];
 
   if (filters.organizationId) {
-    conditions.push(eq(jobs.organizationId, filters.organizationId))
+    conditions.push(eq(jobs.organizationId, filters.organizationId));
   }
   if (filters.source) {
-    conditions.push(eq(jobs.source, filters.source))
+    conditions.push(eq(jobs.source, filters.source));
   }
   if (filters.jobType) {
-    conditions.push(eq(jobs.jobType, filters.jobType as any))
+    conditions.push(eq(jobs.jobType, filters.jobType as any));
   }
   if (filters.jobBranch) {
-    conditions.push(eq(jobs.jobBranch, filters.jobBranch as any))
+    conditions.push(eq(jobs.jobBranch, filters.jobBranch as any));
   }
   if (filters.remoteType) {
-    conditions.push(eq(jobs.remoteType, filters.remoteType as any))
+    conditions.push(eq(jobs.remoteType, filters.remoteType as any));
   }
   if (filters.experienceLevel) {
-    conditions.push(eq(jobs.experienceLevel, filters.experienceLevel as any))
+    conditions.push(eq(jobs.experienceLevel, filters.experienceLevel as any));
   }
   if (filters.search) {
     conditions.push(
       or(
         ilike(jobs.title, `%${filters.search}%`),
-        ilike(jobs.description, `%${filters.search}%`),
-      )!,
-    )
+        ilike(jobs.description, `%${filters.search}%`)
+      )!
+    );
   }
 
   return db.query.jobs.findMany({
@@ -103,19 +106,21 @@ export async function getActiveJobs(filters: JobFilters = {}) {
       organization: true,
       locations: true,
     },
-  })
+  });
 }
 
 export async function createJob(input: CreateJobInput) {
-  const id = crypto.randomUUID()
-  
+  const id = crypto.randomUUID();
+
   // Get organization for slug generation
   const org = await db.query.organizations.findFirst({
     where: eq(organizations.id, input.organizationId),
-  })
-  
-  const slug = generateJobSlug(input.title, org?.name ?? 'unknown')
-  const contentHash = computeContentHashSync(`${input.title}|${input.description}|${input.organizationId}`)
+  });
+
+  const slug = generateJobSlug(input.title, org?.name ?? "unknown");
+  const contentHash = computeContentHashSync(
+    `${input.title}|${input.description}|${input.organizationId}`
+  );
 
   const [job] = await db
     .insert(jobs)
@@ -127,7 +132,7 @@ export async function createJob(input: CreateJobInput) {
       title: input.title,
       description: input.description,
       externalId: input.externalId ?? null,
-      source: input.source ?? 'organic',
+      source: input.source ?? "organic",
       sourceFeed: input.sourceFeed ?? null,
       jobType: input.jobType as any,
       jobBranch: input.jobBranch as any,
@@ -136,9 +141,9 @@ export async function createJob(input: CreateJobInput) {
       packageType: input.packageType as any,
       expiresAt: input.expiresAt ?? null,
     })
-    .returning()
+    .returning();
 
-  return job
+  return job;
 }
 
 export async function updateJobStatus(id: string, status: JobStatus) {
@@ -146,45 +151,38 @@ export async function updateJobStatus(id: string, status: JobStatus) {
     .update(jobs)
     .set({ status, updatedAt: new Date() })
     .where(eq(jobs.id, id))
-    .returning()
+    .returning();
 
-  return updated
+  return updated;
 }
 
-export async function findDuplicateJob(contentHash: string, organizationId: string) {
+export async function findDuplicateJob(
+  contentHash: string,
+  organizationId: string
+) {
   return db.query.jobs.findFirst({
     where: and(
       eq(jobs.contentHash, contentHash),
-      eq(jobs.organizationId, organizationId),
+      eq(jobs.organizationId, organizationId)
     ),
-  })
+  });
 }
 
 export async function expireOldJobs(olderThan: Date) {
   const [result] = await db
     .update(jobs)
-    .set({ status: 'expired', updatedAt: new Date() })
-    .where(
-      and(
-        eq(jobs.status, 'active'),
-        lt(jobs.expiresAt, olderThan),
-      ),
-    )
-    .returning({ id: jobs.id })
+    .set({ status: "expired", updatedAt: new Date() })
+    .where(and(eq(jobs.status, "active"), lt(jobs.expiresAt, olderThan)))
+    .returning({ id: jobs.id });
 
-  return result
+  return result;
 }
 
 export async function getExpiredJobsCount() {
   const result = await db
     .select({ count: sql<number>`count(*)` })
     .from(jobs)
-    .where(
-      and(
-        eq(jobs.status, 'active'),
-        lt(jobs.expiresAt, new Date()),
-      ),
-    )
+    .where(and(eq(jobs.status, "active"), lt(jobs.expiresAt, new Date())));
 
-  return result[0]?.count ?? 0
+  return result[0]?.count ?? 0;
 }

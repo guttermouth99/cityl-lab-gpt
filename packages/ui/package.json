@@ -10,7 +10,8 @@
     "./postcss.config": "./postcss.config.mjs"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "generate:component": "turbo gen react-component",
     "check-types": "tsc --noEmit"
   },
@@ -19,9 +20,7 @@
     "@types/node": "^24.5.2",
     "@types/react": "19.2.6",
     "@types/react-dom": "19.2.3",
-    "eslint": "^9.36.0",
     "typescript": "^5.9.3",
-    "@baito/eslint-config": "*",
     "@baito/typescript-config": "*"
   },
   "dependencies": {

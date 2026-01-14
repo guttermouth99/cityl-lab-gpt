@@ -11,14 +11,14 @@
  */
 export function chunk<T>(array: T[], size: number): T[][] {
   if (size <= 0) {
-    throw new Error('Chunk size must be greater than 0')
+    throw new Error("Chunk size must be greater than 0");
   }
 
-  const result: T[][] = []
+  const result: T[][] = [];
   for (let i = 0; i < array.length; i += size) {
-    result.push(array.slice(i, i + size))
+    result.push(array.slice(i, i + size));
   }
-  return result
+  return result;
 }
 
 /**
@@ -37,12 +37,12 @@ export function chunk<T>(array: T[], size: number): T[][] {
 export async function processBatches<T>(
   array: T[],
   batchSize: number,
-  callback: (batch: T[], index: number) => Promise<void>,
+  callback: (batch: T[], index: number) => Promise<void>
 ): Promise<void> {
-  const batches = chunk(array, batchSize)
+  const batches = chunk(array, batchSize);
 
   for (let i = 0; i < batches.length; i++) {
-    await callback(batches[i]!, i)
+    await callback(batches[i]!, i);
   }
 }
 
@@ -58,20 +58,20 @@ export async function processParallelBatches<T, R>(
   array: T[],
   batchSize: number,
   concurrency: number,
-  callback: (batch: T[], index: number) => Promise<R>,
+  callback: (batch: T[], index: number) => Promise<R>
 ): Promise<R[]> {
-  const batches = chunk(array, batchSize)
-  const results: R[] = []
+  const batches = chunk(array, batchSize);
+  const results: R[] = [];
 
   for (let i = 0; i < batches.length; i += concurrency) {
-    const parallelBatches = batches.slice(i, i + concurrency)
+    const parallelBatches = batches.slice(i, i + concurrency);
     const batchResults = await Promise.all(
-      parallelBatches.map((batch, idx) => callback(batch!, i + idx)),
-    )
-    results.push(...batchResults)
+      parallelBatches.map((batch, idx) => callback(batch!, i + idx))
+    );
+    results.push(...batchResults);
   }
 
-  return results
+  return results;
 }
 
 /**
@@ -80,6 +80,6 @@ export async function processParallelBatches<T, R>(
  */
 export function* chunkGenerator<T>(array: T[], size: number): Generator<T[]> {
   for (let i = 0; i < array.length; i += size) {
-    yield array.slice(i, i + size)
+    yield array.slice(i, i + size);
   }
 }

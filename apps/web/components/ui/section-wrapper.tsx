@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { motion } from 'motion/react'
-import { cn } from '@baito/ui/lib/utils'
+import { cn } from "@baito/ui/lib/utils";
+import { motion } from "motion/react";
+import type React from "react";
 
 interface SectionWrapperProps {
-  children: React.ReactNode
-  className?: string
-  id?: string
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
 }
 
 export const SectionWrapper = ({
@@ -16,16 +16,16 @@ export const SectionWrapper = ({
   id,
 }: SectionWrapperProps) => {
   return (
-    <section id={id} className={cn('relative py-24', className)}>
+    <section className={cn("relative py-24", className)} id={id}>
       <motion.div
+        className="container relative z-10 mx-auto px-4 md:px-6"
         initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: '-100px' }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 container mx-auto px-4 md:px-6"
+        viewport={{ once: true, margin: "-100px" }}
+        whileInView={{ opacity: 1 }}
       >
         {children}
       </motion.div>
     </section>
-  )
-}
+  );
+};
