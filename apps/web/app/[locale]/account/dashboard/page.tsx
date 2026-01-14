@@ -1,12 +1,21 @@
 import { Bell, Briefcase, Heart } from "lucide-react";
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Your personal job search dashboard",
 };
 
-export default function UserDashboardPage() {
+interface UserDashboardPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function UserDashboardPage({
+  params,
+}: UserDashboardPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <h1 className="mb-6 font-bold text-2xl text-gray-900">Dashboard</h1>

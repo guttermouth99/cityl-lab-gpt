@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { setRequestLocale } from "next-intl/server";
 
 interface JobPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -27,6 +28,7 @@ export async function generateMetadata({
 
 export default async function JobPage({ params }: JobPageProps) {
   const { locale, id } = await params;
+  setRequestLocale(locale);
 
   // In a real implementation, fetch job from database
   // For now, showing placeholder content

@@ -1,36 +1,59 @@
+import { generateObject, type LanguageModelV1 } from "ai";
+import type { ZodSchema, z } from "zod";
+import { DEFAULT_MODEL, openai } from "../client";
+
 /**
- * Parse JSON output from LLM with fallback defaults
+ * Generate structured output using AI SDK with Zod schema
  */
-export function parseStructuredOutput<T>(content: string, defaults: T): T {
-  try {
-    const parsed = JSON.parse(content);
-    return { ...defaults, ...parsed };
-  } catch (error) {
-    console.error("Failed to parse LLM output:", error);
-    return defaults;
+export async function generateStructuredOutput<T extends ZodSchema>(
+  schema: T,
+  prompt: string,
+  options?: {
+    model?: LanguageModelV1;
+    schemaName?: string;
+    schemaDescription?: string;
+    temperature?: number;
   }
+): Promise<z.infer<T>> {
+  const { object } = await generateObject({
+    model: options?.model ?? openai(DEFAULT_MODEL),
+    schema,
+    schemaName: options?.schemaName,
+    schemaDescription: options?.schemaDescription,
+    prompt,
+    temperature: options?.temperature ?? 0.1,
+  });
+
+  return object;
 }
 
 /**
- * Validate that a value is one of the allowed enum values
+ * Generate structured output with streaming support
  */
-export function validateEnum<T extends string>(
-  value: unknown,
-  allowedValues: readonly T[]
-): T | null {
-  if (typeof value !== "string") return null;
-  if (allowedValues.includes(value as T)) {
-    return value as T;
+export async function generateStructuredOutputStream<T extends ZodSchema>(
+  schema: T,
+  prompt: string,
+  options?: {
+    model?: LanguageModelV1;
+    schemaName?: string;
+    schemaDescription?: string;
+    temperature?: number;
   }
-  return null;
-}
+): Promise<{
+  partialObjectStream: AsyncIterable<Partial<z.infer<T>>>;
+  object: Promise<z.infer<T>>;
+}> {
+  const result = await generateObject({
+    model: options?.model ?? openai(DEFAULT_MODEL),
+    schema,
+    schemaName: options?.schemaName,
+    schemaDescription: options?.schemaDescription,
+    prompt,
+    temperature: options?.temperature ?? 0.1,
+  });
 
-/**
- * Clean and normalize LLM text output
- */
-export function cleanLLMOutput(text: string): string {
-  return text
-    .replace(/```json\n?/g, "")
-    .replace(/```\n?/g, "")
-    .trim();
+  return {
+    partialObjectStream: result.partialObjectStream,
+    object: result.object,
+  };
 }

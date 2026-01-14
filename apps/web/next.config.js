@@ -10,6 +10,7 @@ const nextConfig = {
     "@baito/shared",
     "@baito/search",
   ],
+  cacheComponents: true,
 };
 
 export default withNextIntl(nextConfig);

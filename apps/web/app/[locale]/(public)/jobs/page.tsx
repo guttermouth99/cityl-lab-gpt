@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 interface JobsPageProps {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{
     q?: string;
     page?: string;
@@ -17,8 +19,13 @@ interface JobsPageProps {
   }>;
 }
 
-export default async function JobsPage({ searchParams }: JobsPageProps) {
-  const params = await searchParams;
+export default async function JobsPage({
+  params,
+  searchParams,
+}: JobsPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const searchParamsData = await searchParams;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -98,7 +105,10 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         {/* Job Listings */}
         <div className="lg:col-span-3">
           <Suspense fallback={<JobListSkeleton />}>
-            <JobList page={Number(params.page) || 1} query={params.q} />
+            <JobList
+              page={Number(searchParamsData.page) || 1}
+              query={searchParamsData.q}
+            />
           </Suspense>
         </div>
       </div>

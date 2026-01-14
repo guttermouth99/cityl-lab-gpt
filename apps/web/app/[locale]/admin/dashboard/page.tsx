@@ -1,12 +1,21 @@
 import { Briefcase, Building2, TrendingUp, Users } from "lucide-react";
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
   description: "Platform administration dashboard",
 };
 
-export default function AdminDashboardPage() {
+interface AdminDashboardPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AdminDashboardPage({
+  params,
+}: AdminDashboardPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <h1 className="mb-6 font-bold text-2xl text-gray-900">Admin Dashboard</h1>

@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Organization Settings",
   description: "Manage your organization profile",
 };
 
-export default function OrganizationPage() {
+interface OrganizationPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function OrganizationPage({
+  params,
+}: OrganizationPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <h1 className="mb-6 font-bold text-2xl text-gray-900">

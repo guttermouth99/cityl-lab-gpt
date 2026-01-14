@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 interface EditJobPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -15,7 +16,8 @@ export async function generateMetadata({
 }
 
 export default async function EditJobPage({ params }: EditJobPageProps) {
-  const { id } = await params;
+  const { locale, id } = await params;
+  setRequestLocale(locale);
 
   return (
     <div>

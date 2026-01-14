@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Settings",
   description: "Manage your account settings and preferences",
 };
 
-export default function SettingsPage() {
+interface SettingsPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function SettingsPage({ params }: SettingsPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <h1 className="mb-6 font-bold text-2xl text-gray-900">Settings</h1>

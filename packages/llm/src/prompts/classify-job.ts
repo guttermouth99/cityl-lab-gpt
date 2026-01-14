@@ -1,71 +1,63 @@
 import {
   EXPERIENCE_LEVELS,
-  type ExperienceLevel,
   JOB_BRANCHES,
   JOB_TYPES,
-  type JobBranch,
-  type JobType,
   REMOTE_TYPES,
-  type RemoteType,
 } from "@baito/shared";
+import { generateObject } from "ai";
+import { z } from "zod";
 import { DEFAULT_MODEL, openai } from "../client";
-import { parseStructuredOutput } from "../parsers/structured-output";
 
-export interface JobClassificationResult {
-  jobType: JobType | null;
-  jobBranch: JobBranch | null;
-  remoteType: RemoteType | null;
-  experienceLevel: ExperienceLevel | null;
-  keywords: string[];
-  sdgs: number[];
-}
+const JobClassificationSchema = z.object({
+  jobType: z
+    .enum(Object.values(JOB_TYPES) as [string, ...string[]])
+    .nullable()
+    .describe("Type of job position"),
+  jobBranch: z
+    .enum(Object.values(JOB_BRANCHES) as [string, ...string[]])
+    .nullable()
+    .describe("Primary industry/sector"),
+  remoteType: z
+    .enum(Object.values(REMOTE_TYPES) as [string, ...string[]])
+    .nullable()
+    .describe("Remote work arrangement"),
+  experienceLevel: z
+    .enum(Object.values(EXPERIENCE_LEVELS) as [string, ...string[]])
+    .nullable()
+    .describe("Required experience level"),
+  keywords: z
+    .array(z.string())
+    .min(3)
+    .max(5)
+    .describe("Relevant keywords for search"),
+  sdgs: z.array(z.number().min(1).max(17)).describe("Relevant UN SDG numbers"),
+});
 
-const SYSTEM_PROMPT = `You are an expert at classifying job postings.
-
-Extract the following information from the job posting:
-
-1. jobType: One of: ${Object.values(JOB_TYPES).join(", ")} (or null if not determinable)
-2. jobBranch: One of: ${Object.values(JOB_BRANCHES).join(", ")} (the primary industry/sector)
-3. remoteType: One of: ${Object.values(REMOTE_TYPES).join(", ")} (or null if not mentioned)
-4. experienceLevel: One of: ${Object.values(EXPERIENCE_LEVELS).join(", ")} (or null if not determinable)
-5. keywords: Array of 3-5 relevant keywords for search
-6. sdgs: Array of relevant UN SDG numbers (1-17) that this job relates to
-
-Respond in JSON format.
-`;
+export type JobClassificationResult = z.infer<typeof JobClassificationSchema>;
 
 export async function classifyJob(input: {
   title: string;
   description: string;
   organizationName?: string;
 }): Promise<JobClassificationResult> {
-  const userPrompt = `
+  const prompt = `Classify this job posting:
+
 Job Title: ${input.title}
 ${input.organizationName ? `Organization: ${input.organizationName}` : ""}
 
-Job Description:
+Description:
 ${input.description.substring(0, 3000)}
 
-Classify this job posting.
-`;
+Extract classification details following the schema.`;
 
-  const response = await openai.chat.completions.create({
-    model: DEFAULT_MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userPrompt },
-    ],
-    response_format: { type: "json_object" },
+  const { object } = await generateObject({
+    model: openai(DEFAULT_MODEL),
+    schema: JobClassificationSchema,
+    schemaName: "JobClassification",
+    schemaDescription: "Classification metadata for a job posting",
+    prompt,
     temperature: 0.1,
   });
 
-  const content = response.choices[0]?.message?.content || "{}";
-  return parseStructuredOutput<JobClassificationResult>(content, {
-    jobType: null,
-    jobBranch: null,
-    remoteType: null,
-    experienceLevel: null,
-    keywords: [],
-    sdgs: [],
-  });
+  return object;
 }

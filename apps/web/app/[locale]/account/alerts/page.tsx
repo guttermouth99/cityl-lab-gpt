@@ -1,12 +1,19 @@
 import { Bell, Plus, Trash2 } from "lucide-react";
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Job Alerts",
   description: "Manage your job alerts and notification preferences",
 };
 
-export default function AlertsPage() {
+interface AlertsPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AlertsPage({ params }: AlertsPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">

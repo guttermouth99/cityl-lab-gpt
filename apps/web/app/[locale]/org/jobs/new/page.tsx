@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Post a Job",
   description: "Create a new job posting",
 };
 
-export default function NewJobPage() {
+interface NewJobPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function NewJobPage({ params }: NewJobPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <h1 className="mb-6 font-bold text-2xl text-gray-900">Post a New Job</h1>

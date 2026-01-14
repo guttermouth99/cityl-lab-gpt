@@ -1,15 +1,13 @@
-import OpenAI from "openai";
+import { createOpenAI } from "@ai-sdk/openai";
 
 const apiKey = process.env.OPENAI_API_KEY;
 
-export const openai = new OpenAI({
+export const openai = createOpenAI({
   apiKey,
 });
 
-// Default model for classification tasks
+// Default models
 export const DEFAULT_MODEL = "gpt-4o-mini";
-
-// Embedding model
 export const EMBEDDING_MODEL = "text-embedding-3-small";
 
-export type OpenAIClient = typeof openai;
+export type OpenAIProvider = typeof openai;

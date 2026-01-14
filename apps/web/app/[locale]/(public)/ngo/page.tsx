@@ -1,6 +1,7 @@
 import { Building2 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "NGO Jobs",
@@ -8,7 +9,13 @@ export const metadata: Metadata = {
     "Find jobs at nonprofit organizations, NGOs, and charitable foundations making a positive impact.",
 };
 
-export default function NgoPage() {
+interface NgoPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function NgoPage({ params }: NgoPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">

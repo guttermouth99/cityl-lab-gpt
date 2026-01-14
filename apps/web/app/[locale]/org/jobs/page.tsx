@@ -1,6 +1,7 @@
 import { Edit, Eye, Plus, Trash2 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "My Jobs",
@@ -13,6 +14,7 @@ interface CustomerJobsProps {
 
 export default async function CustomerJobsPage({ params }: CustomerJobsProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
 
   return (
     <div>

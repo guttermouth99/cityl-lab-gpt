@@ -1,6 +1,7 @@
 import { Briefcase, Eye, Plus, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Customer Dashboard",
@@ -15,6 +16,7 @@ export default async function CustomerDashboardPage({
   params,
 }: CustomerDashboardProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
 
   return (
     <div>

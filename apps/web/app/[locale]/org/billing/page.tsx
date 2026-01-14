@@ -1,12 +1,19 @@
 import { Check, CreditCard } from "lucide-react";
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Billing",
   description: "Manage your subscription and billing",
 };
 
-export default function BillingPage() {
+interface BillingPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function BillingPage({ params }: BillingPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <h1 className="mb-6 font-bold text-2xl text-gray-900">Billing</h1>

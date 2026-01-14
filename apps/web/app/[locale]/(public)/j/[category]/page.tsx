@@ -1,6 +1,7 @@
 import { JOB_BRANCH_LABELS, type JobBranch } from "@baito/shared";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { setRequestLocale } from "next-intl/server";
 
 interface CategoryPageProps {
   params: Promise<{ locale: string; category: string }>;
@@ -20,6 +21,7 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { locale, category } = await params;
+  setRequestLocale(locale);
   const label = JOB_BRANCH_LABELS[category as JobBranch] || category;
 
   return (

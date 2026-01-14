@@ -1,6 +1,7 @@
 import { ArrowLeft, Globe, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { setRequestLocale } from "next-intl/server";
 
 interface OrgPageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -19,6 +20,7 @@ export async function generateMetadata({
 
 export default async function OrgPage({ params }: OrgPageProps) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
 
   // Placeholder organization data
   const org = {

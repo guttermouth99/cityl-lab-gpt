@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Manage Customers",
   description: "Admin customer management",
 };
 
-export default function AdminCustomersPage() {
+interface AdminCustomersPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AdminCustomersPage({
+  params,
+}: AdminCustomersPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div>
       <h1 className="mb-6 font-bold text-2xl text-gray-900">
