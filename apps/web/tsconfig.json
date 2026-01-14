@@ -1,0 +1,27 @@
+{
+  "extends": "@template/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@template/ui/*": ["../../packages/ui/src/*"],
+      "@template/store/*": ["../../packages/store/src/*"],
+      "@template/auth/*": ["../../packages/auth/src/*"],
+      "@template/trpc/*": ["../../packages/trpc/src/*"],
+      "@template/common/*": ["../../packages/common/src/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    "next.config.js",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

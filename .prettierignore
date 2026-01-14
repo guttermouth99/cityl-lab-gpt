@@ -1,0 +1,9 @@
+generated
+node_modules
+.github
+logs
+.husky
+.claude
+
+
+

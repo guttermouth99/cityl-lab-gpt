@@ -1,0 +1,29 @@
+{
+  "name": "@template/worker",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "check-types": "tsc -noEmit",
+    "build": "bun build ./src/index.ts --outdir ./dist --target bun --minify --sourcemap",
+    "dev": "bun --env-file=../../.env run --hot src/index.ts",
+    "start": "bun run dist/server.js",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.3",
+    "eslint": "^9.36.0",
+    "@template/eslint-config": "*",
+    "@template/typescript-config": "*"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@template/backend-common": "*",
+    "@template/common": "*",
+    "@template/auth": "*",
+    "@template/store": "*"
+  }
+}
