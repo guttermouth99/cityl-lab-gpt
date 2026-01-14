@@ -1,6 +1,7 @@
 import { generateText, Output } from "ai";
-import { z } from "zod/v4";
-import { DEFAULT_MODEL } from "../client.js";
+import { z } from "zod";
+
+const DEFAULT_MODEL = "openai/gpt-4o-mini";
 
 /**
  * Example classification schema using Zod v4
@@ -41,7 +42,7 @@ export async function classifyContent(
   content: string
 ): Promise<ClassificationResult> {
   const { output } = await generateText({
-    model: `openai:${DEFAULT_MODEL}`,
+    model: DEFAULT_MODEL,
     output: Output.object({
       schema: classificationSchema,
     }),

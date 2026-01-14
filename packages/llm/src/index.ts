@@ -1,5 +1,4 @@
 // Main entry point for @baito/llm package
-export * from "./client";
 export * from "./parsers/structured-output";
 export * from "./prompts/classify-job";
 export * from "./prompts/classify-org";

@@ -1,49 +1,43 @@
-import { EMBEDDING_MODEL, openai } from "../client";
+import { embed, embedMany } from "ai";
+
+const EMBEDDING_MODEL = "openai/text-embedding-3-small";
 
 /**
  * Generate embeddings for a single text
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const response = await openai.embeddings.create({
+  const { embedding } = await embed({
     model: EMBEDDING_MODEL,
-    input: text,
+    value: text,
   });
 
-  return response.data[0]?.embedding || [];
+  return embedding;
 }
 
 /**
  * Generate embeddings for multiple texts
  */
 export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
-  if (texts.length === 0) return [];
-
-  // OpenAI supports up to 2048 inputs per request
-  const batchSize = 2048;
-  const results: number[][] = [];
-
-  for (let i = 0; i < texts.length; i += batchSize) {
-    const batch = texts.slice(i, i + batchSize);
-    const response = await openai.embeddings.create({
-      model: EMBEDDING_MODEL,
-      input: batch,
-    });
-
-    results.push(...response.data.map((d) => d.embedding));
+  if (texts.length === 0) {
+    return [];
   }
 
-  return results;
+  const { embeddings } = await embedMany({
+    model: EMBEDDING_MODEL,
+    values: texts,
+  });
+
+  return embeddings;
 }
 
 /**
  * Create a searchable embedding from job data
  */
-export async function createJobEmbedding(job: {
+export function createJobEmbedding(job: {
   title: string;
   description: string;
   organizationName: string;
 }): Promise<number[]> {
-  // Combine relevant fields for embedding
   const text = `${job.title}\n${job.organizationName}\n${job.description.substring(0, 2000)}`;
   return generateEmbedding(text);
 }
@@ -51,7 +45,7 @@ export async function createJobEmbedding(job: {
 /**
  * Create a searchable embedding from organization data
  */
-export async function createOrgEmbedding(org: {
+export function createOrgEmbedding(org: {
   name: string;
   description?: string;
 }): Promise<number[]> {

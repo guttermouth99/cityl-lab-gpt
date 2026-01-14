@@ -1,13 +1,21 @@
-import { DEFAULT_MODEL, openai } from "../client";
-import { parseStructuredOutput } from "../parsers/structured-output";
+import { generateText, Output } from "ai";
+import { z } from "zod";
 
-export interface ExtractedCategories {
-  primaryCategory: string;
-  secondaryCategories: string[];
-  skills: string[];
-  benefits: string[];
-  requirements: string[];
-}
+const DEFAULT_MODEL = "openai/gpt-4o-mini";
+
+const ExtractedCategoriesSchema = z.object({
+  primaryCategory: z.string().describe("The main job category/function"),
+  secondaryCategories: z
+    .array(z.string())
+    .describe("Array of related categories"),
+  skills: z.array(z.string()).describe("Array of required skills mentioned"),
+  benefits: z.array(z.string()).describe("Array of benefits/perks mentioned"),
+  requirements: z
+    .array(z.string())
+    .describe("Array of requirements (education, experience, certifications)"),
+});
+
+export type ExtractedCategories = z.infer<typeof ExtractedCategoriesSchema>;
 
 const SYSTEM_PROMPT = `You are an expert at extracting structured information from job postings.
 
@@ -18,31 +26,22 @@ Extract the following:
 4. benefits: Array of benefits/perks mentioned
 5. requirements: Array of requirements (education, experience, certifications)
 
-Be concise and specific. Respond in JSON format.
-`;
+Be concise and specific.`;
 
 export async function extractCategories(
   description: string
 ): Promise<ExtractedCategories> {
-  const response = await openai.chat.completions.create({
+  const { output } = await generateText({
     model: DEFAULT_MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      {
-        role: "user",
-        content: `Extract categories from this job description:\n\n${description.substring(0, 4000)}`,
-      },
-    ],
-    response_format: { type: "json_object" },
+    system: SYSTEM_PROMPT,
+    prompt: `Extract categories from this job description:\n\n${description.substring(0, 4000)}`,
     temperature: 0.1,
+    output: Output.object({
+      schema: ExtractedCategoriesSchema,
+      name: "ExtractedCategories",
+      description: "Extracted job posting categories and metadata",
+    }),
   });
 
-  const content = response.choices[0]?.message?.content || "{}";
-  return parseStructuredOutput<ExtractedCategories>(content, {
-    primaryCategory: "Unknown",
-    secondaryCategories: [],
-    skills: [],
-    benefits: [],
-    requirements: [],
-  });
+  return output;
 }

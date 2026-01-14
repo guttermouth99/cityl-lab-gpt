@@ -17,7 +17,6 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.0.10",
     "@baito/shared": "*",
     "ai": "^6.0.0",
     "zod": "^4.0.0"

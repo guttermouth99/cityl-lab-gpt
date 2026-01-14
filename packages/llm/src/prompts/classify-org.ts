@@ -1,12 +1,22 @@
-import { DEFAULT_MODEL, openai } from "../client";
-import { parseStructuredOutput } from "../parsers/structured-output";
+import { generateText, Output } from "ai";
+import { z } from "zod";
 
-export interface OrgClassificationResult {
-  isImpact: boolean;
-  confidence: number;
-  reason: string;
-  suggestedCategories: string[];
-}
+const DEFAULT_MODEL = "openai/gpt-4o-mini";
+
+const OrgClassificationSchema = z.object({
+  isImpact: z.boolean().describe("True if this is an impact organization"),
+  confidence: z
+    .number()
+    .min(0)
+    .max(1)
+    .describe("Confidence score between 0 and 1"),
+  reason: z.string().describe("Brief explanation for the classification"),
+  suggestedCategories: z
+    .array(z.string())
+    .describe("Relevant impact categories"),
+});
+
+export type OrgClassificationResult = z.infer<typeof OrgClassificationSchema>;
 
 const SYSTEM_PROMPT = `You are an expert at classifying organizations based on their mission and impact.
 An "impact organization" is one that primarily focuses on:
@@ -20,14 +30,7 @@ An "impact organization" is one that primarily focuses on:
 - Poverty alleviation
 - Any work aligned with UN Sustainable Development Goals
 
-Organizations that are purely commercial without a social/environmental mission are NOT impact organizations.
-
-Respond in JSON format with:
-- isImpact: boolean (true if this is an impact organization)
-- confidence: number (0-1, how confident you are)
-- reason: string (brief explanation)
-- suggestedCategories: string[] (relevant impact categories)
-`;
+Organizations that are purely commercial without a social/environmental mission are NOT impact organizations.`;
 
 export async function classifyOrganization(input: {
   name: string;
@@ -42,21 +45,17 @@ ${input.url ? `Website: ${input.url}` : ""}
 Classify this organization.
 `;
 
-  const response = await openai.chat.completions.create({
+  const { output } = await generateText({
     model: DEFAULT_MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userPrompt },
-    ],
-    response_format: { type: "json_object" },
+    system: SYSTEM_PROMPT,
+    prompt: userPrompt,
     temperature: 0.1,
+    output: Output.object({
+      schema: OrgClassificationSchema,
+      name: "OrgClassification",
+      description: "Classification of an organization's impact status",
+    }),
   });
 
-  const content = response.choices[0]?.message?.content || "{}";
-  return parseStructuredOutput<OrgClassificationResult>(content, {
-    isImpact: false,
-    confidence: 0,
-    reason: "Failed to classify",
-    suggestedCategories: [],
-  });
+  return output;
 }

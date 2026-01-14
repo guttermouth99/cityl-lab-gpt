@@ -1,6 +1,7 @@
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
-import { DEFAULT_MODEL, openai } from "../client";
+
+const DEFAULT_MODEL = "openai/gpt-4o-mini";
 
 // Example schema for structured output
 const JobAnalysisSchema = z.object({
@@ -27,15 +28,14 @@ const JobAnalysisSchema = z.object({
 export type JobAnalysis = z.infer<typeof JobAnalysisSchema>;
 
 /**
- * Example function using generateObject with Zod schema
+ * Example function using generateText with Output.object() (AI SDK 6)
  */
 export async function analyzeJobPosting(input: {
   title: string;
   description: string;
 }): Promise<JobAnalysis> {
-  const { object } = await generateObject({
-    model: openai(DEFAULT_MODEL),
-    schema: JobAnalysisSchema,
+  const { output } = await generateText({
+    model: DEFAULT_MODEL,
     prompt: `Analyze this job posting and extract structured information.
 
 Job Title: ${input.title}
@@ -44,44 +44,31 @@ Description:
 ${input.description}
 
 Extract all relevant details following the schema.`,
+    output: Output.object({
+      schema: JobAnalysisSchema,
+    }),
   });
 
-  return object;
+  return output;
 }
 
-// Alternative: using schemaName and schemaDescription for better model understanding
+// Alternative: using name and description for better model understanding
 export async function analyzeJobPostingWithContext(input: {
   title: string;
   description: string;
 }): Promise<JobAnalysis> {
-  const { object } = await generateObject({
-    model: openai(DEFAULT_MODEL),
-    schema: JobAnalysisSchema,
-    schemaName: "JobAnalysis",
-    schemaDescription: "Structured analysis of a job posting",
+  const { output } = await generateText({
+    model: DEFAULT_MODEL,
     prompt: `Analyze this job posting: ${input.title}
 
 ${input.description}`,
     temperature: 0.1,
+    output: Output.object({
+      schema: JobAnalysisSchema,
+      name: "JobAnalysis",
+      description: "Structured analysis of a job posting",
+    }),
   });
 
-  return object;
-}
-
-// Example with streaming for partial results
-export async function* analyzeJobPostingStream(input: {
-  title: string;
-  description: string;
-}): AsyncGenerator<Partial<JobAnalysis>, JobAnalysis> {
-  const { partialObjectStream, object } = await generateObject({
-    model: openai(DEFAULT_MODEL),
-    schema: JobAnalysisSchema,
-    prompt: `Analyze: ${input.title}\n\n${input.description}`,
-  });
-
-  for await (const partialObject of partialObjectStream) {
-    yield partialObject;
-  }
-
-  return object;
+  return output;
 }

@@ -4,9 +4,10 @@ import {
   JOB_TYPES,
   REMOTE_TYPES,
 } from "@baito/shared";
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
-import { DEFAULT_MODEL, openai } from "../client";
+
+const DEFAULT_MODEL = "openai/gpt-4o-mini";
 
 const JobClassificationSchema = z.object({
   jobType: z
@@ -50,14 +51,16 @@ ${input.description.substring(0, 3000)}
 
 Extract classification details following the schema.`;
 
-  const { object } = await generateObject({
-    model: openai(DEFAULT_MODEL),
-    schema: JobClassificationSchema,
-    schemaName: "JobClassification",
-    schemaDescription: "Classification metadata for a job posting",
+  const { output } = await generateText({
+    model: DEFAULT_MODEL,
     prompt,
     temperature: 0.1,
+    output: Output.object({
+      schema: JobClassificationSchema,
+      name: "JobClassification",
+      description: "Classification metadata for a job posting",
+    }),
   });
 
-  return object;
+  return output;
 }
