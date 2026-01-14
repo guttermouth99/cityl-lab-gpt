@@ -7,6 +7,7 @@ import {
   getTranslations,
   setRequestLocale,
 } from "next-intl/server";
+import { Providers } from "@/components/providers";
 import { routing } from "@/i18n/routing";
 
 export async function generateMetadata({
@@ -53,7 +54,7 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <Providers>{children}</Providers>
         </NextIntlClientProvider>
       </body>
     </html>
