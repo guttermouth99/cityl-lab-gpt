@@ -1,5 +1,6 @@
 import { createTRPCRouter } from "../trpc";
 import { customersRouter } from "./customers";
+import { impactRouter } from "./impact";
 import { jobsRouter } from "./jobs";
 import { llmRouter } from "./llm";
 import { organizationsRouter } from "./organizations";
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
   customers: customersRouter,
   llm: llmRouter,
   scraping: scrapingRouter,
+  impact: impactRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -27,6 +27,7 @@
     "@baito/email": "*",
     "@baito/env": "*",
     "@baito/llm": "*",
+    "@baito/mastra": "*",
     "@baito/search": "*",
     "@baito/shared": "*",
     "@trigger.dev/sdk": "^4.0.0",

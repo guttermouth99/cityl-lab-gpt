@@ -2,6 +2,7 @@ import { ArrowRight, Leaf, Search, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CareerPageScraper } from "@/components/career-page-scraper";
+import { ImpactAssessor } from "@/components/impact-assessor";
 import { JobAnalyzer } from "@/components/job-analyzer";
 import { Link } from "@/i18n/navigation";
 
@@ -139,6 +140,22 @@ export default async function LandingPage({ params }: LandingPageProps) {
               all job listings.
             </p>
             <CareerPageScraper />
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Assessor Section */}
+      <section className="border-t py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-2xl">
+            <h2 className="mb-2 text-center font-bold text-2xl text-gray-900">
+              Company Impact Assessor
+            </h2>
+            <p className="mb-6 text-center text-gray-600">
+              Assess multiple companies at once to determine their social and
+              environmental impact.
+            </p>
+            <ImpactAssessor />
           </div>
         </div>
       </section>

@@ -106,6 +106,8 @@ export function CareerPageScraper() {
   };
 
   const isRunning =
+    run?.status === "EXECUTING" ||
+    run?.status === "QUEUED" ||
     run?.status === "WAITING" ||
     run?.status === "DEQUEUED" ||
     run?.status === "DELAYED" ||
@@ -164,9 +166,36 @@ export function CareerPageScraper() {
         </Button>
       </form>
 
-      {(scrapeMutation.isError || realtimeError) && (
-        <div className="mt-4 rounded-md bg-red-50 p-3 text-red-700 text-sm">
-          Failed to start scraping. Please check the URL and try again.
+      {scrapeMutation.isError && (
+        <div className="mt-4 rounded-md bg-red-50 p-3">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-red-800 text-sm">
+                Failed to start scraping
+              </p>
+              <p className="mt-1 text-red-700 text-sm">
+                {scrapeMutation.error?.message ||
+                  "Please check the URL and try again."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {realtimeError && !scrapeMutation.isError && (
+        <div className="mt-4 rounded-md bg-red-50 p-3">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-red-800 text-sm">
+                Connection error
+              </p>
+              <p className="mt-1 text-red-700 text-sm">
+                Lost connection to the scraping job. Please try again.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -191,9 +220,14 @@ export function CareerPageScraper() {
             <span className="font-medium">Scraping failed</span>
           </div>
           <p className="text-gray-600 text-sm">
-            Unable to extract jobs from this page. The page may be protected or
-            have an unsupported format.
+            {run?.error?.message ||
+              "Unable to extract jobs from this page. The page may be protected or have an unsupported format."}
           </p>
+          {run?.status && run.status !== "FAILED" && (
+            <p className="text-gray-500 text-xs">
+              Status: {run.status.toLowerCase().replace(/_/g, " ")}
+            </p>
+          )}
         </div>
       )}
 

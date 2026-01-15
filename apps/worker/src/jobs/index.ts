@@ -4,6 +4,7 @@ export * from "./classification/classify-job";
 export * from "./classification/classify-organization";
 export * from "./feeds/process-feed-batch";
 export * from "./feeds/sync-stepstone";
+export * from "./impact/assess-impact";
 export * from "./maintenance/detect-duplicates";
 export * from "./maintenance/expire-jobs";
 export * from "./newsletter/daily-dispatch";
