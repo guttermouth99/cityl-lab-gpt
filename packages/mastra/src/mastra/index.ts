@@ -6,12 +6,16 @@ import { exampleAgent } from "./agents/example-agent";
 import { impactAssessmentAgent } from "./agents/impact-assessment-agent";
 import { impactAssessmentWorkflow } from "./workflows/impact-assessment-workflow";
 
+// Use MASTRA_DB_URL env var or default to relative path
+// For shared traces across dev server and worker, set MASTRA_DB_URL to an absolute path
+const dbUrl = "file:/Users/lukas/Projects/baito3000/baito-turbo/packages/mastra/mastra.db";
+console.log(dbUrl, "dbUrl");
 export const mastra = new Mastra({
   agents: { exampleAgent, impactAssessmentAgent },
   workflows: { impactAssessmentWorkflow },
   storage: new LibSQLStore({
     id: "mastra",
-    url: "file:./mastra.db",
+    url: dbUrl,
   }),
   observability: new Observability({
     default: { enabled: true },
