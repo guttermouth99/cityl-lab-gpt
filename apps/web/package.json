@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@baito/db": "*",
+    "@baito/env": "*",
     "@baito/search": "*",
     "@baito/shared": "*",
     "@baito/trpc": "*",

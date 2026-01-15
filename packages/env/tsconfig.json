@@ -1,0 +1,13 @@
+{
+  "extends": "@baito/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@baito/env/*": ["./src/*"]
+    },
+    "outDir": "dist",
+    "strictNullChecks": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

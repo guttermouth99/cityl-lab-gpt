@@ -1,3 +1,6 @@
+// Validate environment variables at startup
+import "@baito/env/worker";
+
 import { logger } from "@/utils/logger";
 
 // eslint-disable-next-line no-constant-condition

@@ -1,5 +1,6 @@
 "use client";
 
+import { env } from "@baito/env/web";
 import type { AppRouter } from "@baito/trpc";
 import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -32,8 +33,8 @@ function getQueryClient() {
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return "";
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
+  return `http://localhost:${env.PORT}`;
 }
 
 /**
@@ -50,7 +51,7 @@ export function TRPCReactProvider({
       links: [
         loggerLink({
           enabled: (op) =>
-            process.env.NODE_ENV === "development" ||
+            env.NODE_ENV === "development" ||
             (op.direction === "down" && op.result instanceof Error),
         }),
         httpBatchLink({

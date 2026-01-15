@@ -1,3 +1,6 @@
+// Validate environment variables at startup
+import "@baito/env/web";
+
 import "@baito/ui/globals.css";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";

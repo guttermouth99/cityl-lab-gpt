@@ -1,5 +1,6 @@
 import "server-only";
 
+import { env } from "@baito/env/web";
 import type { AppRouter } from "@baito/trpc";
 import { appRouter, createCallerFactory, createTRPCContext } from "@baito/trpc";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -15,8 +16,8 @@ import { makeQueryClient } from "./query-client";
 export const getQueryClient = cache(makeQueryClient);
 
 function getBaseUrl() {
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
+  return `http://localhost:${env.PORT}`;
 }
 
 /**

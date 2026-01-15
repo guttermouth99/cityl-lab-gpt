@@ -1,3 +1,4 @@
+import { env } from "@baito/env/worker";
 import { chunk } from "@baito/shared";
 import { schedules } from "@trigger.dev/sdk";
 import { processFeedBatch } from "./process-feed-batch";
@@ -16,7 +17,7 @@ export const syncStepstone = schedules.task({
   // Run every hour
   cron: "0 * * * *",
   run: async () => {
-    const feedUrl = process.env.STEPSTONE_FEED_URL;
+    const feedUrl = env.STEPSTONE_FEED_URL;
     if (!feedUrl) {
       throw new Error("STEPSTONE_FEED_URL not configured");
     }

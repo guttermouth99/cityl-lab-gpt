@@ -1,4 +1,5 @@
 import { updateOrganization } from "@baito/db/queries";
+import { env } from "@baito/env/worker";
 import { computeContentHashSync } from "@baito/shared";
 import { task } from "@trigger.dev/sdk";
 
@@ -17,10 +18,7 @@ export const scrapeOrgBatch = task({
     const { organizations } = payload;
     console.log(`Scraping ${organizations.length} organization career pages`);
 
-    const jinaApiKey = process.env.JINA_API_KEY;
-    if (!jinaApiKey) {
-      throw new Error("JINA_API_KEY not configured");
-    }
+    const jinaApiKey = env.JINA_API_KEY;
 
     let updated = 0;
     let unchanged = 0;

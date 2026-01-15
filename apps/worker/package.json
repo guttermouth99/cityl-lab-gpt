@@ -25,6 +25,7 @@
   "dependencies": {
     "@baito/db": "*",
     "@baito/email": "*",
+    "@baito/env": "*",
     "@baito/llm": "*",
     "@baito/search": "*",
     "@baito/shared": "*",
