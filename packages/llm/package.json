@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./client": "./src/client.ts",
     "./prompts/*": "./src/prompts/*.ts",
-    "./parsers/*": "./src/parsers/*.ts"
+    "./parsers/*": "./src/parsers/*.ts",
+    "./services/*": "./src/services/*.ts"
   },
   "scripts": {
     "lint": "biome check .",

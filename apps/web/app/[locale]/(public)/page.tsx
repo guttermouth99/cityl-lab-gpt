@@ -1,6 +1,7 @@
 import { ArrowRight, Leaf, Search, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CareerPageScraper } from "@/components/career-page-scraper";
 import { JobAnalyzer } from "@/components/job-analyzer";
 import { Link } from "@/i18n/navigation";
 
@@ -122,6 +123,22 @@ export default async function LandingPage({ params }: LandingPageProps) {
               more.
             </p>
             <JobAnalyzer />
+          </div>
+        </div>
+      </section>
+
+      {/* Career Page Scraper Section */}
+      <section className="border-t bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-2xl">
+            <h2 className="mb-2 text-center font-bold text-2xl text-gray-900">
+              Career Page Scraper
+            </h2>
+            <p className="mb-6 text-center text-gray-600">
+              Enter a company&apos;s career page URL to automatically extract
+              all job listings.
+            </p>
+            <CareerPageScraper />
           </div>
         </div>
       </section>

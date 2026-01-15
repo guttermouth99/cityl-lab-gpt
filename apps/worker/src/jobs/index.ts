@@ -8,4 +8,5 @@ export * from "./maintenance/detect-duplicates";
 export * from "./maintenance/expire-jobs";
 export * from "./newsletter/daily-dispatch";
 export * from "./newsletter/send-batch";
+export * from "./scraping/scrape-career-page";
 export * from "./scraping/scrape-org-batch";

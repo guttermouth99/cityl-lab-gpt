@@ -1,6 +1,11 @@
 {
   "name": "@baito/worker",
   "module": "src/index.ts",
+  "main": "./src/jobs/index.ts",
+  "types": "./src/jobs/index.ts",
+  "exports": {
+    ".": "./src/jobs/index.ts"
+  },
   "type": "module",
   "private": true,
   "scripts": {
