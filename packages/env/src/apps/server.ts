@@ -1,6 +1,6 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
-import { dbEnvRuntime, dbEnvSchema } from "../schemas/db.js";
+import { dbEnvRuntime, dbEnvSchema } from "../schemas/db";
 
 /**
  * Environment variables for @baito/server (Express API)

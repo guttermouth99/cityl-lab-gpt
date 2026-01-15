@@ -1,13 +1,13 @@
 import { createEnv } from "@t3-oss/env-nextjs";
-import { authEnvRuntime, authEnvSchema } from "../schemas/auth.js";
-import { dbEnvRuntime, dbEnvSchema } from "../schemas/db.js";
+import { authEnvRuntime, authEnvSchema } from "../schemas/auth";
+import { dbEnvRuntime, dbEnvSchema } from "../schemas/db";
 import {
   nextjsClientEnvRuntime,
   nextjsClientEnvSchema,
   nextjsServerEnvRuntime,
   nextjsServerEnvSchema,
-} from "../schemas/nextjs.js";
-import { searchEnvRuntime, searchEnvSchema } from "../schemas/search.js";
+} from "../schemas/nextjs";
+import { searchEnvRuntime, searchEnvSchema } from "../schemas/search";
 
 /**
  * Environment variables for @baito/web (Next.js app)

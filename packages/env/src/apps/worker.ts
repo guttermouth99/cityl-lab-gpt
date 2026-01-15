@@ -1,10 +1,10 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
-import { dbEnvRuntime, dbEnvSchema } from "../schemas/db.js";
-import { emailEnvRuntime, emailEnvSchema } from "../schemas/email.js";
-import { llmEnvRuntime, llmEnvSchema } from "../schemas/llm.js";
-import { searchEnvRuntime, searchEnvSchema } from "../schemas/search.js";
-import { triggerEnvRuntime, triggerEnvSchema } from "../schemas/trigger.js";
+import { dbEnvRuntime, dbEnvSchema } from "../schemas/db";
+import { emailEnvRuntime, emailEnvSchema } from "../schemas/email";
+import { llmEnvRuntime, llmEnvSchema } from "../schemas/llm";
+import { searchEnvRuntime, searchEnvSchema } from "../schemas/search";
+import { triggerEnvRuntime, triggerEnvSchema } from "../schemas/trigger";
 
 /**
  * Environment variables for @baito/worker (Trigger.dev)
