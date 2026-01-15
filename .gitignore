@@ -21,6 +21,9 @@ coverage
 # Trigger.dev
 .trigger
 
+# Mastra
+.mastra
+
 # Vercel
 .vercel
 
