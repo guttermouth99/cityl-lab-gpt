@@ -11,6 +11,7 @@
     "check-types": "turbo run check-types",
     "dev:web": "bun --env-file=.env turbo -F @baito/web dev",
     "dev:worker": "bun --env-file=.env turbo -F @baito/worker dev",
+    "dev:mastra": "bun --env-file=.env turbo -F @baito/mastra dev",
     "db:seed": "turbo db:seed",
     "db:studio": "turbo db:studio",
     "db:generate": "turbo db:generate",

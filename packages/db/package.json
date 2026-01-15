@@ -22,13 +22,13 @@
   },
   "dependencies": {
     "@baito/shared": "*",
-    "drizzle-orm": "^0.38.0",
-    "postgres": "^3.4.5"
+    "drizzle-orm": "^0.44.0",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
     "@baito/typescript-config": "*",
-    "@types/bun": "1.3.3",
-    "drizzle-kit": "^0.30.0"
+    "@types/bun": "^1.2.4",
+    "drizzle-kit": "^0.31.0"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
