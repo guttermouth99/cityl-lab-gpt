@@ -1,6 +1,6 @@
 // Type-only import to prevent task dependencies from leaking into the TRPC bundle
 import type { scrapeCareerPageTask } from "@baito/worker";
-import { tasks } from "@trigger.dev/sdk";
+import { auth, tasks } from "@trigger.dev/sdk";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -18,8 +18,19 @@ export const scrapingRouter = createTRPCRouter({
           { careerPageUrl: input.careerPageUrl }
         );
 
+        // Create a scoped public token for this specific run
+        const publicToken = await auth.createPublicToken({
+          scopes: {
+            read: {
+              runs: [handle.id],
+            },
+          },
+          expirationTime: "1h",
+        });
+
         return {
           runId: handle.id,
+          publicAccessToken: publicToken,
           careerPageUrl: input.careerPageUrl,
         };
       } catch (error) {
