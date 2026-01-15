@@ -3,7 +3,7 @@
 import { Button } from "@baito/ui/components/button";
 import { Textarea } from "@baito/ui/components/textarea";
 import { useMutation } from "@tanstack/react-query";
-import { useRealtimeRun } from "@trigger.dev/react-hooks";
+import { useRealtimeBatch } from "@trigger.dev/react-hooks";
 import {
   AlertCircle,
   CheckCircle2,
@@ -16,10 +16,10 @@ import { useState } from "react";
 import { useTRPCClient } from "@/lib/trpc/client";
 
 interface AssessmentResult {
-  batchTag: string;
   batchId: string;
-  runs: Array<{ id: string; companyName: string }>;
+  runCount: number;
   publicAccessToken: string;
+  companyNames: string[];
 }
 
 interface TaskOutput {
@@ -82,44 +82,55 @@ function getConfidenceBadge(level: TaskOutput["confidenceLevel"]) {
   );
 }
 
-function CompanyResultCard({
-  companyName,
-  runId,
-  publicAccessToken,
-  onStatusChange,
-}: {
-  companyName: string;
-  runId: string;
-  publicAccessToken: string;
-  onStatusChange: (runId: string, status: string | undefined) => void;
-}) {
-  // Subscribe to realtime updates for this specific run
-  const { run, error } = useRealtimeRun(runId, {
-    accessToken: publicAccessToken,
-  });
+type RunStatus =
+  | "EXECUTING"
+  | "QUEUED"
+  | "PENDING_VERSION"
+  | "DEQUEUED"
+  | "WAITING"
+  | "DELAYED"
+  | "COMPLETED"
+  | "FAILED"
+  | "CRASHED"
+  | "SYSTEM_FAILURE"
+  | "CANCELED"
+  | "EXPIRED"
+  | "TIMED_OUT";
 
-  const output = run?.output as TaskOutput | undefined;
+interface TaskPayload {
+  companyName: string;
+  companyUrl?: string;
+}
+
+interface RunInfo {
+  id: string;
+  status: RunStatus;
+  payload: TaskPayload;
+  output?: TaskOutput;
+}
+
+function CompanyResultCard({ run }: { run: RunInfo }) {
+  const output = run.output;
 
   const isRunning =
-    run?.status === "EXECUTING" ||
-    run?.status === "QUEUED" ||
-    run?.status === "PENDING_VERSION" ||
-    run?.status === "DEQUEUED" ||
-    run?.status === "WAITING" ||
-    run?.status === "DELAYED";
-  const isCompleted = run?.status === "COMPLETED";
+    run.status === "EXECUTING" ||
+    run.status === "QUEUED" ||
+    run.status === "PENDING_VERSION" ||
+    run.status === "DEQUEUED" ||
+    run.status === "WAITING" ||
+    run.status === "DELAYED";
+  const isCompleted = run.status === "COMPLETED";
   const isFailed =
-    run?.status === "FAILED" ||
-    run?.status === "CRASHED" ||
-    run?.status === "SYSTEM_FAILURE" ||
-    run?.status === "CANCELED" ||
-    run?.status === "EXPIRED" ||
-    run?.status === "TIMED_OUT";
+    run.status === "FAILED" ||
+    run.status === "CRASHED" ||
+    run.status === "SYSTEM_FAILURE" ||
+    run.status === "CANCELED" ||
+    run.status === "EXPIRED" ||
+    run.status === "TIMED_OUT";
 
-  // Report status changes to parent
-  if (run?.status) {
-    onStatusChange(runId, run.status);
-  }
+  // Get company name from output (when completed) or payload (when still running)
+  const companyName =
+    output?.companyName ?? run.payload?.companyName ?? "Unknown Company";
 
   return (
     <div className="rounded-lg border bg-white p-4 shadow-sm">
@@ -129,16 +140,8 @@ function CompanyResultCard({
             {companyName}
           </h4>
 
-          {/* Error state */}
-          {error && (
-            <div className="mt-2 flex items-center gap-2 text-red-600">
-              <AlertCircle className="h-4 w-4" />
-              <span className="text-sm">Connection error</span>
-            </div>
-          )}
-
           {/* Loading state */}
-          {!error && isRunning && (
+          {isRunning && (
             <div className="mt-2 flex items-center gap-2 text-blue-600">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="text-sm">Analyzing...</span>
@@ -146,7 +149,7 @@ function CompanyResultCard({
           )}
 
           {/* Failed state */}
-          {!error && isFailed && (
+          {isFailed && (
             <div className="mt-2 flex items-center gap-2 text-red-600">
               <AlertCircle className="h-4 w-4" />
               <span className="text-sm">Assessment failed</span>
@@ -154,21 +157,13 @@ function CompanyResultCard({
           )}
 
           {/* Success state */}
-          {!error && isCompleted && output && (
+          {isCompleted && output && (
             <div className="mt-2 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 {getVerdictBadge(output.verdict)}
                 {getConfidenceBadge(output.confidenceLevel)}
               </div>
               <p className="text-gray-600 text-sm">{output.summary}</p>
-            </div>
-          )}
-
-          {/* Waiting state (not yet started) */}
-          {!(error || run) && (
-            <div className="mt-2 flex items-center gap-2 text-gray-500">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Queued...</span>
             </div>
           )}
         </div>
@@ -186,11 +181,90 @@ function CompanyResultCard({
   );
 }
 
+function BatchResultsDisplay({
+  batchId,
+  publicAccessToken,
+  companyNames,
+}: {
+  batchId: string;
+  publicAccessToken: string;
+  companyNames: string[];
+}) {
+  // Subscribe to all runs in the batch using useRealtimeBatch
+  // Note: runs will have output typed as TaskOutput from the task
+  const { runs, error } = useRealtimeBatch(batchId, {
+    accessToken: publicAccessToken,
+  });
+
+  const completedCount = runs.filter((r) => r.status === "COMPLETED").length;
+  const totalCount = runs.length || companyNames.length;
+  const allCompleted = totalCount > 0 && completedCount === totalCount;
+
+  // Map runs to our RunInfo type
+  const runInfos: RunInfo[] = runs.map((run) => ({
+    id: run.id,
+    status: run.status as RunStatus,
+    payload: run.payload as TaskPayload,
+    output: run.output as TaskOutput | undefined,
+  }));
+
+  // If we have runs from the subscription, use those
+  // Otherwise, show placeholders for each company name
+  const hasRuns = runs.length > 0;
+
+  return (
+    <div className="mt-6 space-y-4 border-t pt-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {error ? (
+            <AlertCircle className="h-5 w-5 text-red-600" />
+          ) : allCompleted ? (
+            <CheckCircle2 className="h-5 w-5 text-green-600" />
+          ) : (
+            <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+          )}
+          <span className="font-medium text-gray-900">
+            {error
+              ? "Connection error"
+              : allCompleted
+                ? "Assessment Complete"
+                : `Assessing... (${completedCount}/${totalCount})`}
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {hasRuns
+          ? // Show actual runs from the batch subscription
+            runInfos.map((run) => <CompanyResultCard key={run.id} run={run} />)
+          : // Show placeholders while waiting for runs to appear
+            companyNames.map((name) => (
+              <div
+                className="rounded-lg border bg-white p-4 shadow-sm"
+                key={name}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="truncate font-semibold text-gray-900">
+                      {name}
+                    </h4>
+                    <div className="mt-2 flex items-center gap-2 text-gray-500">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="text-sm">Queued...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+      </div>
+    </div>
+  );
+}
+
 export function ImpactAssessor() {
   const [companies, setCompanies] = useState("");
   const [assessmentResult, setAssessmentResult] =
     useState<AssessmentResult | null>(null);
-  const [runStatuses, setRunStatuses] = useState<Record<string, string>>({});
 
   const trpcClient = useTRPCClient();
 
@@ -200,7 +274,6 @@ export function ImpactAssessor() {
     },
     onSuccess: (data) => {
       setAssessmentResult(data);
-      setRunStatuses({});
     },
   });
 
@@ -210,26 +283,13 @@ export function ImpactAssessor() {
       return;
     }
     setAssessmentResult(null);
-    setRunStatuses({});
     assessMutation.mutate({ companies: companies.trim() });
-  };
-
-  const handleStatusChange = (runId: string, status: string | undefined) => {
-    if (status) {
-      setRunStatuses((prev) => ({ ...prev, [runId]: status }));
-    }
   };
 
   const companyCount = companies
     .split(",")
     .map((c) => c.trim())
     .filter((c) => c.length > 0).length;
-
-  const completedCount = Object.values(runStatuses).filter(
-    (s) => s === "COMPLETED"
-  ).length;
-  const totalCount = assessmentResult?.runs.length ?? 0;
-  const allCompleted = totalCount > 0 && completedCount === totalCount;
 
   return (
     <div className="rounded-lg border bg-white p-6 shadow-sm">
@@ -296,36 +356,13 @@ export function ImpactAssessor() {
         </div>
       )}
 
-      {/* Results - only render when we have the token */}
+      {/* Results - render BatchResultsDisplay when we have a batch */}
       {assessmentResult && (
-        <div className="mt-6 space-y-4 border-t pt-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {allCompleted ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-              ) : (
-                <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-              )}
-              <span className="font-medium text-gray-900">
-                {allCompleted
-                  ? "Assessment Complete"
-                  : `Assessing... (${completedCount}/${totalCount})`}
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {assessmentResult.runs.map((run) => (
-              <CompanyResultCard
-                companyName={run.companyName}
-                key={run.id}
-                onStatusChange={handleStatusChange}
-                publicAccessToken={assessmentResult.publicAccessToken}
-                runId={run.id}
-              />
-            ))}
-          </div>
-        </div>
+        <BatchResultsDisplay
+          batchId={assessmentResult.batchId}
+          companyNames={assessmentResult.companyNames}
+          publicAccessToken={assessmentResult.publicAccessToken}
+        />
       )}
     </div>
   );

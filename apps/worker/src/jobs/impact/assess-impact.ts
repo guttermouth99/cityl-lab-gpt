@@ -28,7 +28,12 @@ export const assessImpactTask = task({
     console.log(`Assessing impact for: ${companyName}`);
 
     const workflow = mastra.getWorkflow("impactAssessmentWorkflow");
-    const run = await workflow.createRun();
+
+    // Create a run ID prefixed with the company name for easier identification in the dashboard
+    const sanitizedName = companyName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const runId = `${sanitizedName}-${Date.now()}`;
+
+    const run = await workflow.createRun({ runId });
 
     const result = await run.start({
       inputData: {
