@@ -14,14 +14,17 @@ export const jinaSearchTool = createTool({
   outputSchema: z.object({
     results: z.string().describe("JSON string containing search results"),
   }),
-  execute: async ({ context }) => {
+  execute: async (inputData) => {
+    const MAX_RESULTS = 5;
+    const MAX_SNIPPET_CHARS = 400;
+
     const jinaApiKey = process.env.JINA_API_KEY;
     if (!jinaApiKey) {
       throw new Error("JINA_API_KEY environment variable is not configured");
     }
 
     const response = await fetch(
-      `https://s.jina.ai/${encodeURIComponent(context.query)}`,
+      `https://s.jina.ai/${encodeURIComponent(inputData.query)}`,
       {
         headers: {
           Authorization: `Bearer ${jinaApiKey}`,
@@ -32,13 +35,46 @@ export const jinaSearchTool = createTool({
 
     if (!response.ok) {
       throw new Error(
-        `Search failed for "${context.query}": ${response.status} ${response.statusText}`
+        `Search failed for "${inputData.query}": ${response.status} ${response.statusText}`
       );
     }
 
     const data = await response.json();
+
+    const rawResults = Array.isArray(data)
+      ? data
+      : Array.isArray(data.results)
+        ? data.results
+        : data.data;
+
+    const sanitizedResults = Array.isArray(rawResults)
+      ? rawResults.slice(0, MAX_RESULTS).map((item) => {
+          const title = item.title ?? item.source?.title ?? "Untitled";
+          const url = item.url ?? item.link ?? item.source?.url ?? "";
+          const snippet = (
+            item.snippet ??
+            item.description ??
+            item.content ??
+            ""
+          )
+            .toString()
+            .slice(0, MAX_SNIPPET_CHARS);
+
+          return { title, url, snippet };
+        })
+      : [];
+
     return {
-      results: JSON.stringify(data, null, 2),
+      results: JSON.stringify(
+        {
+          query: inputData.query,
+          results: sanitizedResults,
+          truncated:
+            Array.isArray(rawResults) && rawResults.length > MAX_RESULTS,
+        },
+        null,
+        2
+      ),
     };
   },
 });

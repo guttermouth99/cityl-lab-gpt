@@ -4,6 +4,7 @@ import { jinaReaderTool } from "../tools/jina-reader";
 import { jinaSearchTool } from "../tools/jina-search";
 
 export const impactAssessmentAgent = new Agent({
+  id: "impact-assessment-agent",
   name: "Impact Assessment Agent",
   instructions: `
     You are an expert analyst that assesses whether organizations have genuine social or environmental impact.

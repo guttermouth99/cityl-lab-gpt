@@ -41,7 +41,9 @@ const assessImpactStep = createStep({
       : `Assess if "${inputData.companyName}" has genuine social or environmental impact.`;
 
     const result = await impactAssessmentAgent.generate(prompt, {
-      output: assessmentOutputSchema,
+      structuredOutput: {
+        schema: assessmentOutputSchema,
+      },
     });
 
     return {
@@ -75,7 +77,7 @@ const markAsImpactStep = createStep({
     action: z.literal("marked_as_impact"),
     evidenceOfImpact: z.array(z.string()),
   }),
-  execute: ({ inputData }) => {
+  execute: async ({ inputData }) => {
     // In production, this would update the database:
     // await db.update(organizations).set({ isImpact: true }).where(eq(organizations.name, inputData.companyName));
 
@@ -117,7 +119,7 @@ const markAsBlacklistedStep = createStep({
     action: z.literal("marked_as_blacklisted"),
     redFlags: z.array(z.string()),
   }),
-  execute: ({ inputData }) => {
+  execute: async ({ inputData }) => {
     // In production, this would update the database:
     // await db.update(organizations).set({ isBlacklisted: true }).where(eq(organizations.name, inputData.companyName));
 
@@ -133,80 +135,6 @@ const markAsBlacklistedStep = createStep({
       action: "marked_as_blacklisted" as const,
       redFlags: inputData.assessment.redFlags,
     };
-  },
-});
-
-/**
- * Final step to consolidate branch outputs
- */
-const finalizeStep = createStep({
-  id: "finalize",
-  inputSchema: z.object({
-    "mark-as-impact": z
-      .object({
-        companyName: z.string(),
-        verdict: z.enum([
-          "Has Impact",
-          "No Clear Impact",
-          "Insufficient Information",
-        ]),
-        confidenceLevel: z.enum(["High", "Medium", "Low"]),
-        summary: z.string(),
-        action: z.literal("marked_as_impact"),
-        evidenceOfImpact: z.array(z.string()),
-      })
-      .optional(),
-    "mark-as-blacklisted": z
-      .object({
-        companyName: z.string(),
-        verdict: z.enum([
-          "Has Impact",
-          "No Clear Impact",
-          "Insufficient Information",
-        ]),
-        confidenceLevel: z.enum(["High", "Medium", "Low"]),
-        summary: z.string(),
-        action: z.literal("marked_as_blacklisted"),
-        redFlags: z.array(z.string()),
-      })
-      .optional(),
-  }),
-  outputSchema: z.object({
-    companyName: z.string(),
-    verdict: z.enum([
-      "Has Impact",
-      "No Clear Impact",
-      "Insufficient Information",
-    ]),
-    confidenceLevel: z.enum(["High", "Medium", "Low"]),
-    summary: z.string(),
-    action: z.enum(["marked_as_impact", "marked_as_blacklisted"]),
-  }),
-  execute: ({ inputData }) => {
-    const impactResult = inputData["mark-as-impact"];
-    const blacklistResult = inputData["mark-as-blacklisted"];
-
-    if (impactResult) {
-      return {
-        companyName: impactResult.companyName,
-        verdict: impactResult.verdict,
-        confidenceLevel: impactResult.confidenceLevel,
-        summary: impactResult.summary,
-        action: impactResult.action,
-      };
-    }
-
-    if (blacklistResult) {
-      return {
-        companyName: blacklistResult.companyName,
-        verdict: blacklistResult.verdict,
-        confidenceLevel: blacklistResult.confidenceLevel,
-        summary: blacklistResult.summary,
-        action: blacklistResult.action,
-      };
-    }
-
-    throw new Error("No branch result found");
   },
 });
 
@@ -254,5 +182,36 @@ export const impactAssessmentWorkflow = createWorkflow({
       markAsBlacklistedStep,
     ],
   ])
-  .then(finalizeStep)
+  .map(async ({ getStepResult }) => {
+    // Access results from whichever branch was executed
+    const impactResult = getStepResult(markAsImpactStep);
+    const blacklistResult = getStepResult(markAsBlacklistedStep);
+
+    // Return the result from whichever branch executed
+    if (impactResult) {
+      return {
+        companyName: impactResult.companyName,
+        verdict: impactResult.verdict,
+        confidenceLevel: impactResult.confidenceLevel,
+        summary: impactResult.summary,
+        action: impactResult.action as
+          | "marked_as_impact"
+          | "marked_as_blacklisted",
+      };
+    }
+
+    if (blacklistResult) {
+      return {
+        companyName: blacklistResult.companyName,
+        verdict: blacklistResult.verdict,
+        confidenceLevel: blacklistResult.confidenceLevel,
+        summary: blacklistResult.summary,
+        action: blacklistResult.action as
+          | "marked_as_impact"
+          | "marked_as_blacklisted",
+      };
+    }
+
+    throw new Error("No branch result found");
+  })
   .commit();

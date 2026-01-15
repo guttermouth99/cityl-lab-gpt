@@ -28,7 +28,7 @@ export const assessImpactTask = task({
     console.log(`Assessing impact for: ${companyName}`);
 
     const workflow = mastra.getWorkflow("impactAssessmentWorkflow");
-    const run = workflow.createRun();
+    const run = await workflow.createRun();
 
     const result = await run.start({
       inputData: {

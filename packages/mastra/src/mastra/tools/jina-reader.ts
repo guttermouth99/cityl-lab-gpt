@@ -9,18 +9,24 @@ export const jinaReaderTool = createTool({
   description:
     "Read and extract content from a URL as clean markdown. Use this to analyze organization websites, about pages, impact reports, and other web content.",
   inputSchema: z.object({
-    url: z.string().url().describe("The URL to read and extract content from"),
+    url: z
+      .string()
+      .describe(
+        "The URL to read and extract content from (must be a valid URL)"
+      ),
   }),
   outputSchema: z.object({
     content: z.string().describe("The extracted page content as markdown"),
   }),
-  execute: async ({ context }) => {
+  execute: async (inputData) => {
+    const MAX_CONTENT_CHARS = 15_000;
+
     const jinaApiKey = process.env.JINA_API_KEY;
     if (!jinaApiKey) {
       throw new Error("JINA_API_KEY environment variable is not configured");
     }
 
-    const response = await fetch(`https://r.jina.ai/${context.url}`, {
+    const response = await fetch(`https://r.jina.ai/${inputData.url}`, {
       headers: {
         Authorization: `Bearer ${jinaApiKey}`,
         "X-Engine": "browser",
@@ -33,11 +39,16 @@ export const jinaReaderTool = createTool({
 
     if (!response.ok) {
       throw new Error(
-        `Failed to read content from ${context.url}: ${response.status} ${response.statusText}`
+        `Failed to read content from ${inputData.url}: ${response.status} ${response.statusText}`
       );
     }
 
-    const content = await response.text();
-    return { content };
+    const fullContent = await response.text();
+    const truncated =
+      fullContent.length > MAX_CONTENT_CHARS
+        ? `${fullContent.slice(0, MAX_CONTENT_CHARS)}\n\n[content truncated to ${MAX_CONTENT_CHARS} characters]`
+        : fullContent;
+
+    return { content: truncated };
   },
 });

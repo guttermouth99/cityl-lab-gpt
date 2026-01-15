@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "main": "./src/mastra/index.ts",
   "types": "./src/mastra/index.ts",
   "exports": {
@@ -16,13 +19,14 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@mastra/core": "latest",
+    "@mastra/core": "beta",
+    "@mastra/libsql": "beta",
     "zod": "^4.0.0"
   },
   "devDependencies": {
     "@baito/typescript-config": "*",
     "@types/bun": "1.3.3",
-    "mastra": "latest"
+    "mastra": "beta"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"

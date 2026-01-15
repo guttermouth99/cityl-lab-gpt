@@ -3,6 +3,7 @@ import { Agent } from "@mastra/core/agent";
 import { exampleTool } from "../tools/example-tool";
 
 export const exampleAgent = new Agent({
+  id: "example-agent",
   name: "Example Agent",
   instructions: `
     You are a helpful assistant that can answer questions and help with tasks.

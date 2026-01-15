@@ -10,9 +10,9 @@ export const exampleTool = createTool({
   outputSchema: z.object({
     output: z.string(),
   }),
-  execute: async ({ context }) => {
+  execute: async (inputData) => {
     return {
-      output: `Echo: ${context.message}`,
+      output: `Echo: ${inputData.message}`,
     };
   },
 });
