@@ -1,7 +1,6 @@
-import { db } from "@baito/db";
+import { and, db, eq, sql } from "@baito/db";
 import { jobs } from "@baito/db/schema";
 import { schedules } from "@trigger.dev/sdk";
-import { and, eq, sql } from "drizzle-orm";
 
 export const detectDuplicates = schedules.task({
   id: "detect-duplicates",

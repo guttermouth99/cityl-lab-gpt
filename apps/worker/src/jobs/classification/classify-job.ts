@@ -1,9 +1,8 @@
-import { db } from "@baito/db";
+import { db, eq } from "@baito/db";
 import { getJobById } from "@baito/db/queries";
 import { jobs } from "@baito/db/schema";
 import { classifyJob as classifyJobLLM } from "@baito/llm";
 import { task } from "@trigger.dev/sdk";
-import { eq } from "drizzle-orm";
 
 export const classifyJobTask = task({
   id: "classify-job",
