@@ -1,5 +1,5 @@
 import { mastra } from "@baito/mastra";
-import { task } from "@trigger.dev/sdk";
+import { metadata, tags, task } from "@trigger.dev/sdk";
 
 interface AssessImpactPayload {
   companyName: string;
@@ -32,6 +32,13 @@ export const assessImpactTask = task({
     // Create a run ID prefixed with the company name for easier identification in the dashboard
     const sanitizedName = companyName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const runId = `${sanitizedName}-${Date.now()}`;
+
+    // Add company name as tag for easier filtering in the dashboard
+    await tags.add(`company:${sanitizedName}`);
+
+    // Add link to Mastra workflow graph in run metadata
+    const mastraGraphUrl = `http://localhost:4111/workflows/impactAssessmentWorkflow/graph/${runId}`;
+    metadata.set("mastraGraphUrl", mastraGraphUrl);
 
     const run = await workflow.createRun({ runId });
 
