@@ -30,13 +30,22 @@ export const classifyJobTask = task({
     console.log("Classification result:", result);
 
     // Update the job with classification
+    // biome-ignore lint/suspicious/noExplicitAny: LLM result types need runtime validation
+    const jobType = result.jobType as any;
+    // biome-ignore lint/suspicious/noExplicitAny: LLM result types need runtime validation
+    const jobBranch = result.jobBranch as any;
+    // biome-ignore lint/suspicious/noExplicitAny: LLM result types need runtime validation
+    const remoteType = result.remoteType as any;
+    // biome-ignore lint/suspicious/noExplicitAny: LLM result types need runtime validation
+    const experienceLevel = result.experienceLevel as any;
+
     await db
       .update(jobs)
       .set({
-        jobType: result.jobType as any,
-        jobBranch: result.jobBranch as any,
-        remoteType: result.remoteType as any,
-        experienceLevel: result.experienceLevel as any,
+        jobType,
+        jobBranch,
+        remoteType,
+        experienceLevel,
         updatedAt: new Date(),
       })
       .where(eq(jobs.id, jobId));

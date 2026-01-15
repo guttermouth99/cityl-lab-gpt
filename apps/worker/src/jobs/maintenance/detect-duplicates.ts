@@ -36,7 +36,7 @@ export const detectDuplicates = schedules.task({
         .orderBy(jobs.createdAt);
 
       // Keep the oldest, archive the rest
-      const [oldest, ...rest] = dupJobs;
+      const [_oldest, ...rest] = dupJobs;
 
       for (const job of rest) {
         await db

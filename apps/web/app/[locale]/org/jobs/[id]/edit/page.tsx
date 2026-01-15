@@ -31,34 +31,48 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
 
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="job-title"
+              >
                 Job Title *
               </label>
               <input
                 className="w-full rounded-lg border px-4 py-2"
                 defaultValue={`Sample Job ${id}`}
+                id="job-title"
                 required
                 type="text"
               />
             </div>
 
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="job-description"
+              >
                 Description *
               </label>
               <textarea
                 className="h-48 w-full rounded-lg border px-4 py-2"
                 defaultValue="Existing job description..."
+                id="job-description"
                 required
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block font-medium text-gray-700 text-sm">
+                <label
+                  className="mb-1 block font-medium text-gray-700 text-sm"
+                  htmlFor="job-type"
+                >
                   Job Type
                 </label>
-                <select className="w-full rounded-lg border px-4 py-2">
+                <select
+                  className="w-full rounded-lg border px-4 py-2"
+                  id="job-type"
+                >
                   <option>Full Time</option>
                   <option>Part Time</option>
                   <option>Contract</option>
@@ -66,10 +80,16 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block font-medium text-gray-700 text-sm">
+                <label
+                  className="mb-1 block font-medium text-gray-700 text-sm"
+                  htmlFor="job-status"
+                >
                   Status
                 </label>
-                <select className="w-full rounded-lg border px-4 py-2">
+                <select
+                  className="w-full rounded-lg border px-4 py-2"
+                  id="job-status"
+                >
                   <option>Active</option>
                   <option>Draft</option>
                   <option>Archived</option>

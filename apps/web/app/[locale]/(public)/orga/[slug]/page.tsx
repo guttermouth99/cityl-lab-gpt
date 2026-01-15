@@ -19,7 +19,7 @@ export async function generateMetadata({
 }
 
 export default async function OrgPage({ params }: OrgPageProps) {
-  const { locale, slug } = await params;
+  const { locale, slug: _slug } = await params;
   setRequestLocale(locale);
 
   // Placeholder organization data

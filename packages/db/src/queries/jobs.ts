@@ -33,7 +33,7 @@ export interface JobFilters {
   offset?: number;
 }
 
-export async function getJobById(id: string) {
+export function getJobById(id: string) {
   return db.query.jobs.findFirst({
     where: eq(jobs.id, id),
     with: {
@@ -43,7 +43,7 @@ export async function getJobById(id: string) {
   });
 }
 
-export async function getJobBySlug(slug: string) {
+export function getJobBySlug(slug: string) {
   return db.query.jobs.findFirst({
     where: eq(jobs.slug, slug),
     with: {
@@ -53,10 +53,7 @@ export async function getJobBySlug(slug: string) {
   });
 }
 
-export async function getJobsByOrganization(
-  organizationId: string,
-  limit = 50
-) {
+export function getJobsByOrganization(organizationId: string, limit = 50) {
   return db.query.jobs.findMany({
     where: eq(jobs.organizationId, organizationId),
     orderBy: [desc(jobs.createdAt)],
@@ -67,7 +64,7 @@ export async function getJobsByOrganization(
   });
 }
 
-export async function getActiveJobs(filters: JobFilters = {}) {
+export function getActiveJobs(filters: JobFilters = {}) {
   const conditions = [eq(jobs.status, "active")];
 
   if (filters.organizationId) {
@@ -77,24 +74,45 @@ export async function getActiveJobs(filters: JobFilters = {}) {
     conditions.push(eq(jobs.source, filters.source));
   }
   if (filters.jobType) {
-    conditions.push(eq(jobs.jobType, filters.jobType as any));
+    conditions.push(
+      eq(
+        jobs.jobType,
+        filters.jobType as (typeof jobs.jobType.enumValues)[number]
+      )
+    );
   }
   if (filters.jobBranch) {
-    conditions.push(eq(jobs.jobBranch, filters.jobBranch as any));
+    conditions.push(
+      eq(
+        jobs.jobBranch,
+        filters.jobBranch as (typeof jobs.jobBranch.enumValues)[number]
+      )
+    );
   }
   if (filters.remoteType) {
-    conditions.push(eq(jobs.remoteType, filters.remoteType as any));
+    conditions.push(
+      eq(
+        jobs.remoteType,
+        filters.remoteType as (typeof jobs.remoteType.enumValues)[number]
+      )
+    );
   }
   if (filters.experienceLevel) {
-    conditions.push(eq(jobs.experienceLevel, filters.experienceLevel as any));
+    conditions.push(
+      eq(
+        jobs.experienceLevel,
+        filters.experienceLevel as (typeof jobs.experienceLevel.enumValues)[number]
+      )
+    );
   }
   if (filters.search) {
-    conditions.push(
-      or(
-        ilike(jobs.title, `%${filters.search}%`),
-        ilike(jobs.description, `%${filters.search}%`)
-      )!
+    const searchCondition = or(
+      ilike(jobs.title, `%${filters.search}%`),
+      ilike(jobs.description, `%${filters.search}%`)
     );
+    if (searchCondition) {
+      conditions.push(searchCondition);
+    }
   }
 
   return db.query.jobs.findMany({
@@ -134,11 +152,21 @@ export async function createJob(input: CreateJobInput) {
       externalId: input.externalId ?? null,
       source: input.source ?? "organic",
       sourceFeed: input.sourceFeed ?? null,
-      jobType: input.jobType as any,
-      jobBranch: input.jobBranch as any,
-      remoteType: input.remoteType as any,
-      experienceLevel: input.experienceLevel as any,
-      packageType: input.packageType as any,
+      jobType: input.jobType as
+        | (typeof jobs.jobType.enumValues)[number]
+        | undefined,
+      jobBranch: input.jobBranch as
+        | (typeof jobs.jobBranch.enumValues)[number]
+        | undefined,
+      remoteType: input.remoteType as
+        | (typeof jobs.remoteType.enumValues)[number]
+        | undefined,
+      experienceLevel: input.experienceLevel as
+        | (typeof jobs.experienceLevel.enumValues)[number]
+        | undefined,
+      packageType: input.packageType as
+        | (typeof jobs.packageType.enumValues)[number]
+        | undefined,
       expiresAt: input.expiresAt ?? null,
     })
     .returning();
@@ -156,10 +184,7 @@ export async function updateJobStatus(id: string, status: JobStatus) {
   return updated;
 }
 
-export async function findDuplicateJob(
-  contentHash: string,
-  organizationId: string
-) {
+export function findDuplicateJob(contentHash: string, organizationId: string) {
   return db.query.jobs.findFirst({
     where: and(
       eq(jobs.contentHash, contentHash),

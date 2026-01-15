@@ -16,7 +16,9 @@ import { makeQueryClient } from "./query-client";
 export const getQueryClient = cache(makeQueryClient);
 
 function getBaseUrl() {
-  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
+  if (env.VERCEL_URL) {
+    return `https://${env.VERCEL_URL}`;
+  }
   return `http://localhost:${env.PORT}`;
 }
 
@@ -62,15 +64,12 @@ export function HydrateClient({ children }: { children: React.ReactNode }) {
 /**
  * Prefetch a tRPC query on the server for hydration
  */
-export function prefetch(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  queryOptions: ReturnType<TRPCQueryOptions<any>>
-) {
+export function prefetch<T>(queryOptions: ReturnType<TRPCQueryOptions<T>>) {
   const queryClient = getQueryClient();
   if (queryOptions.queryKey[1]?.type === "infinite") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    void queryClient.prefetchInfiniteQuery(queryOptions as any);
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC infinite query typing limitation
+    queryClient.prefetchInfiniteQuery(queryOptions as any);
   } else {
-    void queryClient.prefetchQuery(queryOptions);
+    queryClient.prefetchQuery(queryOptions);
   }
 }

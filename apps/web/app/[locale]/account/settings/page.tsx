@@ -23,21 +23,29 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
           <h2 className="mb-4 font-semibold text-gray-900 text-lg">Profile</h2>
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="settings-name"
+              >
                 Name
               </label>
               <input
                 className="w-full rounded-lg border px-4 py-2"
+                id="settings-name"
                 placeholder="Your name"
                 type="text"
               />
             </div>
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="settings-email"
+              >
                 Email
               </label>
               <input
                 className="w-full rounded-lg border px-4 py-2"
+                id="settings-email"
                 placeholder="your@email.com"
                 type="email"
               />
@@ -76,7 +84,10 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <button className="rounded-lg bg-green-600 px-6 py-2 font-medium text-white hover:bg-green-700">
+          <button
+            className="rounded-lg bg-green-600 px-6 py-2 font-medium text-white hover:bg-green-700"
+            type="button"
+          >
             Save Changes
           </button>
         </div>

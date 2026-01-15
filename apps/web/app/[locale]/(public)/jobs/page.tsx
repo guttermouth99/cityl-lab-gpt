@@ -116,7 +116,13 @@ export default async function JobsPage({
   );
 }
 
-async function JobList({ query, page }: { query?: string; page: number }) {
+async function JobList({
+  query: _query,
+  page: _page,
+}: {
+  query?: string;
+  page: number;
+}) {
   // In a real implementation, this would fetch from the database
   // For now, showing placeholder content
   return (

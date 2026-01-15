@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
+function getSourceName(i: number): string {
+  if (i % 3 === 0) {
+    return "Feed";
+  }
+  if (i % 2 === 0) {
+    return "Scraped";
+  }
+  return "Organic";
+}
+
 export const metadata: Metadata = {
   title: "Manage Jobs",
   description: "Admin job management",
@@ -74,7 +84,7 @@ export default async function AdminJobsPage({ params }: AdminJobsPageProps) {
                 <td className="px-6 py-4 text-gray-600">Organization {i}</td>
                 <td className="px-6 py-4">
                   <span className="rounded bg-gray-100 px-2 py-1 text-gray-600 text-xs">
-                    {i % 3 === 0 ? "Feed" : i % 2 === 0 ? "Scraped" : "Organic"}
+                    {getSourceName(i)}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -90,7 +100,10 @@ export default async function AdminJobsPage({ params }: AdminJobsPageProps) {
                 </td>
                 <td className="px-6 py-4 text-gray-600">{i} days ago</td>
                 <td className="px-6 py-4 text-right">
-                  <button className="text-green-600 text-sm hover:text-green-700">
+                  <button
+                    className="text-green-600 text-sm hover:text-green-700"
+                    type="button"
+                  >
                     View
                   </button>
                 </td>

@@ -61,21 +61,21 @@ export async function createJobsCollection() {
   }
 }
 
-export async function indexJob(job: JobDocument) {
+export function indexJob(job: JobDocument) {
   return typesenseClient
     .collections(JOBS_COLLECTION_NAME)
     .documents()
     .upsert(job);
 }
 
-export async function indexJobs(jobs: JobDocument[]) {
+export function indexJobs(jobs: JobDocument[]) {
   return typesenseClient
     .collections(JOBS_COLLECTION_NAME)
     .documents()
     .import(jobs, { action: "upsert" });
 }
 
-export async function deleteJobFromIndex(id: string) {
+export function deleteJobFromIndex(id: string) {
   return typesenseClient
     .collections(JOBS_COLLECTION_NAME)
     .documents(id)

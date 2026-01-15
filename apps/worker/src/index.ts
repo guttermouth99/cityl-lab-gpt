@@ -3,11 +3,11 @@ import "@baito/env/worker";
 
 import { logger } from "@/utils/logger";
 
-// eslint-disable-next-line no-constant-condition
-while (1) {
+let running = true;
+while (running) {
   await new Promise(() =>
     setTimeout(() => logger.info("worker started"), 1000)
   );
 
-  break;
+  running = false;
 }

@@ -25,7 +25,7 @@ export interface UpdateOrganizationInput {
   contentHash?: string | null;
 }
 
-export async function getOrganizationById(id: string) {
+export function getOrganizationById(id: string) {
   return db.query.organizations.findFirst({
     where: eq(organizations.id, id),
     with: {
@@ -37,7 +37,7 @@ export async function getOrganizationById(id: string) {
   });
 }
 
-export async function getOrganizationBySlug(slug: string) {
+export function getOrganizationBySlug(slug: string) {
   return db.query.organizations.findFirst({
     where: eq(organizations.slug, slug),
     with: {
@@ -50,13 +50,13 @@ export async function getOrganizationBySlug(slug: string) {
   });
 }
 
-export async function findOrgByDomain(domain: string) {
+export function findOrgByDomain(domain: string) {
   return db.query.organizations.findFirst({
     where: eq(organizations.domain, domain.toLowerCase()),
   });
 }
 
-export async function findOrgByName(name: string) {
+export function findOrgByName(name: string) {
   const normalized = normalizeOrgName(name);
 
   return db.query.organizations.findFirst({
@@ -73,13 +73,17 @@ export async function findOrMatchOrganization(input: {
     const domain = extractDomain(input.url);
     if (domain) {
       const byDomain = await findOrgByDomain(domain);
-      if (byDomain) return byDomain;
+      if (byDomain) {
+        return byDomain;
+      }
     }
   }
 
   // Then try to find by name
   const byName = await findOrgByName(input.name);
-  if (byName) return byName;
+  if (byName) {
+    return byName;
+  }
 
   return null;
 }
@@ -121,7 +125,7 @@ export async function updateOrganization(
   return updated;
 }
 
-export async function getImpactOrganizations(limit = 100) {
+export function getImpactOrganizations(limit = 100) {
   return db.query.organizations.findMany({
     where: and(
       eq(organizations.isImpact, true),
@@ -132,7 +136,7 @@ export async function getImpactOrganizations(limit = 100) {
   });
 }
 
-export async function searchOrganizations(query: string, limit = 20) {
+export function searchOrganizations(query: string, limit = 20) {
   return db.query.organizations.findMany({
     where: and(
       eq(organizations.isBlacklisted, false),

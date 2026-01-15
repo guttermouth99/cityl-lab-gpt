@@ -1,5 +1,5 @@
 import { db } from "@baito/db";
-import * as schema from "@baito/db/schema";
+import { accounts, sessions, users, verifications } from "@baito/db/schema";
 import { env } from "@baito/env/web";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -8,10 +8,10 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
-      user: schema.users,
-      session: schema.sessions,
-      account: schema.accounts,
-      verification: schema.verifications,
+      user: users,
+      session: sessions,
+      account: accounts,
+      verification: verifications,
     },
   }),
   emailAndPassword: {

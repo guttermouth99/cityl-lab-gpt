@@ -18,7 +18,10 @@ export default async function AlertsPage({ params }: AlertsPageProps) {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-bold text-2xl text-gray-900">Job Alerts</h1>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700">
+        <button
+          className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
+          type="button"
+        >
           <Plus className="h-4 w-4" />
           Create Alert
         </button>
@@ -44,7 +47,10 @@ export default async function AlertsPage({ params }: AlertsPageProps) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                <button
+                  className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  type="button"
+                >
                   <Trash2 className="h-5 w-5" />
                 </button>
               </div>

@@ -29,39 +29,54 @@ export default async function OrganizationPage({
 
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="org-name"
+              >
                 Organization Name
               </label>
               <input
                 className="w-full rounded-lg border px-4 py-2"
                 defaultValue="Sample Organization"
+                id="org-name"
                 type="text"
               />
             </div>
 
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="org-website"
+              >
                 Website
               </label>
               <input
                 className="w-full rounded-lg border px-4 py-2"
                 defaultValue="https://example.com"
+                id="org-website"
                 type="url"
               />
             </div>
 
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="org-description"
+              >
                 Description
               </label>
               <textarea
                 className="h-32 w-full rounded-lg border px-4 py-2"
                 defaultValue="A brief description of your organization..."
+                id="org-description"
               />
             </div>
 
             <div>
-              <label className="mb-1 block font-medium text-gray-700 text-sm">
+              <label
+                className="mb-1 block font-medium text-gray-700 text-sm"
+                htmlFor="org-logo"
+              >
                 Logo
               </label>
               <div className="flex items-center gap-4">
@@ -70,6 +85,7 @@ export default async function OrganizationPage({
                 </div>
                 <button
                   className="rounded-lg border px-4 py-2 text-gray-700 hover:bg-gray-50"
+                  id="org-logo"
                   type="button"
                 >
                   Upload New Logo

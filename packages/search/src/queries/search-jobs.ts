@@ -120,7 +120,9 @@ function extractFacetCounts(
   const facetCounts = response.facet_counts?.find(
     (f) => f.field_name === fieldName
   );
-  if (!facetCounts) return [];
+  if (!facetCounts) {
+    return [];
+  }
 
   return facetCounts.counts.map((c) => ({
     value: c.value,

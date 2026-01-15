@@ -90,7 +90,10 @@ export default async function CustomerJobsPage({ params }: CustomerJobsProps) {
                     >
                       <Eye className="h-4 w-4" />
                     </a>
-                    <button className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600">
+                    <button
+                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600"
+                      type="button"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>

@@ -27,7 +27,7 @@ export async function generateMetadata({
 }
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { locale, id } = await params;
+  const { locale, id: _id } = await params;
   setRequestLocale(locale);
 
   // In a real implementation, fetch job from database
@@ -113,6 +113,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
             {/* Job Description */}
             <div className="prose max-w-none">
               <div
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: Job descriptions are sanitized server-side
                 dangerouslySetInnerHTML={{
                   __html: job.description.replace(/\n/g, "<br/>"),
                 }}

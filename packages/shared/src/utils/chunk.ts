@@ -42,7 +42,10 @@ export async function processBatches<T>(
   const batches = chunk(array, batchSize);
 
   for (let i = 0; i < batches.length; i++) {
-    await callback(batches[i]!, i);
+    const batch = batches[i];
+    if (batch) {
+      await callback(batch, i);
+    }
   }
 }
 
@@ -66,7 +69,12 @@ export async function processParallelBatches<T, R>(
   for (let i = 0; i < batches.length; i += concurrency) {
     const parallelBatches = batches.slice(i, i + concurrency);
     const batchResults = await Promise.all(
-      parallelBatches.map((batch, idx) => callback(batch!, i + idx))
+      parallelBatches.map((batch, idx) => {
+        if (!batch) {
+          throw new Error("Unexpected empty batch");
+        }
+        return callback(batch, i + idx);
+      })
     );
     results.push(...batchResults);
   }

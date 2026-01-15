@@ -14,11 +14,11 @@ export interface TRPCContext {
   } | null;
 }
 
-export async function createTRPCContext(
-  opts?: FetchCreateContextFnOptions
-): Promise<TRPCContext> {
+export function createTRPCContext(
+  _opts?: FetchCreateContextFnOptions
+): TRPCContext {
   // TODO: Get session from Better-Auth
-  // const session = await getSession(opts?.req)
+  // const session = await getSession(_opts?.req)
 
   return {
     session: null,

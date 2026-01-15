@@ -17,6 +17,9 @@ export async function POST(req: NextRequest) {
       case "spamreport":
         // Handle spam report
         break;
+      default:
+        // Unknown event type - ignore
+        break;
     }
   }
 

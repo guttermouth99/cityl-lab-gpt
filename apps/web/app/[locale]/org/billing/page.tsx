@@ -88,7 +88,10 @@ export default async function BillingPage({ params }: BillingPageProps) {
                 </li>
               </ul>
               {!plan.current && (
-                <button className="mt-4 w-full rounded-lg border px-4 py-2 font-medium text-gray-700 hover:bg-gray-50">
+                <button
+                  className="mt-4 w-full rounded-lg border px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
+                  type="button"
+                >
                   Switch Plan
                 </button>
               )}
@@ -110,7 +113,10 @@ export default async function BillingPage({ params }: BillingPageProps) {
             <p className="font-medium text-gray-900">•••• •••• •••• 4242</p>
             <p className="text-gray-600 text-sm">Expires 12/26</p>
           </div>
-          <button className="ml-auto text-green-600 hover:text-green-700">
+          <button
+            className="ml-auto text-green-600 hover:text-green-700"
+            type="button"
+          >
             Update
           </button>
         </div>

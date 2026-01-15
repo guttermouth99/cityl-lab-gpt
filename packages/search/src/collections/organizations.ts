@@ -39,21 +39,21 @@ export async function createOrganizationsCollection() {
   }
 }
 
-export async function indexOrganization(org: OrganizationDocument) {
+export function indexOrganization(org: OrganizationDocument) {
   return typesenseClient
     .collections(ORGANIZATIONS_COLLECTION_NAME)
     .documents()
     .upsert(org);
 }
 
-export async function indexOrganizations(orgs: OrganizationDocument[]) {
+export function indexOrganizations(orgs: OrganizationDocument[]) {
   return typesenseClient
     .collections(ORGANIZATIONS_COLLECTION_NAME)
     .documents()
     .import(orgs, { action: "upsert" });
 }
 
-export async function deleteOrganizationFromIndex(id: string) {
+export function deleteOrganizationFromIndex(id: string) {
   return typesenseClient
     .collections(ORGANIZATIONS_COLLECTION_NAME)
     .documents(id)

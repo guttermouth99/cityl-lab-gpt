@@ -65,7 +65,7 @@ export const processFeedBatch = task({
           title: feedJob.title,
           description: feedJob.description,
           externalId: feedJob.externalId,
-          source: source as any,
+          source: source as JobSource,
           sourceFeed: source,
         });
 

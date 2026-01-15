@@ -13,8 +13,99 @@ interface UserWithAlerts {
   alerts: Array<{
     id: string;
     name: string;
-    filters: Record<string, any>;
+    filters: Record<string, unknown>;
   }>;
+}
+
+interface JobToSend {
+  id: string;
+  title: string;
+  slug: string;
+  organizationName: string;
+  location?: string;
+  jobType?: string;
+}
+
+async function collectJobsForAlert(
+  userId: string,
+  alert: UserWithAlerts["alerts"][number]
+): Promise<JobToSend[]> {
+  const matchingJobs = await getActiveJobs({
+    ...alert.filters,
+    limit: 10,
+  });
+
+  const jobs: JobToSend[] = [];
+  for (const job of matchingJobs) {
+    const alreadySent = await hasJobBeenSentToUser(userId, job.id);
+    if (!alreadySent) {
+      jobs.push({
+        id: job.id,
+        title: job.title,
+        slug: job.slug,
+        organizationName: job.organization?.name || "Unknown",
+        location: job.locations?.[0]?.city,
+        jobType: job.jobType || undefined,
+      });
+    }
+  }
+  return jobs;
+}
+
+async function collectJobsForUser(user: UserWithAlerts): Promise<JobToSend[]> {
+  const allJobs: JobToSend[] = [];
+  for (const alert of user.alerts) {
+    const jobs = await collectJobsForAlert(user.userId, alert);
+    allJobs.push(...jobs);
+  }
+  return allJobs;
+}
+
+async function sendEmail(
+  user: UserWithAlerts,
+  jobs: JobToSend[],
+  type: "daily" | "weekly"
+): Promise<void> {
+  if (type === "daily") {
+    const alertName =
+      user.alerts.length === 1
+        ? (user.alerts[0]?.name ?? "Your Alerts")
+        : "Your Alerts";
+    await sendJobAlertEmail(user.email, {
+      userName: user.name,
+      alertName,
+      jobs: jobs.slice(0, 10),
+    });
+  } else {
+    await sendWeeklyDigestEmail(user.email, {
+      userName: user.name,
+      totalNewJobs: jobs.length,
+      topJobs: jobs.slice(0, 5),
+      topCategories: [],
+    });
+  }
+}
+
+async function markJobsAsSent(
+  userId: string,
+  jobs: JobToSend[]
+): Promise<void> {
+  for (const job of jobs) {
+    await markJobAsSent(userId, job.id);
+  }
+}
+
+async function processUser(
+  user: UserWithAlerts,
+  type: "daily" | "weekly"
+): Promise<"sent" | "skipped"> {
+  const jobsToSend = await collectJobsForUser(user);
+  if (jobsToSend.length === 0) {
+    return "skipped";
+  }
+  await sendEmail(user, jobsToSend, type);
+  await markJobsAsSent(user.userId, jobsToSend);
+  return "sent";
 }
 
 export const sendBatchTask = task({
@@ -38,68 +129,12 @@ export const sendBatchTask = task({
 
     for (const user of users) {
       try {
-        // Collect jobs for all user alerts
-        const jobsToSend: Array<{
-          id: string;
-          title: string;
-          slug: string;
-          organizationName: string;
-          location?: string;
-          jobType?: string;
-        }> = [];
-
-        for (const alert of user.alerts) {
-          // Get matching jobs based on alert filters
-          const matchingJobs = await getActiveJobs({
-            ...alert.filters,
-            limit: 10,
-          });
-
-          for (const job of matchingJobs) {
-            // Check if job was already sent to this user
-            const alreadySent = await hasJobBeenSentToUser(user.userId, job.id);
-            if (alreadySent) continue;
-
-            jobsToSend.push({
-              id: job.id,
-              title: job.title,
-              slug: job.slug,
-              organizationName: job.organization?.name || "Unknown",
-              location: job.locations?.[0]?.city,
-              jobType: job.jobType || undefined,
-            });
-          }
-        }
-
-        // Skip if no new jobs
-        if (jobsToSend.length === 0) {
-          skipped++;
-          continue;
-        }
-
-        // Send email
-        if (type === "daily") {
-          await sendJobAlertEmail(user.email, {
-            userName: user.name,
-            alertName:
-              user.alerts.length === 1 ? user.alerts[0]!.name : "Your Alerts",
-            jobs: jobsToSend.slice(0, 10), // Limit to 10 jobs
-          });
+        const result = await processUser(user, type);
+        if (result === "sent") {
+          sent++;
         } else {
-          await sendWeeklyDigestEmail(user.email, {
-            userName: user.name,
-            totalNewJobs: jobsToSend.length,
-            topJobs: jobsToSend.slice(0, 5),
-            topCategories: [], // TODO: Calculate top categories
-          });
+          skipped++;
         }
-
-        // Mark jobs as sent
-        for (const job of jobsToSend) {
-          await markJobAsSent(user.userId, job.id);
-        }
-
-        sent++;
       } catch (error) {
         console.error(`Error sending to ${user.email}:`, error);
         errors++;

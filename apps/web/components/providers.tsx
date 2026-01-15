@@ -1,10 +1,10 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import * as React from "react";
+import { type ReactNode, Suspense } from "react";
 import { TRPCReactProvider } from "@/lib/trpc/client";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
     <NextThemesProvider
       attribute="class"
@@ -13,9 +13,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableColorScheme
       enableSystem
     >
-      <React.Suspense>
+      <Suspense>
         <TRPCReactProvider>{children}</TRPCReactProvider>
-      </React.Suspense>
+      </Suspense>
     </NextThemesProvider>
   );
 }

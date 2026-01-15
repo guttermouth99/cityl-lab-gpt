@@ -7,13 +7,19 @@ export const AnimatedGradient = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let width = canvas.width;
+    let height = canvas.height;
 
     const colors = [
       { r: 255, g: 107, b: 107 }, // Solar Orange
@@ -41,11 +47,12 @@ export const AnimatedGradient = () => {
       }
 
       // Create a moving gradient background
-      const gradient = ctx.createLinearGradient(0, 0, width, height);
       const c1 = colors[Math.floor(time % colors.length)];
       const c2 = colors[Math.floor((time + 1) % colors.length)];
 
-      if (!(c1 && c2)) return;
+      if (!(c1 && c2)) {
+        return;
+      }
 
       // Interpolate colors (simplified)
       const r = Math.round(c1.r + (c2.r - c1.r) * (time % 1));

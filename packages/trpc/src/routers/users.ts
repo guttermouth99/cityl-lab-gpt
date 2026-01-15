@@ -1,11 +1,19 @@
-import * as userQueries from "@baito/db/queries";
+import {
+  createAlert,
+  deleteAlert,
+  getUserAlerts,
+  getUserById,
+  updateAlert,
+  updateUserAlertFrequency,
+  updateUserRole,
+} from "@baito/db/queries";
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const usersRouter = createTRPCRouter({
   // User endpoints
-  me: protectedProcedure.query(async ({ ctx }) => {
-    return userQueries.getUserById(ctx.session.user.id);
+  me: protectedProcedure.query(({ ctx }) => {
+    return getUserById(ctx.session.user.id);
   }),
 
   updateAlertFrequency: protectedProcedure
@@ -14,16 +22,13 @@ export const usersRouter = createTRPCRouter({
         frequency: z.enum(["daily", "weekly", "instant", "none"]),
       })
     )
-    .mutation(async ({ ctx, input }) => {
-      return userQueries.updateUserAlertFrequency(
-        ctx.session.user.id,
-        input.frequency
-      );
+    .mutation(({ ctx, input }) => {
+      return updateUserAlertFrequency(ctx.session.user.id, input.frequency);
     }),
 
   // Alert management
-  alerts: protectedProcedure.query(async ({ ctx }) => {
-    return userQueries.getUserAlerts(ctx.session.user.id);
+  alerts: protectedProcedure.query(({ ctx }) => {
+    return getUserAlerts(ctx.session.user.id);
   }),
 
   createAlert: protectedProcedure
@@ -42,8 +47,8 @@ export const usersRouter = createTRPCRouter({
           .optional(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
-      return userQueries.createAlert({
+    .mutation(({ ctx, input }) => {
+      return createAlert({
         userId: ctx.session.user.id,
         name: input.name,
         filters: input.filters,
@@ -55,18 +60,18 @@ export const usersRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string().optional(),
-        filters: z.record(z.any()).optional(),
+        filters: z.record(z.unknown()).optional(),
         isActive: z.boolean().optional(),
       })
     )
-    .mutation(async ({ input }) => {
-      return userQueries.updateAlert(input.id, input);
+    .mutation(({ input }) => {
+      return updateAlert(input.id, input);
     }),
 
   deleteAlert: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      return userQueries.deleteAlert(input.id);
+    .mutation(({ input }) => {
+      return deleteAlert(input.id);
     }),
 
   // Admin endpoints
@@ -77,7 +82,7 @@ export const usersRouter = createTRPCRouter({
         role: z.enum(["user", "customer", "admin"]),
       })
     )
-    .mutation(async ({ input }) => {
-      return userQueries.updateUserRole(input.userId, input.role);
+    .mutation(({ input }) => {
+      return updateUserRole(input.userId, input.role);
     }),
 });

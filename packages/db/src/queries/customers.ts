@@ -10,7 +10,7 @@ export interface CreateCustomerInput {
   billingEmail?: string | null;
 }
 
-export async function getCustomerById(id: string) {
+export function getCustomerById(id: string) {
   return db.query.customers.findFirst({
     where: eq(customers.id, id),
     with: {
@@ -20,7 +20,7 @@ export async function getCustomerById(id: string) {
   });
 }
 
-export async function getCustomerByUserId(userId: string) {
+export function getCustomerByUserId(userId: string) {
   return db.query.customers.findFirst({
     where: eq(customers.userId, userId),
     with: {
@@ -29,7 +29,7 @@ export async function getCustomerByUserId(userId: string) {
   });
 }
 
-export async function getCustomerByOrganizationId(organizationId: string) {
+export function getCustomerByOrganizationId(organizationId: string) {
   return db.query.customers.findFirst({
     where: eq(customers.organizationId, organizationId),
     with: {
@@ -93,7 +93,9 @@ export async function incrementJobsUsed(id: string) {
     where: eq(customers.id, id),
   });
 
-  if (!customer) return null;
+  if (!customer) {
+    return null;
+  }
 
   const [updated] = await db
     .update(customers)
@@ -112,7 +114,9 @@ export async function decrementJobsUsed(id: string) {
     where: eq(customers.id, id),
   });
 
-  if (!customer || customer.jobsUsed <= 0) return null;
+  if (!customer || customer.jobsUsed <= 0) {
+    return null;
+  }
 
   const [updated] = await db
     .update(customers)
@@ -131,8 +135,12 @@ export async function canCustomerPostJob(id: string): Promise<boolean> {
     where: eq(customers.id, id),
   });
 
-  if (!customer) return false;
-  if (customer.status !== "active") return false;
+  if (!customer) {
+    return false;
+  }
+  if (customer.status !== "active") {
+    return false;
+  }
 
   return customer.jobsUsed < customer.jobsLimit;
 }
@@ -153,7 +161,7 @@ export async function setStripeCustomerId(
   return updated;
 }
 
-export async function getActiveCustomers() {
+export function getActiveCustomers() {
   return db.query.customers.findMany({
     where: eq(customers.status, "active"),
     orderBy: [desc(customers.createdAt)],

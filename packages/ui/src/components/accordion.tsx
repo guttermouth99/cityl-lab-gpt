@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@baito/ui/lib/utils";
+// biome-ignore lint/performance/noNamespaceImport: Radix UI components use namespace pattern
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
 import type * as React from "react";

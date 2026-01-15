@@ -1,6 +1,26 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
+function getPlanStyle(i: number): string {
+  if (i % 3 === 0) {
+    return "bg-purple-100 text-purple-800";
+  }
+  if (i % 2 === 0) {
+    return "bg-blue-100 text-blue-800";
+  }
+  return "bg-gray-100 text-gray-800";
+}
+
+function getPlanName(i: number): string {
+  if (i % 3 === 0) {
+    return "Enterprise";
+  }
+  if (i % 2 === 0) {
+    return "Professional";
+  }
+  return "Starter";
+}
+
 export const metadata: Metadata = {
   title: "Manage Customers",
   description: "Admin customer management",
@@ -74,19 +94,9 @@ export default async function AdminCustomersPage({
                 <td className="px-6 py-4 text-gray-600">Organization {i}</td>
                 <td className="px-6 py-4">
                   <span
-                    className={`rounded-full px-2 py-1 text-xs ${
-                      i % 3 === 0
-                        ? "bg-purple-100 text-purple-800"
-                        : i % 2 === 0
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
-                    }`}
+                    className={`rounded-full px-2 py-1 text-xs ${getPlanStyle(i)}`}
                   >
-                    {i % 3 === 0
-                      ? "Enterprise"
-                      : i % 2 === 0
-                        ? "Professional"
-                        : "Starter"}
+                    {getPlanName(i)}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -98,7 +108,10 @@ export default async function AdminCustomersPage({
                   {i * 2} / {i * 5}
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button className="text-green-600 text-sm hover:text-green-700">
+                  <button
+                    className="text-green-600 text-sm hover:text-green-700"
+                    type="button"
+                  >
                     View
                   </button>
                 </td>

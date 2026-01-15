@@ -4,19 +4,19 @@ import { db } from "../client";
 import { alerts, sentJobs } from "../schema/alerts";
 import { users } from "../schema/users";
 
-export async function getUserById(id: string) {
+export function getUserById(id: string) {
   return db.query.users.findFirst({
     where: eq(users.id, id),
   });
 }
 
-export async function getUserByEmail(email: string) {
+export function getUserByEmail(email: string) {
   return db.query.users.findFirst({
     where: eq(users.email, email.toLowerCase()),
   });
 }
 
-export async function getUserWithAlerts(userId: string) {
+export function getUserWithAlerts(userId: string) {
   return db.query.users.findFirst({
     where: eq(users.id, userId),
     with: {
@@ -58,7 +58,7 @@ export async function updateUserRole(
 }
 
 // Alert queries
-export async function getUserAlerts(userId: string) {
+export function getUserAlerts(userId: string) {
   return db.query.alerts.findMany({
     where: eq(alerts.userId, userId),
     orderBy: [desc(alerts.createdAt)],
@@ -68,7 +68,7 @@ export async function getUserAlerts(userId: string) {
 export async function createAlert(input: {
   userId: string;
   name: string;
-  filters?: Record<string, any>;
+  filters?: AlertFilters;
 }) {
   const id = crypto.randomUUID();
 
@@ -87,7 +87,7 @@ export async function createAlert(input: {
 
 export async function updateAlert(
   id: string,
-  input: { name?: string; filters?: Record<string, any>; isActive?: boolean }
+  input: { name?: string; filters?: AlertFilters; isActive?: boolean }
 ) {
   const [updated] = await db
     .update(alerts)
@@ -130,13 +130,13 @@ export async function hasJobBeenSentToUser(userId: string, jobId: string) {
 }
 
 // Get users who need alerts
-export async function getUsersForDailyAlerts() {
+export function getUsersForDailyAlerts() {
   return db.query.users.findMany({
     where: eq(users.alertFrequency, "daily"),
   });
 }
 
-export async function getUsersForWeeklyAlerts() {
+export function getUsersForWeeklyAlerts() {
   return db.query.users.findMany({
     where: eq(users.alertFrequency, "weekly"),
   });

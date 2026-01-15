@@ -52,12 +52,14 @@ export const CodeBlock = ({
         <button
           className="absolute top-2 right-2 rounded-md bg-white/10 p-2 text-neutral-400 opacity-0 transition-opacity hover:bg-white/20 hover:text-white group-hover:opacity-100"
           onClick={copyToClipboard}
+          type="button"
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}
         </button>
 
         <div
           className="overflow-x-auto p-4 font-mono text-sm"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML from shiki syntax highlighter is safe
           dangerouslySetInnerHTML={{
             __html: html || `<pre><code>${code}</code></pre>`,
           }}

@@ -1,3 +1,6 @@
+// Top-level regex patterns for performance
+const WWW_PREFIX_REGEX = /^www\./;
+
 /**
  * Normalize a string for comparison and storage.
  */
@@ -19,7 +22,7 @@ export function normalizeUrl(url: string): string {
   try {
     const parsed = new URL(url);
     // Remove www. prefix for consistency
-    parsed.hostname = parsed.hostname.replace(/^www\./, "");
+    parsed.hostname = parsed.hostname.replace(WWW_PREFIX_REGEX, "");
     // Remove trailing slash
     let normalized = parsed.toString();
     if (normalized.endsWith("/")) {
@@ -38,7 +41,7 @@ export function normalizeUrl(url: string): string {
 export function extractDomain(url: string): string | null {
   try {
     const parsed = new URL(url);
-    return parsed.hostname.replace(/^www\./, "");
+    return parsed.hostname.replace(WWW_PREFIX_REGEX, "");
   } catch {
     return null;
   }

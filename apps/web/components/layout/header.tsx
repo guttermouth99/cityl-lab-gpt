@@ -42,7 +42,10 @@ export function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-4 md:flex">
-          <button className="rounded-lg p-2 text-gray-600 hover:bg-gray-100">
+          <button
+            className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"
+            type="button"
+          >
             <Search className="h-5 w-5" />
           </button>
           <Link
@@ -62,12 +65,14 @@ export function Header() {
             <button
               className="rounded px-2 py-1 text-sm hover:bg-gray-100"
               onClick={() => handleLanguageSwitch("de")}
+              type="button"
             >
               DE
             </button>
             <button
               className="rounded px-2 py-1 text-sm hover:bg-gray-100"
               onClick={() => handleLanguageSwitch("en")}
+              type="button"
             >
               EN
             </button>
@@ -78,6 +83,7 @@ export function Header() {
         <button
           className="rounded-lg p-2 md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          type="button"
         >
           {mobileMenuOpen ? (
             <X className="h-6 w-6" />
@@ -127,6 +133,7 @@ export function Header() {
                   handleLanguageSwitch("de");
                   setMobileMenuOpen(false);
                 }}
+                type="button"
               >
                 Deutsch
               </button>
@@ -136,6 +143,7 @@ export function Header() {
                   handleLanguageSwitch("en");
                   setMobileMenuOpen(false);
                 }}
+                type="button"
               >
                 English
               </button>

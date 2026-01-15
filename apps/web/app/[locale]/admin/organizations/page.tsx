@@ -78,7 +78,10 @@ export default async function AdminOrganizationsPage({
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button className="text-green-600 text-sm hover:text-green-700">
+                  <button
+                    className="text-green-600 text-sm hover:text-green-700"
+                    type="button"
+                  >
                     Edit
                   </button>
                 </td>

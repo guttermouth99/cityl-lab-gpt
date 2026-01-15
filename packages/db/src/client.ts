@@ -1,8 +1,53 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+import {
+  accounts,
+  accountsRelations,
+  alerts,
+  alertsRelations,
+  customers,
+  customersRelations,
+  jobLocations,
+  jobLocationsRelations,
+  jobs,
+  jobsRelations,
+  organizations,
+  organizationsRelations,
+  sentJobs,
+  sentJobsRelations,
+  sessions,
+  sessionsRelations,
+  users,
+  usersRelations,
+  verifications,
+} from "./schema";
 
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = process.env.DATABASE_URL ?? "";
+if (!connectionString) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
+
+const schema = {
+  accounts,
+  accountsRelations,
+  alerts,
+  alertsRelations,
+  customers,
+  customersRelations,
+  jobLocations,
+  jobLocationsRelations,
+  jobs,
+  jobsRelations,
+  organizations,
+  organizationsRelations,
+  sentJobs,
+  sentJobsRelations,
+  sessions,
+  sessionsRelations,
+  users,
+  usersRelations,
+  verifications,
+};
 
 // Connection for queries
 const queryClient = postgres(connectionString);
