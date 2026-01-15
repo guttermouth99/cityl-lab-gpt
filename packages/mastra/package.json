@@ -21,6 +21,7 @@
   "dependencies": {
     "@mastra/core": "beta",
     "@mastra/libsql": "beta",
+    "@mastra/observability": "beta",
     "zod": "^4.0.0"
   },
   "devDependencies": {

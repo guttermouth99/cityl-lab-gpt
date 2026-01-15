@@ -167,6 +167,7 @@
       "dependencies": {
         "@mastra/core": "beta",
         "@mastra/libsql": "beta",
+        "@mastra/observability": "beta",
         "zod": "^4.0.0",
       },
       "devDependencies": {
@@ -613,6 +614,8 @@
     "@mastra/libsql": ["@mastra/libsql@1.0.0-beta.11", "", { "dependencies": { "@libsql/client": "^0.15.15" }, "peerDependencies": { "@mastra/core": ">=1.0.0-0 <2.0.0-0" } }, "sha512-GLwS57q7lnbjpes3WzWwD/TTpOMRUi9MDkdPYQ1BAAEa7j39RGxS06TXPamy7T/7xN6zqliZbAkRs1TKQCNHiQ=="],
 
     "@mastra/loggers": ["@mastra/loggers@1.0.0-beta.4", "", { "dependencies": { "pino": "^10.1.0", "pino-pretty": "^13.0.0" }, "peerDependencies": { "@mastra/core": ">=1.0.0-0 <2.0.0-0" } }, "sha512-sioCtUFZ83EoXOCg5k7eA8rq1Y+cH4SFVMG98xjNapB0Wpzr8ODSVElAg0e/u+jIVAqBVSUi0I/i0BNL5irHoQ=="],
+
+    "@mastra/observability": ["@mastra/observability@1.0.0-beta.10", "", { "peerDependencies": { "@mastra/core": ">=1.0.0-0 <2.0.0-0" } }, "sha512-uaVEupKgLYiiOtx5xASl4zPqEaqqkbI6dzwMUP05RaaMXTHqvD3X5+uVyrtL04PgXjVv1GNxPw9UxMYFUDGutg=="],
 
     "@mastra/schema-compat": ["@mastra/schema-compat@1.0.0-beta.6", "", { "dependencies": { "json-schema-to-zod": "^2.7.0", "zod-from-json-schema": "^0.5.0", "zod-from-json-schema-v3": "npm:zod-from-json-schema@^0.0.5", "zod-to-json-schema": "^3.24.6" }, "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" } }, "sha512-9PfpTMpxHnqhqfNTaEFM7MZwxtahVg8NAhkP4sbMQCHcc6fjnJawg4E7kv6cIz3XZTtXsUO7bA8twQrDgoD2Uw=="],
 

@@ -1,5 +1,6 @@
 import { Mastra } from "@mastra/core/mastra";
 import { LibSQLStore } from "@mastra/libsql";
+import { Observability } from "@mastra/observability";
 
 import { exampleAgent } from "./agents/example-agent";
 import { impactAssessmentAgent } from "./agents/impact-assessment-agent";
@@ -11,5 +12,8 @@ export const mastra = new Mastra({
   storage: new LibSQLStore({
     id: "mastra",
     url: "file:./mastra.db",
+  }),
+  observability: new Observability({
+    default: { enabled: true },
   }),
 });
