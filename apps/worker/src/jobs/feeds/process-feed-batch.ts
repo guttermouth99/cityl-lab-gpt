@@ -4,7 +4,7 @@ import {
   findDuplicateJob,
   findOrMatchOrganization,
 } from "@baito/db/queries";
-import { computeContentHashSync } from "@baito/shared";
+import { computeContentHashSync, type JobSource } from "@baito/shared";
 import { task } from "@trigger.dev/sdk";
 
 interface FeedJob {
@@ -46,6 +46,14 @@ export const processFeedBatch = task({
             name: feedJob.organizationName,
             url: feedJob.url,
           });
+        }
+
+        if (!org) {
+          console.error(
+            `Failed to create organization for job ${feedJob.externalId}`
+          );
+          errors++;
+          continue;
         }
 
         // Check for duplicates

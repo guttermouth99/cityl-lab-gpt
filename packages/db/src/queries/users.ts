@@ -1,7 +1,7 @@
 import type { AlertFrequency } from "@baito/shared";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "../client";
-import { alerts, sentJobs } from "../schema/alerts";
+import { type AlertFilters, alerts, sentJobs } from "../schema/alerts";
 import { users } from "../schema/users";
 
 export function getUserById(id: string) {

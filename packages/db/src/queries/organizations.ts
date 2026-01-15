@@ -88,7 +88,9 @@ export async function findOrMatchOrganization(input: {
   return null;
 }
 
-export async function createOrganization(input: CreateOrganizationInput) {
+export async function createOrganization(
+  input: CreateOrganizationInput
+): Promise<typeof organizations.$inferSelect | null> {
   const id = crypto.randomUUID();
   const slug = generateOrgSlug(input.name);
   const domain = input.domain ?? (input.url ? extractDomain(input.url) : null);
@@ -106,7 +108,7 @@ export async function createOrganization(input: CreateOrganizationInput) {
     })
     .returning();
 
-  return org;
+  return org ?? null;
 }
 
 export async function updateOrganization(

@@ -36,7 +36,7 @@ export function WeeklyDigestEmail({
   return (
     <Html>
       <Head />
-      <Preview>Your weekly impact job digest - {totalNewJobs} new jobs</Preview>
+      <Preview>{`Your weekly impact job digest - ${totalNewJobs} new jobs`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={heading}>🌱 Weekly Job Digest</Heading>

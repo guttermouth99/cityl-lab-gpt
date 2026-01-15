@@ -5,10 +5,7 @@ import type { AppRouter } from "@baito/trpc";
 import { appRouter, createCallerFactory, createTRPCContext } from "@baito/trpc";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createTRPCClient, httpLink } from "@trpc/client";
-import {
-  createTRPCOptionsProxy,
-  type TRPCQueryOptions,
-} from "@trpc/tanstack-react-query";
+import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { cache } from "react";
 import superjson from "superjson";
 import { makeQueryClient } from "./query-client";
@@ -64,11 +61,11 @@ export function HydrateClient({ children }: { children: React.ReactNode }) {
 /**
  * Prefetch a tRPC query on the server for hydration
  */
-export function prefetch<T>(queryOptions: ReturnType<TRPCQueryOptions<T>>) {
+// biome-ignore lint/suspicious/noExplicitAny: tRPC prefetch utility accepts any query options
+export function prefetch(queryOptions: any) {
   const queryClient = getQueryClient();
   if (queryOptions.queryKey[1]?.type === "infinite") {
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC infinite query typing limitation
-    queryClient.prefetchInfiniteQuery(queryOptions as any);
+    queryClient.prefetchInfiniteQuery(queryOptions);
   } else {
     queryClient.prefetchQuery(queryOptions);
   }

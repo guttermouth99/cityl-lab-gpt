@@ -3,6 +3,7 @@ import {
   hasJobBeenSentToUser,
   markJobAsSent,
 } from "@baito/db/queries";
+import type { AlertFilters } from "@baito/db/schema";
 import { sendJobAlertEmail, sendWeeklyDigestEmail } from "@baito/email";
 import { task } from "@trigger.dev/sdk";
 
@@ -13,7 +14,7 @@ interface UserWithAlerts {
   alerts: Array<{
     id: string;
     name: string;
-    filters: Record<string, unknown>;
+    filters: AlertFilters;
   }>;
 }
 
@@ -44,8 +45,8 @@ async function collectJobsForAlert(
         title: job.title,
         slug: job.slug,
         organizationName: job.organization?.name || "Unknown",
-        location: job.locations?.[0]?.city,
-        jobType: job.jobType || undefined,
+        location: job.locations?.[0]?.city ?? undefined,
+        jobType: job.jobType ?? undefined,
       });
     }
   }

@@ -70,12 +70,13 @@ export function CareerPageScraper() {
   const trpcClient = useTRPCClient();
 
   // Subscribe to realtime updates when we have a runId and token
-  const { run, error: realtimeError } = useRealtimeRun<{
-    output: TaskOutput;
-  }>(triggerResult?.runId ?? "", {
-    accessToken: triggerResult?.publicAccessToken,
-    enabled: !!triggerResult?.runId && !!triggerResult?.publicAccessToken,
-  });
+  const { run, error: realtimeError } = useRealtimeRun(
+    triggerResult?.runId ?? "",
+    {
+      accessToken: triggerResult?.publicAccessToken,
+      enabled: !!triggerResult?.runId && !!triggerResult?.publicAccessToken,
+    }
+  );
 
   const scrapeMutation = useMutation({
     mutationFn: async (input: { careerPageUrl: string }) => {
@@ -105,14 +106,18 @@ export function CareerPageScraper() {
   };
 
   const isRunning =
-    run?.status === "EXECUTING" ||
-    run?.status === "QUEUED" ||
-    run?.status === "PENDING";
+    run?.status === "WAITING" ||
+    run?.status === "DEQUEUED" ||
+    run?.status === "DELAYED" ||
+    run?.status === "PENDING_VERSION";
   const isCompleted = run?.status === "COMPLETED";
   const isFailed =
     run?.status === "FAILED" ||
     run?.status === "CRASHED" ||
-    run?.status === "SYSTEM_FAILURE";
+    run?.status === "SYSTEM_FAILURE" ||
+    run?.status === "CANCELED" ||
+    run?.status === "EXPIRED" ||
+    run?.status === "TIMED_OUT";
 
   const output = run?.output as TaskOutput | undefined;
 
