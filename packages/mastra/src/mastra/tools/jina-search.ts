@@ -17,7 +17,7 @@ export const jinaSearchTool = createTool({
   execute: async (inputData) => {
     const MAX_RESULTS = 5;
     const MAX_SNIPPET_CHARS = 400;
-
+    console.log(inputData, "inputData in jina-search tool");
     const jinaApiKey = process.env.JINA_API_KEY;
     if (!jinaApiKey) {
       throw new Error("JINA_API_KEY environment variable is not configured");

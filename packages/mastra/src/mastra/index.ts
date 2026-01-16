@@ -2,7 +2,6 @@ import { Mastra } from "@mastra/core/mastra";
 import { LibSQLStore } from "@mastra/libsql";
 import { Observability } from "@mastra/observability";
 
-import { exampleAgent } from "./agents/example-agent";
 import { impactAssessmentAgent } from "./agents/impact-assessment-agent";
 import { impactAssessmentWorkflow } from "./workflows/impact-assessment-workflow";
 
@@ -12,7 +11,7 @@ const dbUrl =
   "file:/Users/lukas/Projects/baito3000/baito-turbo/packages/mastra/mastra.db";
 console.log(dbUrl, "dbUrl");
 export const mastra = new Mastra({
-  agents: { exampleAgent, impactAssessmentAgent },
+  agents: { impactAssessmentAgent },
   workflows: { impactAssessmentWorkflow },
   storage: new LibSQLStore({
     id: "mastra",

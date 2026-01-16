@@ -49,6 +49,16 @@ export const assessImpactTask = task({
       },
     });
 
+    // Store the trace ID for observability correlation
+    if (result.traceId) {
+      metadata.set("mastraTraceId", result.traceId);
+      // If using Mastra's observability UI, you can link directly to the trace
+      metadata.set(
+        "mastraTraceUrl",
+        `http://localhost:4111/traces/${result.traceId}`
+      );
+    }
+
     if (result.status !== "success") {
       const errorMessage =
         result.status === "failed" && "error" in result
