@@ -1,5 +1,19 @@
 import { createTool } from "@mastra/core/tools";
+import { ofetch } from "ofetch";
 import { z } from "zod";
+
+interface JinaReaderResponse {
+  code: number;
+  status: number;
+  data: {
+    title: string;
+    url: string;
+    content: string;
+    usage: {
+      tokens: number;
+    };
+  };
+}
 
 /**
  * Jina Reader tool for extracting content from URLs using r.jina.ai API
@@ -17,6 +31,7 @@ export const jinaReaderTool = createTool({
   }),
   outputSchema: z.object({
     content: z.string().describe("The extracted page content as markdown"),
+    tokensUsed: z.number().describe("Number of tokens used by Jina Reader API"),
   }),
   execute: async (inputData) => {
     const MAX_CONTENT_CHARS = 15_000;
@@ -26,29 +41,28 @@ export const jinaReaderTool = createTool({
       throw new Error("JINA_API_KEY environment variable is not configured");
     }
 
-    const response = await fetch(`https://r.jina.ai/${inputData.url}`, {
-      headers: {
-        Authorization: `Bearer ${jinaApiKey}`,
-        "X-Engine": "browser",
-        "X-Return-Format": "markdown",
-        "X-Timeout": "20",
-        "X-With-Iframe": "true",
-        "X-With-Shadow-Dom": "true",
-      },
-    });
+    const response = await ofetch<JinaReaderResponse>(
+      `https://r.jina.ai/${inputData.url}`,
+      {
+        headers: {
+          Authorization: `Bearer ${jinaApiKey}`,
+          Accept: "application/json",
+          "X-Engine": "browser",
+          "X-Timeout": "20",
+          "X-With-Iframe": "true",
+          "X-With-Shadow-Dom": "true",
+        },
+      }
+    );
 
-    if (!response.ok) {
-      throw new Error(
-        `Failed to read content from ${inputData.url}: ${response.status} ${response.statusText}`
-      );
-    }
-
-    const fullContent = await response.text();
+    const fullContent = response.data.content;
     const truncated =
       fullContent.length > MAX_CONTENT_CHARS
         ? `${fullContent.slice(0, MAX_CONTENT_CHARS)}\n\n[content truncated to ${MAX_CONTENT_CHARS} characters]`
         : fullContent;
 
-    return { content: truncated };
+    const tokensUsed = response.data.usage?.tokens ?? 0;
+
+    return { content: truncated, tokensUsed };
   },
 });

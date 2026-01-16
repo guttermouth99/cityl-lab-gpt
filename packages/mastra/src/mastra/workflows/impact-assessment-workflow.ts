@@ -5,6 +5,15 @@ import { deciderAgent } from "../agents/decider-agent";
 import { devilsAdvocateAgent } from "../agents/devils-advocate-agent";
 import { researchAgent } from "../agents/research-agent";
 import { isBotInitialized, notifyHumanReview } from "../telegram";
+import {
+  addLLMUsage,
+  addToolUsage,
+  createEmptyCostBreakdown,
+  formatCost,
+  getCostSummary,
+  mergeCostBreakdowns,
+  workflowCostBreakdownSchema,
+} from "../utils/cost-tracker";
 
 /**
  * Schema for research findings from the Research Agent
@@ -147,6 +156,7 @@ const researchStep = createStep({
     companyName: z.string(),
     companyUrl: z.string().optional(),
     research: researchOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   execute: async ({ inputData }) => {
     const prompt = inputData.companyUrl
@@ -159,14 +169,62 @@ const researchStep = createStep({
       },
     });
 
+    // Initialize cost tracking
+    let costs = createEmptyCostBreakdown("openai/gpt-4o");
+
+    // Track LLM usage
+    if (result.usage) {
+      costs = addLLMUsage(
+        costs,
+        "openai/gpt-4o",
+        {
+          inputTokens: result.usage.inputTokens ?? 0,
+          outputTokens: result.usage.outputTokens ?? 0,
+          cachedInputTokens: result.usage.cachedInputTokens ?? 0,
+          totalTokens: result.usage.totalTokens ?? 0,
+        },
+        "research"
+      );
+    }
+
+    // Track tool usage from tool results
+    // Tool results come as ToolResultChunk with payload containing toolName and result
+    if (result.toolResults && Array.isArray(result.toolResults)) {
+      for (const toolResultChunk of result.toolResults) {
+        // Access toolName and result from payload (ToolResultChunk structure)
+        const payload = (
+          toolResultChunk as {
+            payload?: { toolName?: string; result?: unknown };
+          }
+        ).payload;
+        if (!payload) continue;
+
+        const toolName = payload.toolName;
+        const toolOutput = payload.result;
+
+        if (
+          toolName &&
+          toolOutput &&
+          typeof toolOutput === "object" &&
+          "tokensUsed" in toolOutput
+        ) {
+          const tokens = (toolOutput as { tokensUsed: number }).tokensUsed;
+          if (tokens > 0) {
+            costs = addToolUsage(costs, toolName, tokens);
+          }
+        }
+      }
+    }
+
     console.log(
-      `[Research Agent] Completed research on "${inputData.companyName}"`
+      `[Research Agent] Completed research on "${inputData.companyName}" - Cost: ${formatCost(costs.totalCost)}`
     );
 
     return {
       companyName: inputData.companyName,
       companyUrl: inputData.companyUrl,
       research: result.object,
+      costs,
     };
   },
 });
@@ -181,12 +239,14 @@ const devilsAdvocateStep = createStep({
     companyName: z.string(),
     companyUrl: z.string().optional(),
     research: researchOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   outputSchema: z.object({
     companyName: z.string(),
     companyUrl: z.string().optional(),
     research: researchOutputSchema,
     critique: critiqueOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   execute: async ({ inputData }) => {
     const prompt = `
@@ -208,8 +268,26 @@ Be specific about what concerns you and why. Acknowledge strong evidence where i
       },
     });
 
+    // Track LLM usage and merge with previous costs
+    let stepCosts = createEmptyCostBreakdown("openai/gpt-4o");
+    if (result.usage) {
+      stepCosts = addLLMUsage(
+        stepCosts,
+        "openai/gpt-4o",
+        {
+          inputTokens: result.usage.inputTokens ?? 0,
+          outputTokens: result.usage.outputTokens ?? 0,
+          cachedInputTokens: result.usage.cachedInputTokens ?? 0,
+          totalTokens: result.usage.totalTokens ?? 0,
+        },
+        "devils-advocate"
+      );
+    }
+
+    const costs = mergeCostBreakdowns(inputData.costs, stepCosts);
+
     console.log(
-      `[Devil's Advocate] Completed critique for "${inputData.companyName}"`
+      `[Devil's Advocate] Completed critique for "${inputData.companyName}" - Step cost: ${formatCost(stepCosts.totalCost)}, Total: ${formatCost(costs.totalCost)}`
     );
 
     return {
@@ -217,6 +295,7 @@ Be specific about what concerns you and why. Acknowledge strong evidence where i
       companyUrl: inputData.companyUrl,
       research: inputData.research,
       critique: result.object,
+      costs,
     };
   },
 });
@@ -232,6 +311,7 @@ const deciderStep = createStep({
     companyUrl: z.string().optional(),
     research: researchOutputSchema,
     critique: critiqueOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   outputSchema: z.object({
     companyName: z.string(),
@@ -239,6 +319,7 @@ const deciderStep = createStep({
     research: researchOutputSchema,
     critique: critiqueOutputSchema,
     decision: decisionOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   execute: async ({ inputData }) => {
     const prompt = `
@@ -264,8 +345,26 @@ Remember: if you're not confident, set isUncertain to true so this can be escala
       },
     });
 
+    // Track LLM usage and merge with previous costs
+    let stepCosts = createEmptyCostBreakdown("openai/gpt-4o");
+    if (result.usage) {
+      stepCosts = addLLMUsage(
+        stepCosts,
+        "openai/gpt-4o",
+        {
+          inputTokens: result.usage.inputTokens ?? 0,
+          outputTokens: result.usage.outputTokens ?? 0,
+          cachedInputTokens: result.usage.cachedInputTokens ?? 0,
+          totalTokens: result.usage.totalTokens ?? 0,
+        },
+        "decider"
+      );
+    }
+
+    const costs = mergeCostBreakdowns(inputData.costs, stepCosts);
+
     console.log(
-      `[Decider] Decision for "${inputData.companyName}": ${result.object.verdict} (confidence: ${result.object.confidence}, uncertain: ${result.object.isUncertain})`
+      `[Decider] Decision for "${inputData.companyName}": ${result.object.verdict} (confidence: ${result.object.confidence}, uncertain: ${result.object.isUncertain}) - Step cost: ${formatCost(stepCosts.totalCost)}, Total: ${formatCost(costs.totalCost)}`
     );
 
     return {
@@ -274,6 +373,7 @@ Remember: if you're not confident, set isUncertain to true so this can be escala
       research: inputData.research,
       critique: inputData.critique,
       decision: result.object,
+      costs,
     };
   },
 });
@@ -290,6 +390,7 @@ const humanReviewStep = createStep({
     research: researchOutputSchema,
     critique: critiqueOutputSchema,
     decision: decisionOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   outputSchema: z.object({
     companyName: z.string(),
@@ -305,6 +406,7 @@ const humanReviewStep = createStep({
     research: researchOutputSchema,
     critique: critiqueOutputSchema,
     deciderAnalysis: decisionOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   resumeSchema: z.object({
     humanVerdict: z.enum([
@@ -339,6 +441,7 @@ const humanReviewStep = createStep({
         research: inputData.research,
         critique: inputData.critique,
         deciderAnalysis: inputData.decision,
+        costs: inputData.costs,
       };
     }
 
@@ -401,6 +504,7 @@ const directDecisionStep = createStep({
     research: researchOutputSchema,
     critique: critiqueOutputSchema,
     decision: decisionOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   outputSchema: z.object({
     companyName: z.string(),
@@ -416,6 +520,7 @@ const directDecisionStep = createStep({
     research: researchOutputSchema,
     critique: critiqueOutputSchema,
     deciderAnalysis: decisionOutputSchema,
+    costs: workflowCostBreakdownSchema,
   }),
   execute: async ({ inputData }) => {
     console.log(
@@ -432,6 +537,7 @@ const directDecisionStep = createStep({
       research: inputData.research,
       critique: inputData.critique,
       deciderAnalysis: inputData.decision,
+      costs: inputData.costs,
     };
   },
 });
@@ -468,6 +574,9 @@ export const impactAssessmentWorkflow = createWorkflow({
     action: z.enum(["marked_as_impact", "marked_as_blacklisted"]),
     humanReviewed: z.boolean(),
     summary: z.string(),
+    costs: workflowCostBreakdownSchema.describe(
+      "Cost breakdown for the entire workflow run"
+    ),
   }),
 })
   // Step 1: Research
@@ -503,7 +612,7 @@ export const impactAssessmentWorkflow = createWorkflow({
     const hasImpact = result.finalVerdict === "Has Impact";
     const action = hasImpact ? "marked_as_impact" : "marked_as_blacklisted";
 
-    // Log the final decision
+    // Log the final decision with cost summary
     if (hasImpact) {
       console.log(
         `[Impact Assessment] Marking "${result.companyName}" as IMPACT organization`
@@ -514,6 +623,10 @@ export const impactAssessmentWorkflow = createWorkflow({
       );
     }
 
+    console.log(
+      `[Impact Assessment] Cost Summary:\n${getCostSummary(result.costs)}`
+    );
+
     return {
       companyName: result.companyName,
       verdict: result.finalVerdict,
@@ -521,6 +634,7 @@ export const impactAssessmentWorkflow = createWorkflow({
       action: action as "marked_as_impact" | "marked_as_blacklisted",
       humanReviewed: result.humanReviewed,
       summary: result.deciderAnalysis.reasoning,
+      costs: result.costs,
     };
   })
   .commit();

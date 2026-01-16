@@ -1,5 +1,28 @@
 import { createTool } from "@mastra/core/tools";
+import { ofetch } from "ofetch";
 import { z } from "zod";
+
+interface JinaSearchResult {
+  title: string;
+  url: string;
+  description: string;
+  content: string;
+  date?: string;
+  usage: {
+    tokens: number;
+  };
+}
+
+interface JinaSearchResponse {
+  code: number;
+  status: number;
+  data: JinaSearchResult[];
+  meta: {
+    usage: {
+      tokens: number;
+    };
+  };
+}
 
 /**
  * Jina Search tool for web searches using s.jina.ai API
@@ -13,17 +36,18 @@ export const jinaSearchTool = createTool({
   }),
   outputSchema: z.object({
     results: z.string().describe("JSON string containing search results"),
+    tokensUsed: z.number().describe("Number of tokens used by Jina Search API"),
   }),
   execute: async (inputData) => {
     const MAX_RESULTS = 5;
     const MAX_SNIPPET_CHARS = 400;
-    console.log(inputData, "inputData in jina-search tool");
+
     const jinaApiKey = process.env.JINA_API_KEY;
     if (!jinaApiKey) {
       throw new Error("JINA_API_KEY environment variable is not configured");
     }
 
-    const response = await fetch(
+    const response = await ofetch<JinaSearchResponse>(
       `https://s.jina.ai/${encodeURIComponent(inputData.query)}`,
       {
         headers: {
@@ -33,48 +57,27 @@ export const jinaSearchTool = createTool({
       }
     );
 
-    if (!response.ok) {
-      throw new Error(
-        `Search failed for "${inputData.query}": ${response.status} ${response.statusText}`
-      );
-    }
+    const sanitizedResults = response.data
+      .slice(0, MAX_RESULTS)
+      .map((item) => ({
+        title: item.title,
+        url: item.url,
+        snippet: item.description.slice(0, MAX_SNIPPET_CHARS),
+      }));
 
-    const data = await response.json();
-
-    const rawResults = Array.isArray(data)
-      ? data
-      : Array.isArray(data.results)
-        ? data.results
-        : data.data;
-
-    const sanitizedResults = Array.isArray(rawResults)
-      ? rawResults.slice(0, MAX_RESULTS).map((item) => {
-          const title = item.title ?? item.source?.title ?? "Untitled";
-          const url = item.url ?? item.link ?? item.source?.url ?? "";
-          const snippet = (
-            item.snippet ??
-            item.description ??
-            item.content ??
-            ""
-          )
-            .toString()
-            .slice(0, MAX_SNIPPET_CHARS);
-
-          return { title, url, snippet };
-        })
-      : [];
+    const tokensUsed = response.meta?.usage?.tokens ?? 0;
 
     return {
       results: JSON.stringify(
         {
           query: inputData.query,
           results: sanitizedResults,
-          truncated:
-            Array.isArray(rawResults) && rawResults.length > MAX_RESULTS,
+          truncated: response.data.length > MAX_RESULTS,
         },
         null,
         2
       ),
+      tokensUsed,
     };
   },
 });
