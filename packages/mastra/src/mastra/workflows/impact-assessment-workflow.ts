@@ -163,6 +163,13 @@ const researchStep = createStep({
       ? `Research "${inputData.companyName}" (${inputData.companyUrl}) to gather information about their social or environmental impact. Be thorough and objective.`
       : `Research "${inputData.companyName}" to gather information about their social or environmental impact. Be thorough and objective.`;
 
+    console.log(
+      `[Research Agent] Input prompt (${prompt.length} chars):\n${prompt}`
+    );
+    console.log(
+      `[Research Agent] Starting research for "${inputData.companyName}"...`
+    );
+
     const result = await researchAgent.generate(prompt, {
       structuredOutput: {
         schema: researchOutputSchema,
@@ -171,6 +178,28 @@ const researchStep = createStep({
 
     // Initialize cost tracking
     let costs = createEmptyCostBreakdown("openai/gpt-4o");
+
+    // Log usage details
+    console.log(
+      "[Research Agent] Usage reported:",
+      JSON.stringify(result.usage, null, 2)
+    );
+    console.log(
+      `[Research Agent] Tool results count: ${result.toolResults?.length ?? 0}`
+    );
+    if (result.toolResults && Array.isArray(result.toolResults)) {
+      for (const toolResult of result.toolResults) {
+        const payload = (
+          toolResult as { payload?: { toolName?: string; result?: unknown } }
+        ).payload;
+        if (payload) {
+          console.log(
+            `[Research Agent] Tool "${payload.toolName}" result:`,
+            JSON.stringify(payload.result, null, 2).slice(0, 500) + "..."
+          );
+        }
+      }
+    }
 
     // Track LLM usage
     if (result.usage) {
@@ -258,15 +287,55 @@ ${JSON.stringify(inputData.research, null, 2)}
 
 ## Your Task
 
-Critically examine these findings. Challenge the evidence, identify weaknesses, and consider alternative interpretations.
-Be specific about what concerns you and why. Acknowledge strong evidence where it exists.
+1. **Use your search tools** to verify key claims and find counter-evidence:
+   - Search for "${inputData.companyName} controversy" or "${inputData.companyName} criticism"
+   - Search for "${inputData.companyName} greenwashing" if applicable
+   - Verify any certifications or ratings mentioned are current and legitimate
+   - Look for news or information the research may have missed
+
+2. **Critically examine** the findings. Challenge the evidence, identify weaknesses, and consider alternative interpretations.
+
+3. **Be specific** about what concerns you and why. Acknowledge strong evidence where it exists.
     `.trim();
+
+    console.log(
+      `[Devil's Advocate] Input prompt (${prompt.length} chars):\n${prompt}`
+    );
+    console.log(
+      `[Devil's Advocate] Research data size: ${JSON.stringify(inputData.research).length} chars`
+    );
 
     const result = await devilsAdvocateAgent.generate(prompt, {
       structuredOutput: {
         schema: critiqueOutputSchema,
       },
     });
+
+    // Log usage details
+    console.log(
+      `[Devil's Advocate] Usage reported:`,
+      JSON.stringify(result.usage, null, 2)
+    );
+    console.log(
+      `[Devil's Advocate] Tool results count: ${result.toolResults?.length ?? 0}`
+    );
+    if (result.toolResults && Array.isArray(result.toolResults)) {
+      for (const toolResult of result.toolResults) {
+        const payload = (
+          toolResult as { payload?: { toolName?: string; result?: unknown } }
+        ).payload;
+        if (payload) {
+          console.log(
+            `[Devil's Advocate] Tool "${payload.toolName}" result:`,
+            JSON.stringify(payload.result, null, 2).slice(0, 500) + "..."
+          );
+        }
+      }
+    }
+    console.log(
+      `[Devil's Advocate] Output object:`,
+      JSON.stringify(result.object, null, 2).slice(0, 1000) + "..."
+    );
 
     // Track LLM usage and merge with previous costs
     let stepCosts = createEmptyCostBreakdown("openai/gpt-4o");
@@ -282,6 +351,33 @@ Be specific about what concerns you and why. Acknowledge strong evidence where i
         },
         "devils-advocate"
       );
+    }
+
+    // Track tool usage from tool results
+    if (result.toolResults && Array.isArray(result.toolResults)) {
+      for (const toolResultChunk of result.toolResults) {
+        const payload = (
+          toolResultChunk as {
+            payload?: { toolName?: string; result?: unknown };
+          }
+        ).payload;
+        if (!payload) continue;
+
+        const toolName = payload.toolName;
+        const toolOutput = payload.result;
+
+        if (
+          toolName &&
+          toolOutput &&
+          typeof toolOutput === "object" &&
+          "tokensUsed" in toolOutput
+        ) {
+          const tokens = (toolOutput as { tokensUsed: number }).tokensUsed;
+          if (tokens > 0) {
+            stepCosts = addToolUsage(stepCosts, toolName, tokens);
+          }
+        }
+      }
     }
 
     const costs = mergeCostBreakdowns(inputData.costs, stepCosts);
@@ -339,11 +435,29 @@ Weigh both the research findings and the critique. Make a final determination.
 Remember: if you're not confident, set isUncertain to true so this can be escalated to human review.
     `.trim();
 
+    console.log(`[Decider] Input prompt (${prompt.length} chars):\n${prompt}`);
+    console.log(
+      `[Decider] Research data size: ${JSON.stringify(inputData.research).length} chars`
+    );
+    console.log(
+      `[Decider] Critique data size: ${JSON.stringify(inputData.critique).length} chars`
+    );
+
     const result = await deciderAgent.generate(prompt, {
       structuredOutput: {
         schema: decisionOutputSchema,
       },
     });
+
+    // Log usage details
+    console.log(
+      "[Decider] Usage reported:",
+      JSON.stringify(result.usage, null, 2)
+    );
+    console.log(
+      "[Decider] Output object:",
+      JSON.stringify(result.object, null, 2)
+    );
 
     // Track LLM usage and merge with previous costs
     let stepCosts = createEmptyCostBreakdown("openai/gpt-4o");
