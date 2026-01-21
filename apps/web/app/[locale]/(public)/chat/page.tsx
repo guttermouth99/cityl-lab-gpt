@@ -1,16 +1,10 @@
-import { ChatInterface } from "@/components/chat-interface";
+import { redirect } from "next/navigation";
 
-export default function ChatPage() {
-  return (
-    <div className="container mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-6 text-center">
-        <h1 className="mb-2 font-bold text-3xl">CityLAB Berlin Assistant</h1>
-        <p className="text-muted-foreground">
-          Ask questions about CityLAB Berlin, its projects like BärGPT, Parla,
-          Fairgnügen, and more.
-        </p>
-      </div>
-      <ChatInterface />
-    </div>
-  );
+interface ChatPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function ChatPage({ params }: ChatPageProps) {
+  const { locale } = await params;
+  redirect(`/${locale}`);
 }
