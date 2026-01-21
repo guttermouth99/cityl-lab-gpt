@@ -13,6 +13,13 @@ const nextConfig = {
   ],
   serverExternalPackages: ["@mastra/*"],
   cacheComponents: true,
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "citylab-berlin.de" },
+      { protocol: "https", hostname: "citylab-berlin.org" },
+      { protocol: "http", hostname: "localhost" },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);

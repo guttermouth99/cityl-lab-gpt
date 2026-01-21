@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { MessageContent } from "./message-content";
 
 interface ChatMessagesProps {
   messages: UIMessage[];
@@ -68,9 +69,16 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
                   : "bg-muted"
               )}
             >
-              <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                {getMessageText(message)}
-              </p>
+              {message.role === "assistant" ? (
+                <MessageContent
+                  content={getMessageText(message)}
+                  showLinkPreviews
+                />
+              ) : (
+                <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                  {getMessageText(message)}
+                </p>
+              )}
             </div>
 
             {message.role === "user" && (
