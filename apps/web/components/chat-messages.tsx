@@ -81,7 +81,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
           </motion.div>
         ))}
 
-        {isLoading && (
+        {isLoading && messages.at(-1)?.role !== "assistant" && (
           <motion.div
             animate={{ opacity: 1, y: 0 }}
             className="flex gap-4"
