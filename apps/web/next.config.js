@@ -15,9 +15,8 @@ const nextConfig = {
   cacheComponents: true,
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "citylab-berlin.de" },
-      { protocol: "https", hostname: "citylab-berlin.org" },
-      { protocol: "http", hostname: "localhost" },
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
     ],
   },
 };

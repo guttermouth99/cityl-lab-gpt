@@ -140,6 +140,34 @@ const embedResultSchema = z.object({
 // Helper Functions
 // ============================================================================
 
+/** Total characters to use for metadata extraction */
+const METADATA_SAMPLE_LENGTH = 6000;
+
+/** Content length threshold above which we use smart sampling */
+const LONG_CONTENT_THRESHOLD = 10_000;
+
+/**
+ * Create a representative sample of content for metadata extraction.
+ * For short content, returns the content as-is (up to METADATA_SAMPLE_LENGTH).
+ * For long content (e.g., YouTube transcripts), extracts excerpts from
+ * beginning, middle, and end to capture representative context.
+ */
+function createMetadataSample(content: string): string {
+  if (content.length <= LONG_CONTENT_THRESHOLD) {
+    return content.slice(0, METADATA_SAMPLE_LENGTH);
+  }
+
+  // For long content, take beginning + middle + end excerpts
+  const excerptLength = Math.floor(METADATA_SAMPLE_LENGTH / 3);
+  const middleStart = Math.floor((content.length - excerptLength) / 2);
+
+  const beginning = content.slice(0, excerptLength);
+  const middle = content.slice(middleStart, middleStart + excerptLength);
+  const ending = content.slice(-excerptLength);
+
+  return `[Beginning]\n${beginning}\n\n[Middle]\n${middle}\n\n[End]\n${ending}`;
+}
+
 /**
  * Generate a slug from a title
  */
@@ -229,6 +257,9 @@ const extractMetadataStep = createStep({
   execute: async ({ inputData }) => {
     const { content, title: jinaTitle, url } = inputData;
 
+    const contentSample = createMetadataSample(content);
+    const isLongContent = content.length > LONG_CONTENT_THRESHOLD;
+
     const { object } = await generateObject({
       model: openai("gpt-4o-mini"),
       schema: metadataSchema,
@@ -236,9 +267,9 @@ const extractMetadataStep = createStep({
 
 URL: ${url}
 Title from page: ${jinaTitle}
-
+${isLongContent ? "\nNote: This is a long document. The content below shows excerpts from the beginning, middle, and end to help you understand the full context.\n" : ""}
 Content:
-${content.slice(0, 8000)}
+${contentSample}
 
 Extract the metadata according to the schema. For the sourceId, generate a URL-safe slug based on the title.
 If the content is primarily in German, set language to "de", otherwise "en".
