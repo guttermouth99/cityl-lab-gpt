@@ -94,3 +94,79 @@ export interface EmbedResult {
   /** Error message if failed */
   error?: string;
 }
+
+// ============================================================================
+// Document Embedding Workflow Types
+// ============================================================================
+
+/**
+ * Input payload for the embed-document Trigger.dev task
+ */
+export interface EmbedDocumentInput {
+  /** URL of the document to fetch and embed */
+  url: string;
+}
+
+/**
+ * Metadata extracted from document content using AI
+ */
+export interface ExtractedDocumentMetadata {
+  /** Title of the document */
+  title: string;
+  /** Author if found in the content */
+  author?: string;
+  /** Relevant tags/keywords */
+  tags: string[];
+  /** Content type classification */
+  contentType: CityLabContentType;
+  /** Language of the content */
+  language: CityLabLanguage;
+  /** Publication date if found (ISO 8601) */
+  publishedAt?: string;
+  /** Generated source ID (slug from title) */
+  sourceId: string;
+}
+
+/**
+ * Data extracted from URL and sent for human review
+ */
+export interface ExtractedDocumentData {
+  /** Raw content from Jina Reader */
+  content: string;
+  /** AI-extracted metadata */
+  metadata: ExtractedDocumentMetadata;
+  /** Original URL */
+  url: string;
+  /** Content preview (first N characters) */
+  preview: string;
+}
+
+/**
+ * Payload sent when completing the review waitpoint token
+ */
+export interface DocumentReviewPayload {
+  /** Whether the document was approved for embedding */
+  approved: boolean;
+  /** Optionally edited metadata (if approved) */
+  metadata?: ExtractedDocumentMetadata;
+  /** Reason for rejection (if not approved) */
+  rejectionReason?: string;
+}
+
+/**
+ * Output from the embed-document task
+ */
+export interface EmbedDocumentOutput {
+  /** Whether the workflow completed successfully */
+  success: boolean;
+  /** Status of the embedding */
+  status: "embedded" | "rejected" | "error";
+  /** Number of chunks created (if embedded) */
+  chunksCreated?: number;
+  /** Source ID of the embedded content */
+  sourceId?: string;
+  /** Error message if failed */
+  error?: string;
+  /** URL that was processed */
+  url: string;
+}

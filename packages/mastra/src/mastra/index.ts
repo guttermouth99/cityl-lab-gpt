@@ -4,10 +4,18 @@ import { LibSQLStore } from "@mastra/libsql";
 
 import { citylabAgent } from "./agents/citylab-agent";
 import { exampleAgent } from "./agents/example-agent";
+import { embedDocumentWorkflow } from "./workflows/embed-document-workflow";
 import { exampleWorkflow } from "./workflows/example-workflow";
 
 // Re-export RAG and vector modules for external use
 export * from "./rag";
+export type {
+  JinaReaderContent,
+  JinaReaderResponse,
+} from "./tools/jina-reader";
+
+// Export tools for use in worker
+export { fetchUrlContent } from "./tools/jina-reader";
 export * from "./vector";
 
 // Use MASTRA_DB_URL env var or default to absolute path
@@ -18,7 +26,10 @@ const dbUrl =
 
 export const mastra = new Mastra({
   agents: { exampleAgent, citylabAgent },
-  workflows: { exampleWorkflow },
+  workflows: {
+    exampleWorkflow,
+    embedDocumentWorkflow,
+  },
   storage: new LibSQLStore({
     id: "mastra",
     url: dbUrl,

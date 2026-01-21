@@ -1,12 +1,15 @@
 "use client";
 
 import { cn } from "@baito/ui/lib/utils";
-import { Root as LabelRoot } from "@radix-ui/react-label";
-import type { ComponentProps } from "react";
+import * as LabelPrimitive from "@radix-ui/react-label";
+import type * as React from "react";
 
-function Label({ className, ...props }: ComponentProps<typeof LabelRoot>) {
+function Label({
+  className,
+  ...props
+}: React.ComponentProps<typeof LabelPrimitive.Root>) {
   return (
-    <LabelRoot
+    <LabelPrimitive.Root
       className={cn(
         "flex select-none items-center gap-2 font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50",
         className
