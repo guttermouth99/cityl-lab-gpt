@@ -2,29 +2,31 @@
 
 import { cn } from "@baito/ui/lib/utils";
 import { Cog, FileText, FolderOpen, LayoutDashboard, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: "addKnowledge" | "browseKnowledge";
   icon: React.ComponentType<{ className?: string }>;
 }
 
 const knowledgeBaseItems: NavItem[] = [
   {
     href: "/dashboard/add-document",
-    label: "Add Document",
+    labelKey: "addKnowledge",
     icon: Plus,
   },
   {
     href: "/documents/browse",
-    label: "Browse Documents",
+    labelKey: "browseKnowledge",
     icon: FolderOpen,
   },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const t = useTranslations("AdminSidebar");
 
   return (
     <aside className="sticky top-16 flex h-[calc(100vh-4rem)] w-64 flex-col border-r bg-muted/30">
@@ -39,11 +41,11 @@ export function AdminSidebar() {
           href="/dashboard"
         >
           <LayoutDashboard className="h-4 w-4" />
-          Overview
+          {t("overview")}
         </Link>
 
         <div className="mt-6 mb-4 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-          Knowledge Base
+          {t("knowledgeBase")}
         </div>
         {knowledgeBaseItems.map((item) => {
           const isActive = pathname === item.href;
@@ -61,13 +63,13 @@ export function AdminSidebar() {
               key={item.href}
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}
 
         <div className="mt-8 mb-4 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-          Maschinenraum
+          {t("engineRoom")}
         </div>
         <a
           className="flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
@@ -76,7 +78,7 @@ export function AdminSidebar() {
           target="_blank"
         >
           <Cog className="h-4 w-4" />
-          Mastra UI
+          {t("mastraUi")}
         </a>
       </nav>
 
@@ -84,8 +86,8 @@ export function AdminSidebar() {
         <div className="flex items-center gap-3 rounded-lg bg-secondary p-3">
           <FileText className="h-5 w-5 text-secondary-foreground" />
           <div className="text-secondary-foreground text-xs">
-            <p className="font-medium">CityLAB Berlin</p>
-            <p>Knowledge Base Admin</p>
+            <p className="font-medium">{t("cityLabBerlin")}</p>
+            <p>{t("knowledgeBaseAdmin")}</p>
           </div>
         </div>
       </div>

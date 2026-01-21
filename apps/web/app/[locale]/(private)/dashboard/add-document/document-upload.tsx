@@ -19,6 +19,7 @@ import { Textarea } from "@baito/ui/components/textarea";
 import { useMutation } from "@tanstack/react-query";
 import { useRealtimeRun } from "@trigger.dev/react-hooks";
 import { AlertCircle, CheckCircle, FileText, Loader2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
 import { useTRPCClient } from "@/lib/trpc/client";
@@ -39,23 +40,21 @@ interface RunMetadata {
   };
 }
 
-const CONTENT_TYPES = [
-  { value: "blog", label: "Blog Post" },
-  { value: "project", label: "Project" },
-  { value: "youtube_transcript", label: "YouTube Transcript" },
-  { value: "event", label: "Event" },
-  { value: "page", label: "Page" },
-  { value: "exhibition", label: "Exhibition" },
-  { value: "team", label: "Team" },
-  { value: "newsletter", label: "Newsletter" },
+const CONTENT_TYPE_VALUES = [
+  "blog",
+  "project",
+  "youtube_transcript",
+  "event",
+  "page",
+  "exhibition",
+  "team",
+  "newsletter",
 ] as const;
 
-const LANGUAGES = [
-  { value: "de", label: "German" },
-  { value: "en", label: "English" },
-] as const;
+const LANGUAGE_VALUES = ["de", "en"] as const;
 
 export function DocumentUpload() {
+  const t = useTranslations("AddDocument");
   const [url, setUrl] = useState("");
   const [runData, setRunData] = useState<RunData | null>(null);
   const trpc = useTRPCClient();
@@ -86,13 +85,13 @@ export function DocumentUpload() {
           className="flex-1"
           disabled={triggerMutation.isPending || runData !== null}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter URL to embed (e.g., https://citylab-berlin.org/...)"
+          placeholder={t("urlPlaceholder")}
           type="url"
           value={url}
         />
         {runData ? (
           <Button onClick={handleReset} type="button" variant="outline">
-            New Document
+            {t("newDocument")}
           </Button>
         ) : (
           <Button
@@ -102,12 +101,12 @@ export function DocumentUpload() {
             {triggerMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Starting...
+                {t("starting")}
               </>
             ) : (
               <>
                 <FileText className="mr-2 h-4 w-4" />
-                Embed Document
+                {t("embedDocument")}
               </>
             )}
           </Button>
@@ -118,9 +117,7 @@ export function DocumentUpload() {
       {triggerMutation.isError && (
         <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
           <AlertCircle className="h-5 w-5 shrink-0" />
-          <span>
-            {triggerMutation.error?.message || "Failed to start embedding"}
-          </span>
+          <span>{triggerMutation.error?.message || t("failedToStart")}</span>
         </div>
       )}
 
@@ -145,6 +142,7 @@ function DocumentStatus({
   accessToken: string;
   onComplete: () => void;
 }) {
+  const t = useTranslations("AddDocument");
   const { run, error } = useRealtimeRun<EmbedDocumentOutput>(runId, {
     accessToken,
   });
@@ -159,6 +157,19 @@ function DocumentStatus({
     status === "awaiting_review" && extractedData && reviewToken;
   const isCompleted = run?.status === "COMPLETED";
   const isFailed = run?.status === "FAILED" || run?.status === "CRASHED";
+
+  const getStatusLabel = (statusValue?: string): string => {
+    switch (statusValue) {
+      case "fetching":
+        return t("statusFetching");
+      case "extracting":
+        return t("statusExtracting");
+      case "embedding":
+        return t("statusEmbedding");
+      default:
+        return t("statusProcessing");
+    }
+  };
 
   if (error) {
     return (
@@ -175,7 +186,7 @@ function DocumentStatus({
     return (
       <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-4">
         <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Connecting to task...</span>
+        <span>{t("connectingToTask")}</span>
       </div>
     );
   }
@@ -185,7 +196,9 @@ function DocumentStatus({
       <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
         <div className="flex items-center gap-2 text-destructive">
           <AlertCircle className="h-5 w-5" />
-          <span>Task failed: {message || "Unknown error"}</span>
+          <span>
+            {t("taskFailed", { message: message || t("unknownError") })}
+          </span>
         </div>
       </div>
     );
@@ -208,24 +221,23 @@ function DocumentStatus({
             <>
               <CheckCircle className="h-5 w-5" />
               <span>
-                Document embedded successfully! Created {output.chunksCreated}{" "}
-                chunks.
+                {t("embeddedSuccess", { chunksCreated: output.chunksCreated })}
               </span>
             </>
           ) : output?.status === "rejected" ? (
             <>
               <X className="h-5 w-5" />
-              <span>Document was rejected and not embedded.</span>
+              <span>{t("documentRejected")}</span>
             </>
           ) : (
             <>
               <AlertCircle className="h-5 w-5" />
-              <span>{output?.error || "Unknown error occurred"}</span>
+              <span>{output?.error || t("unknownError")}</span>
             </>
           )}
         </div>
         <Button onClick={onComplete} variant="outline">
-          Embed Another Document
+          {t("embedAnother")}
         </Button>
       </div>
     );
@@ -255,19 +267,6 @@ function DocumentStatus({
   );
 }
 
-function getStatusLabel(status?: string): string {
-  switch (status) {
-    case "fetching":
-      return "Fetching content...";
-    case "extracting":
-      return "Extracting metadata...";
-    case "embedding":
-      return "Embedding document...";
-    default:
-      return "Processing...";
-  }
-}
-
 function MetadataReview({
   extractedData,
   tokenId,
@@ -277,6 +276,7 @@ function MetadataReview({
   tokenId: string;
   tokenPublicAccessToken: string;
 }) {
+  const t = useTranslations("AddDocument");
   const [metadata, setMetadata] = useState<ExtractedDocumentMetadata>(
     extractedData.metadata
   );
@@ -290,8 +290,8 @@ function MetadataReview({
   useEffect(() => {
     const tags = tagsInput
       .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
     setMetadata((prev) => ({ ...prev, tags }));
   }, [tagsInput]);
 
@@ -305,16 +305,14 @@ function MetadataReview({
       };
       const result = await completeDocumentReview(tokenId, payload);
       if (!result.success) {
-        setError(result.error || "Failed to approve document");
+        setError(result.error || t("failedToApprove"));
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to approve document"
-      );
+      setError(err instanceof Error ? err.message : t("failedToApprove"));
     } finally {
       setIsSubmitting(false);
     }
-  }, [tokenId, metadata]);
+  }, [tokenId, metadata, t]);
 
   const handleReject = useCallback(async () => {
     setIsSubmitting(true);
@@ -326,34 +324,32 @@ function MetadataReview({
       };
       const result = await completeDocumentReview(tokenId, payload);
       if (!result.success) {
-        setError(result.error || "Failed to reject document");
+        setError(result.error || t("failedToReject"));
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to reject document"
-      );
+      setError(err instanceof Error ? err.message : t("failedToReject"));
     } finally {
       setIsSubmitting(false);
     }
-  }, [tokenId]);
+  }, [tokenId, t]);
 
   return (
     <div className="space-y-6 rounded-lg border bg-card p-6">
       <div>
-        <h3 className="font-semibold text-lg">Review Extracted Content</h3>
+        <h3 className="font-semibold text-lg">{t("reviewTitle")}</h3>
         <p className="text-muted-foreground text-sm">
-          Review and edit the metadata before embedding this document.
+          {t("reviewDescription")}
         </p>
       </div>
 
       {/* Content Preview */}
       <div className="space-y-2">
-        <label className="font-medium text-sm">Content Preview</label>
+        <label className="font-medium text-sm">{t("contentPreview")}</label>
         <div className="max-h-48 overflow-y-auto rounded-md border bg-muted/50 p-3 text-sm">
           {extractedData.preview}...
         </div>
         <p className="text-muted-foreground text-xs">
-          URL: {extractedData.url}
+          {t("urlLabel", { url: extractedData.url })}
         </p>
       </div>
 
@@ -362,7 +358,7 @@ function MetadataReview({
         {/* Title */}
         <div className="space-y-2 sm:col-span-2">
           <label className="font-medium text-sm" htmlFor="title">
-            Title
+            {t("title")}
           </label>
           <Input
             id="title"
@@ -376,7 +372,7 @@ function MetadataReview({
         {/* Author */}
         <div className="space-y-2">
           <label className="font-medium text-sm" htmlFor="author">
-            Author (optional)
+            {t("authorOptional")}
           </label>
           <Input
             id="author"
@@ -386,7 +382,7 @@ function MetadataReview({
                 author: e.target.value || undefined,
               }))
             }
-            placeholder="Author name"
+            placeholder={t("authorPlaceholder")}
             value={metadata.author || ""}
           />
         </div>
@@ -394,7 +390,7 @@ function MetadataReview({
         {/* Source ID */}
         <div className="space-y-2">
           <label className="font-medium text-sm" htmlFor="sourceId">
-            Source ID (slug)
+            {t("sourceId")}
           </label>
           <Input
             id="sourceId"
@@ -407,7 +403,7 @@ function MetadataReview({
 
         {/* Content Type */}
         <div className="space-y-2">
-          <label className="font-medium text-sm">Content Type</label>
+          <label className="font-medium text-sm">{t("contentType")}</label>
           <Select
             onValueChange={(value) =>
               setMetadata((prev) => ({
@@ -418,12 +414,12 @@ function MetadataReview({
             value={metadata.contentType}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select content type" />
+              <SelectValue placeholder={t("selectContentType")} />
             </SelectTrigger>
             <SelectContent>
-              {CONTENT_TYPES.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.label}
+              {CONTENT_TYPE_VALUES.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {t(`contentTypes.${type}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -432,7 +428,7 @@ function MetadataReview({
 
         {/* Language */}
         <div className="space-y-2">
-          <label className="font-medium text-sm">Language</label>
+          <label className="font-medium text-sm">{t("language")}</label>
           <Select
             onValueChange={(value) =>
               setMetadata((prev) => ({
@@ -443,12 +439,12 @@ function MetadataReview({
             value={metadata.language}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select language" />
+              <SelectValue placeholder={t("selectLanguage")} />
             </SelectTrigger>
             <SelectContent>
-              {LANGUAGES.map((lang) => (
-                <SelectItem key={lang.value} value={lang.value}>
-                  {lang.label}
+              {LANGUAGE_VALUES.map((lang) => (
+                <SelectItem key={lang} value={lang}>
+                  {t(`languages.${lang}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -458,7 +454,7 @@ function MetadataReview({
         {/* Published At */}
         <div className="space-y-2">
           <label className="font-medium text-sm" htmlFor="publishedAt">
-            Published Date (optional)
+            {t("publishedDateOptional")}
           </label>
           <Input
             id="publishedAt"
@@ -477,13 +473,13 @@ function MetadataReview({
         {/* Tags */}
         <div className="space-y-2 sm:col-span-2">
           <label className="font-medium text-sm" htmlFor="tags">
-            Tags (comma-separated)
+            {t("tagsLabel")}
           </label>
           <Textarea
             className="min-h-[60px]"
             id="tags"
             onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="tag1, tag2, tag3"
+            placeholder={t("tagsPlaceholder")}
             value={tagsInput}
           />
           <div className="flex flex-wrap gap-1">
@@ -519,7 +515,7 @@ function MetadataReview({
           ) : (
             <X className="mr-2 h-4 w-4" />
           )}
-          Reject
+          {t("reject")}
         </Button>
         <Button disabled={isSubmitting} onClick={handleApprove}>
           {isSubmitting ? (
@@ -527,7 +523,7 @@ function MetadataReview({
           ) : (
             <CheckCircle className="mr-2 h-4 w-4" />
           )}
-          Approve & Embed
+          {t("approveAndEmbed")}
         </Button>
       </div>
     </div>

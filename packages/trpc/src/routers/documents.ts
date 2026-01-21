@@ -83,4 +83,23 @@ export const documentsRouter = createTRPCRouter({
         token: handle.publicAccessToken,
       };
     }),
+
+  /**
+   * Delete a document and all its chunks from the knowledge base
+   */
+  delete: publicProcedure
+    .input(z.object({ sourceId: z.string() }))
+    .mutation(async ({ input }) => {
+      const connectionString = process.env.DATABASE_URL;
+      if (!connectionString) {
+        throw new Error("DATABASE_URL environment variable is required");
+      }
+      const sql = neon(connectionString);
+      const result = await sql`
+        DELETE FROM "citylab_content"
+        WHERE metadata->>'sourceId' = ${input.sourceId}
+        RETURNING id
+      `;
+      return { success: true, deletedCount: result.length };
+    }),
 });

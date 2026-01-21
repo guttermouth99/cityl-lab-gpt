@@ -10,6 +10,7 @@ import {
 import { LayoutDashboard, LogIn, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { authClient } from "@/lib/auth-client";
@@ -20,11 +21,16 @@ const localeConfig: Record<Locale, { label: string; flag: string }> = {
 };
 
 export function Header() {
+  const [isMounted, setIsMounted] = useState(false);
   const { data: session, isPending } = authClient.useSession();
   const pathname = usePathname();
   const router = useRouter();
   const params = useParams();
   const currentLocale = (params.locale as Locale) || "de";
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleLocaleChange = (locale: Locale) => {
     router.replace(pathname, { locale });
@@ -50,7 +56,7 @@ export function Header() {
         {/* Right side actions */}
         <div className="flex items-center gap-2">
           {/* Logged in: Chat and Dashboard buttons */}
-          {isLoggedIn && (
+          {isMounted && isLoggedIn && (
             <>
               <Button asChild size="sm" variant="ghost">
                 <Link href="/chat">
@@ -102,12 +108,13 @@ export function Header() {
           </DropdownMenu>
 
           {/* Login button or loading state */}
-          {isPending && (
+          {/* Show loading skeleton until mounted and session resolved to prevent hydration mismatch */}
+          {(!isMounted || isPending) && (
             <Button disabled size="sm" variant="outline">
               <span className="h-4 w-16 animate-pulse rounded bg-muted" />
             </Button>
           )}
-          {!(isPending || isLoggedIn) && (
+          {isMounted && !isPending && !isLoggedIn && (
             <Button asChild size="sm" variant="default">
               <Link href="/auth/sign-in">
                 <LogIn className="mr-2 h-4 w-4" />

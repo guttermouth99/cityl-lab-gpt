@@ -1,14 +1,17 @@
+"use client";
+
 import { Cog, FileText, FolderSearch, MessageCircle } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function DashboardPage() {
+  const t = useTranslations("Dashboard");
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="mb-2 font-bold text-3xl">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage your CityLAB Berlin knowledge base.
-        </p>
+        <h1 className="mb-2 font-bold text-3xl">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
@@ -20,11 +23,10 @@ export default function DashboardPage() {
             <FileText className="h-6 w-6" />
           </div>
           <h2 className="mb-2 font-semibold text-lg group-hover:text-foreground">
-            Add Documents
+            {t("addKnowledge")}
           </h2>
           <p className="text-muted-foreground text-sm">
-            Add new documents to the knowledge base. Embed URLs and review
-            extracted content.
+            {t("addKnowledgeDescription")}
           </p>
         </Link>
 
@@ -36,11 +38,10 @@ export default function DashboardPage() {
             <FolderSearch className="h-6 w-6" />
           </div>
           <h2 className="mb-2 font-semibold text-lg group-hover:text-foreground">
-            Browse Documents
+            {t("browseKnowledge")}
           </h2>
           <p className="text-muted-foreground text-sm">
-            View and manage all documents in the knowledge base. Search, filter,
-            and organize your content.
+            {t("browseKnowledgeDescription")}
           </p>
         </Link>
 
@@ -52,11 +53,10 @@ export default function DashboardPage() {
             <MessageCircle className="h-6 w-6" />
           </div>
           <h2 className="mb-2 font-semibold text-lg group-hover:text-foreground">
-            Go to Chat
+            {t("goToChat")}
           </h2>
           <p className="text-muted-foreground text-sm">
-            Return to the chat interface and interact with the CityLAB Berlin
-            knowledge assistant.
+            {t("goToChatDescription")}
           </p>
         </Link>
 
@@ -70,11 +70,10 @@ export default function DashboardPage() {
             <Cog className="h-6 w-6" />
           </div>
           <h2 className="mb-2 font-semibold text-lg group-hover:text-foreground">
-            Maschinenraum
+            {t("engineRoom")}
           </h2>
           <p className="text-muted-foreground text-sm">
-            Access the Mastra UI to monitor and manage AI workflows and agent
-            configurations.
+            {t("engineRoomDescription")}
           </p>
         </a>
       </div>
