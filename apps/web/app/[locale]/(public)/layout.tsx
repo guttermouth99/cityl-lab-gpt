@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { Header } from "@/components/header";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -12,5 +13,10 @@ export default async function PublicLayout({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <main className="flex-1">{children}</main>;
+  return (
+    <>
+      <Header />
+      <main className="flex-1">{children}</main>
+    </>
+  );
 }
