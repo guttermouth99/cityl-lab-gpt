@@ -1,4 +1,5 @@
 import { AuthView } from "@daveyplate/better-auth-ui";
+import Image from "next/image";
 import { setRequestLocale } from "next-intl/server";
 
 interface AuthPageProps {
@@ -10,8 +11,21 @@ export default async function AuthPage({ params }: AuthPageProps) {
   setRequestLocale(locale);
 
   return (
-    <main className="container flex grow flex-col items-center justify-center p-4 md:p-6">
-      <AuthView path={path} />
+    <main className="flex w-full items-center justify-center p-4 md:p-6">
+      <AuthView
+        cardHeader={
+          <div className="flex items-center justify-center gap-2">
+            <Image
+              alt="citylab berlin"
+              height={60}
+              src="/citylab_berlin_logo_square.jpeg"
+              width={60}
+            />
+          </div>
+        }
+        className="shadow-2xl"
+        path={path}
+      />
     </main>
   );
 }
