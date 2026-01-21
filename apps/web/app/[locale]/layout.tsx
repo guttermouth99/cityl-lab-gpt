@@ -2,6 +2,7 @@
 import "@baito/env/web";
 
 import "@baito/ui/globals.css";
+import "@daveyplate/better-auth-ui/css";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
