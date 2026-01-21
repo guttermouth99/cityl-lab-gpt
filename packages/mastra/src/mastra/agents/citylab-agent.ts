@@ -57,7 +57,7 @@ Use this tool when users ask questions about CityLAB Berlin, its projects, activ
   }),
   execute: async (input) => {
     const { query, contentType, language, topK = 5 } = input;
-
+    console.log("query", query);
     // Generate embedding for the query
     // Using 512 dimensions to match the citylab_content index
     const { embedding } = await embed({
@@ -69,10 +69,12 @@ Use this tool when users ask questions about CityLAB Berlin, its projects, activ
         },
       },
     });
+    console.log("embedding", embedding);
+    console.log(contentType, language);
 
     // Build filter if content type or language specified
     const filter: Record<string, CityLabContentType | CityLabLanguage> = {};
-    if (contentType) filter.contentType = contentType;
+    //if (contentType) filter.contentType = contentType;
     if (language) filter.language = language;
 
     // Query the vector store
@@ -82,7 +84,7 @@ Use this tool when users ask questions about CityLAB Berlin, its projects, activ
       topK,
       filter: Object.keys(filter).length > 0 ? filter : undefined,
     });
-
+    console.log("results", results);
     // Format results
     const formattedResults = results.map((result) => ({
       text: String(result.metadata?.text ?? ""),
