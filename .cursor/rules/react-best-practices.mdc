@@ -1,0 +1,217 @@
+---
+description: React and Next.js performance optimization guidelines from Vercel Engineering. Use when writing, reviewing, or refactoring React/Next.js code.
+globs: "*.ts, *.tsx, *.js, *.jsx"
+---
+
+# React Best Practices
+
+Comprehensive performance optimization guide for React and Next.js applications.
+
+## Priority 1: Eliminating Waterfalls (CRITICAL)
+
+### Defer Await Until Needed
+Move `await` into branches where actually used:
+```typescript
+// ❌ Bad: blocks both branches
+async function handleRequest(userId: string, skip: boolean) {
+  const data = await fetchData(userId)
+  if (skip) return { skipped: true }
+  return processData(data)
+}
+
+// ✅ Good: only blocks when needed
+async function handleRequest(userId: string, skip: boolean) {
+  if (skip) return { skipped: true }
+  const data = await fetchData(userId)
+  return processData(data)
+}
+```
+
+### Promise.all() for Independent Operations
+```typescript
+// ❌ Bad: sequential, 3 round trips
+const user = await fetchUser()
+const posts = await fetchPosts()
+const comments = await fetchComments()
+
+// ✅ Good: parallel, 1 round trip
+const [user, posts, comments] = await Promise.all([
+  fetchUser(),
+  fetchPosts(),
+  fetchComments()
+])
+```
+
+### Strategic Suspense Boundaries
+```tsx
+// ✅ Good: wrapper shows immediately, data streams in
+function Page() {
+  return (
+    <div>
+      <Header />
+      <Suspense fallback={<Skeleton />}>
+        <DataDisplay />
+      </Suspense>
+      <Footer />
+    </div>
+  )
+}
+```
+
+## Priority 2: Bundle Size Optimization (CRITICAL)
+
+### Avoid Barrel File Imports
+```tsx
+// ❌ Bad: imports entire library
+import { Check, X } from 'lucide-react'
+
+// ✅ Good: imports only what you need
+import Check from 'lucide-react/dist/esm/icons/check'
+import X from 'lucide-react/dist/esm/icons/x'
+```
+
+### Dynamic Imports for Heavy Components
+```tsx
+import dynamic from 'next/dynamic'
+
+const MonacoEditor = dynamic(
+  () => import('./monaco-editor').then(m => m.MonacoEditor),
+  { ssr: false }
+)
+```
+
+### Defer Non-Critical Third-Party Libraries
+```tsx
+// Load analytics after hydration
+const Analytics = dynamic(
+  () => import('@vercel/analytics/react').then(m => m.Analytics),
+  { ssr: false }
+)
+```
+
+## Priority 3: Server-Side Performance (HIGH)
+
+### Authenticate Server Actions
+```typescript
+'use server'
+
+export async function deleteUser(userId: string) {
+  const session = await verifySession()
+  if (!session) throw new Error('Unauthorized')
+  if (session.user.id !== userId) throw new Error('Forbidden')
+  await db.user.delete({ where: { id: userId } })
+}
+```
+
+### Minimize Serialization at RSC Boundaries
+```tsx
+// ❌ Bad: serializes all 50 fields
+<Profile user={user} />
+
+// ✅ Good: serializes only 1 field
+<Profile name={user.name} />
+```
+
+### Use React.cache() for Deduplication
+```typescript
+import { cache } from 'react'
+
+export const getCurrentUser = cache(async () => {
+  const session = await auth()
+  return await db.user.findUnique({ where: { id: session.user.id } })
+})
+```
+
+## Priority 4: Re-render Optimization (MEDIUM)
+
+### Use Functional setState Updates
+```tsx
+// ❌ Bad: requires state as dependency
+const addItem = useCallback((item) => {
+  setItems([...items, item])
+}, [items])
+
+// ✅ Good: stable callback
+const addItem = useCallback((item) => {
+  setItems(curr => [...curr, item])
+}, [])
+```
+
+### Use Lazy State Initialization
+```tsx
+// ❌ Bad: runs on every render
+const [index, setIndex] = useState(buildSearchIndex(items))
+
+// ✅ Good: runs only once
+const [index, setIndex] = useState(() => buildSearchIndex(items))
+```
+
+### Subscribe to Derived State
+```tsx
+// ❌ Bad: re-renders on every pixel change
+const width = useWindowWidth()
+const isMobile = width < 768
+
+// ✅ Good: re-renders only when boolean changes
+const isMobile = useMediaQuery('(max-width: 767px)')
+```
+
+## Priority 5: Rendering Performance (MEDIUM)
+
+### CSS content-visibility for Long Lists
+```css
+.message-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 80px;
+}
+```
+
+### Animate SVG Wrapper Instead of SVG Element
+```tsx
+// ✅ Good: hardware accelerated
+<div className="animate-spin">
+  <svg>...</svg>
+</div>
+```
+
+### Use Explicit Conditional Rendering
+```tsx
+// ❌ Bad: renders "0" when count is 0
+{count && <Badge>{count}</Badge>}
+
+// ✅ Good: renders nothing when count is 0
+{count > 0 ? <Badge>{count}</Badge> : null}
+```
+
+## Priority 6: JavaScript Performance (LOW-MEDIUM)
+
+### Build Index Maps for Repeated Lookups
+```typescript
+// ❌ Bad: O(n) per lookup
+users.find(u => u.id === order.userId)
+
+// ✅ Good: O(1) per lookup
+const userById = new Map(users.map(u => [u.id, u]))
+userById.get(order.userId)
+```
+
+### Use toSorted() Instead of sort()
+```typescript
+// ❌ Bad: mutates original array
+const sorted = users.sort((a, b) => a.name.localeCompare(b.name))
+
+// ✅ Good: creates new array
+const sorted = users.toSorted((a, b) => a.name.localeCompare(b.name))
+```
+
+### Early Return from Functions
+```typescript
+// ✅ Good: returns immediately on first error
+function validateUsers(users: User[]) {
+  for (const user of users) {
+    if (!user.email) return { valid: false, error: 'Email required' }
+    if (!user.name) return { valid: false, error: 'Name required' }
+  }
+  return { valid: true }
+}
+```

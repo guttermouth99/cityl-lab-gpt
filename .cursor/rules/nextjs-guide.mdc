@@ -1,0 +1,173 @@
+---
+description: Guide for implementing Next.js - a React framework for production with server-side rendering, static generation, and modern web features.
+globs: "*.ts, *.tsx, *.js, *.jsx"
+---
+
+# Next.js Guide
+
+Next.js is a React framework for building full-stack web applications with server-side rendering, static generation, and powerful optimization features.
+
+## Core Concepts
+
+### App Router vs Pages Router
+- **App Router (Recommended)**: Modern architecture with React Server Components in `app/` directory
+- **Pages Router (Legacy)**: Traditional page-based routing in `pages/` directory
+
+### Key Principles
+1. **Server Components by Default**: Components in `app/` are Server Components unless marked with `'use client'`
+2. **File-based Routing**: File system defines application routes
+3. **Nested Layouts**: Share UI across routes with layouts
+4. **Automatic Optimization**: Images, fonts, scripts auto-optimized
+
+## Routing
+
+### File Conventions
+- `page.tsx` - Page UI for route
+- `layout.tsx` - Shared UI for segment and children
+- `loading.tsx` - Loading UI (wraps page in Suspense)
+- `error.tsx` - Error UI (wraps page in Error Boundary)
+- `not-found.tsx` - 404 UI
+- `route.ts` - API endpoint (Route Handler)
+
+### Dynamic Routes
+```tsx
+// app/blog/[slug]/page.tsx
+export default function BlogPost({ params }: { params: { slug: string } }) {
+  return <h1>Post: {params.slug}</h1>
+}
+```
+
+## Server and Client Components
+
+### Server Components (Default)
+```tsx
+// app/page.tsx (Server Component)
+async function getData() {
+  const res = await fetch('https://api.example.com/data')
+  return res.json()
+}
+
+export default async function Page() {
+  const data = await getData()
+  return <div>{data.title}</div>
+}
+```
+
+### Client Components
+```tsx
+'use client'
+
+import { useState } from 'react'
+
+export function Counter() {
+  const [count, setCount] = useState(0)
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Count: {count}
+    </button>
+  )
+}
+```
+
+## Data Fetching
+
+### Caching Strategies
+```tsx
+// Force Cache (Default)
+fetch('https://api.example.com/data', { cache: 'force-cache' })
+
+// No Store (Dynamic)
+fetch('https://api.example.com/data', { cache: 'no-store' })
+
+// Revalidate
+fetch('https://api.example.com/data', {
+  next: { revalidate: 3600 }
+})
+```
+
+## Route Handlers (API Routes)
+
+```tsx
+// app/api/hello/route.ts
+export async function GET(request: Request) {
+  return Response.json({ message: 'Hello' })
+}
+
+export async function POST(request: Request) {
+  const body = await request.json()
+  return Response.json({ received: body })
+}
+```
+
+## Server Actions
+
+```tsx
+// app/actions.ts
+'use server'
+
+import { revalidatePath } from 'next/cache'
+
+export async function createPost(formData: FormData) {
+  const title = formData.get('title')
+  await db.post.create({ data: { title } })
+  revalidatePath('/posts')
+}
+```
+
+## Metadata & SEO
+
+```tsx
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'My Page',
+  description: 'Page description',
+  openGraph: {
+    title: 'My Page',
+    description: 'Page description',
+    images: ['/og-image.jpg'],
+  },
+}
+```
+
+## Image Optimization
+
+```tsx
+import Image from 'next/image'
+
+<Image
+  src="/profile.png"
+  alt="Profile"
+  width={500}
+  height={500}
+  priority // for above-fold images
+/>
+```
+
+## Loading States with Suspense
+
+```tsx
+import { Suspense } from 'react'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>My Posts</h1>
+      <Suspense fallback={<div>Loading posts...</div>}>
+        <Posts />
+      </Suspense>
+    </div>
+  )
+}
+```
+
+## Best Practices
+
+1. **Use Server Components**: Default to Server Components, use Client Components only when needed
+2. **Optimize Images**: Always use `next/image` for automatic optimization
+3. **Metadata**: Set proper metadata for SEO
+4. **Loading States**: Provide loading UI with Suspense
+5. **Error Handling**: Implement error boundaries
+6. **Caching**: Leverage built-in caching strategies
+7. **Layouts**: Use nested layouts to share UI
+8. **TypeScript**: Enable TypeScript for type safety
