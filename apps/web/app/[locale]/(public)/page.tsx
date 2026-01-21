@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRealtimeRun } from "@trigger.dev/react-hooks";
 import { Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useTRPCClient } from "@/lib/trpc/client";
 
 interface RunData {
@@ -35,9 +36,14 @@ export default function HelloWorldPage() {
 
   return (
     <div className="container mx-auto max-w-2xl p-8">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <div className="mb-8 text-center">
         <h1 className="mb-2 font-bold text-3xl">Hello World Boilerplate</h1>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Enter a message to trigger a background task with Mastra AI.
         </p>
       </div>
@@ -62,7 +68,7 @@ export default function HelloWorldPage() {
       </form>
 
       {triggerMutation.isError && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
           {triggerMutation.error?.message || "Failed to trigger task"}
         </div>
       )}
@@ -96,26 +102,26 @@ function RealtimeResult({
   const isFailed = run?.status === "FAILED" || run?.status === "CRASHED";
 
   return (
-    <div className="rounded-lg border bg-white p-6 shadow-sm">
+    <div className="rounded-lg border bg-card p-6 shadow-sm">
       {isRunning && (
-        <div className="flex items-center gap-2 text-blue-600">
+        <div className="flex items-center gap-2 text-primary">
           <Loader2 className="h-5 w-5 animate-spin" />
           <span>Processing with Mastra AI...</span>
         </div>
       )}
 
       {isFailed && (
-        <div className="text-red-600">
+        <div className="text-destructive">
           Something went wrong. Please try again.
         </div>
       )}
 
       {isCompleted && output && (
         <div className="flex items-start gap-3">
-          <Sparkles className="mt-1 h-5 w-5 shrink-0 text-purple-600" />
+          <Sparkles className="mt-1 h-5 w-5 shrink-0 text-primary" />
           <div>
-            <p className="font-medium text-gray-900">Response</p>
-            <p className="mt-1 text-gray-700">{output.response}</p>
+            <p className="font-medium text-foreground">Response</p>
+            <p className="mt-1 text-muted-foreground">{output.response}</p>
           </div>
         </div>
       )}
