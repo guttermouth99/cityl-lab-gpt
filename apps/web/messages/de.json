@@ -1,77 +1,10 @@
 {
   "Metadata": {
-    "title": "Baito Jobs - Impact Karriereplattform",
-    "description": "Finde sinnvolle Arbeit bei Organisationen, die einen positiven Beitrag leisten. Jobs in Nachhaltigkeit, Social Impact, NGOs und mehr.",
-    "landingTitle": "Impact Jobs finden | Baito Jobs",
-    "landingDescription": "Entdecke sinnvolle Karrieren bei Organisationen, die einen Unterschied machen. Durchsuche Jobs in Nachhaltigkeit, Social Impact, NGOs und mehr."
+    "title": "Boilerplate",
+    "description": "Trigger.dev + Mastra Boilerplate"
   },
   "Common": {
-    "search": "Suchen",
-    "viewAll": "Alle anzeigen",
-    "new": "Neu",
-    "fullTime": "Vollzeit",
-    "remote": "Remote"
-  },
-  "Landing": {
-    "hero": {
-      "title": "Finde Arbeit, die",
-      "titleHighlight": "einen Unterschied macht",
-      "subtitle": "Entdecke sinnvolle Karrieren bei Organisationen, die positiven Impact schaffen. Von Nachhaltigkeit bis soziale Gerechtigkeit – finde deine nächste Chance.",
-      "searchPlaceholder": "Jobs suchen...",
-      "searchButton": "Suchen"
-    },
-    "categories": {
-      "sustainability": "Nachhaltigkeit",
-      "socialImpact": "Social Impact",
-      "remoteJobs": "Remote Jobs"
-    },
-    "stats": {
-      "activeJobs": "Aktive Jobs",
-      "organizations": "Organisationen",
-      "monthlyVisitors": "Monatliche Besucher",
-      "impactFocused": "Impact-fokussiert"
-    },
-    "featuredJobs": {
-      "title": "Empfohlene Jobs",
-      "viewAll": "Alle Jobs anzeigen",
-      "sampleTitle": "Beispiel Jobtitel",
-      "sampleOrg": "Organisationsname"
-    },
-    "cta": {
-      "title": "Bereit, Impact zu machen?",
-      "subtitle": "Erstelle Job-Alerts und verpasse keine neue Chance.",
-      "button": "Job-Alerts einrichten"
-    }
-  },
-  "Header": {
-    "jobs": "Jobs",
-    "ngos": "NGOs",
-    "sustainability": "Nachhaltigkeit",
-    "dashboard": "Dashboard",
-    "postJob": "Job posten"
-  },
-  "Footer": {
-    "tagline": "Finde sinnvolle Arbeit bei Organisationen, die einen positiven Beitrag leisten.",
-    "jobSeekers": {
-      "title": "Jobsuchende",
-      "browseJobs": "Jobs durchsuchen",
-      "jobAlerts": "Job-Alerts",
-      "ngoJobs": "NGO Jobs",
-      "sustainabilityJobs": "Nachhaltigkeits-Jobs"
-    },
-    "employers": {
-      "title": "Arbeitgeber",
-      "postJob": "Job posten",
-      "pricing": "Preise",
-      "dashboard": "Dashboard"
-    },
-    "company": {
-      "title": "Unternehmen",
-      "about": "Über uns",
-      "contact": "Kontakt",
-      "privacy": "Datenschutz",
-      "terms": "AGB"
-    },
-    "copyright": "© {year} Baito Jobs. Alle Rechte vorbehalten."
+    "loading": "Laden...",
+    "error": "Etwas ist schief gelaufen"
   }
 }

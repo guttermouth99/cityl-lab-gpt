@@ -3,12 +3,6 @@ import { boolean, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 // Enums
 export const userRoleEnum = pgEnum("user_role", ["user", "customer", "admin"]);
-export const alertFrequencyEnum = pgEnum("alert_frequency", [
-  "daily",
-  "weekly",
-  "instant",
-  "none",
-]);
 
 // Users table (Better-Auth compatible)
 export const users = pgTable("user", {
@@ -18,9 +12,6 @@ export const users = pgTable("user", {
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
   role: userRoleEnum("role").notNull().default("user"),
-  alertFrequency: alertFrequencyEnum("alert_frequency")
-    .notNull()
-    .default("daily"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

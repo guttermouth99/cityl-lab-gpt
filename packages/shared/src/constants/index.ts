@@ -1,3 +1,2 @@
-export * from "./categories";
-export * from "./sdgs";
-export * from "./sources";
+// Constants - placeholder
+// Add constant exports here as needed

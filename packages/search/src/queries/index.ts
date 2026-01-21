@@ -1,2 +1,2 @@
-export * from "./autocomplete";
-export * from "./search-jobs";
+// Search queries - placeholder
+// Add query exports here as needed

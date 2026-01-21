@@ -1,2 +1,2 @@
-export * from "./jobs";
-export * from "./organizations";
+// Search collections - placeholder
+// Add collection exports here as needed

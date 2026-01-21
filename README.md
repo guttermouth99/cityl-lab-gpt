@@ -1,205 +1,220 @@
-<p align="center">
-  <img src="https://nextjs.org/static/favicon/favicon-32x32.png" alt="Next.js" width="32" />
-  <img src="https://expressjs.com/images/favicon.png" alt="Express" width="32" />
-  <img src="https://trpc.io/img/logo.svg" alt="tRPC" width="32" />
-  <img src="https://raw.githubusercontent.com/oven-sh/bun/main/assets/logo.svg" alt="Bun" width="32" />
-  <img src="https://www.prisma.io/favicon.ico" alt="Prisma" width="32" />
-</p>
+# Trigger.dev + Mastra Boilerplate
 
-<h1 align="center">Next.js × Express × tRPC × Bun × Better Auth × Prisma × Turborepo Template</h1>
+A lightweight monorepo boilerplate demonstrating **Trigger.dev** background tasks with **Mastra AI** agents, featuring realtime responses streamed back to a Next.js frontend.
 
-<p align="center">
-  <b>Kickstart your next project with a modern, scalable, and type-safe monorepo template.</b><br/>
-  <i>Production-ready, batteries included, and easy to extend.</i>
-</p>
+## Features
 
----
+- **Next.js 15** - App Router with React Server Components
+- **Trigger.dev v4** - Background task execution with realtime updates
+- **Mastra AI** - Agent framework with tool support (Jina Search)
+- **tRPC** - End-to-end typesafe APIs
+- **Better-Auth** - Authentication (pre-configured)
+- **Drizzle ORM** - Type-safe database access
+- **AI Gateway** - Proxy endpoint for LLM providers
+- **Turborepo** - Fast monorepo builds
+- **Bun** - Fast package manager and runtime
 
-## 🧪 Use this template
+## Quick Start
 
-```sh
-bun create turbo@latest --example https://github.com/KitsuneKode/template-nextjs-express-trpc-bettera-auth-monorepo
-cd my-app
+### Prerequisites
+
+- [Bun](https://bun.sh) >= 1.0
+- [Node.js](https://nodejs.org) >= 22
+- PostgreSQL database
+- [Trigger.dev](https://trigger.dev) account
+
+### Installation
+
+```bash
+# Install dependencies
 bun install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your values
+
+# Generate database types
+bun db:generate
+
+# Start development
 bun dev
 ```
 
-> Requires Bun: [Bun](https://bun.sh)
+### Environment Variables
 
-## 🔗 Repository
+Create a `.env` file in the root:
 
-- GitHub: [KitsuneKode/template-nextjs-express-trpc-bettera-auth-monorepo](https://github.com/KitsuneKode/template-nextjs-express-trpc-bettera-auth-monorepo)
+```env
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/boilerplate
 
----
+# Next.js
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-## 🚀 Features
+# Authentication
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=your-secret-key
 
-- **Full-Stack Ready:** Next.js frontend, Express backend, tRPC for typesafe APIs.
-- **Ultra-Fast Tooling:** Powered by Bun for rapid installs and scripts.
-- **Type Safety:** End-to-end TypeScript, including API contracts.
-- **Modular Auth:** Plug-and-play authentication package.
-- **Reusable UI:** Shared component library for consistent design.
-- **Monorepo Power:** Code sharing and easy scaling with Turborepo.
-- **Production Best Practices:** Pre-configured for real-world deployments.
+# Trigger.dev
+TRIGGER_SECRET_KEY=tr_dev_xxx
 
----
+# LLM (required for Mastra)
+OPENAI_API_KEY=sk-xxx
 
-## 🗂️ Project Structure
+# Jina Search (optional - for web search tool)
+JINA_API_KEY=jina_xxx
+```
+
+## Project Structure
 
 ```
 apps/
-  api/        # Express backend (tRPC, Auth, Prisma)
-  client/     # Next.js frontend (tRPC client, UI)
+  web/          # Next.js frontend
+  server/       # Express API + AI Gateway
+  worker/       # Trigger.dev background tasks
+
 packages/
-  auth/       # Authentication logic(better-auth)
-  store/      # Prisma schema & DB access
-  trpc/       # tRPC routers & helpers
-  ui/         # Shared UI components
-  common/     # Shared types & utilities
-  backend-common/ # Backend-specific shared code
+  mastra/       # Mastra AI agents & workflows
+  trpc/         # tRPC routers
+  db/           # Drizzle schema & queries
+  ui/           # Shared UI components
+  env/          # Environment validation
+  shared/       # Shared types & utils
 ```
 
----
+## How It Works
 
-## ⚡ Quick Start
-
-1. **Install dependencies (with Bun):**
-
-   ```sh
-   bun install
-   ```
-
-2. **Set up environment variables** (see section below)
-
-3. **Start development (all apps/packages):**
-
-   ```sh
-   bun dev
-   ```
-
-4. **Build everything:**
-   ```sh
-   bun run build
-   ```
-
----
-
-## 🔐 Environment Variables
-
-This monorepo uses environment variables across different apps and packages. Place `.env` files in the **root directory** — Turborepo will automatically pass them to the appropriate packages.
-
-### Required Variables
-
-Create a `.env` file in the **root** of the project:
-
-```env
-# Database (required - used by packages/db)
-DATABASE_URL=postgresql://user:password@localhost:5432/baito
-
-# App URLs (required)
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+┌─────────────┐     ┌─────────┐     ┌──────────┐     ┌─────────┐
+│   Next.js   │────▶│  tRPC   │────▶│ Trigger  │────▶│ Mastra  │
+│  Frontend   │     │ Router  │     │   Task   │     │  Agent  │
+└─────────────┘     └─────────┘     └──────────┘     └─────────┘
+       ▲                                                   │
+       │              useRealtimeRun                       │
+       └───────────────────────────────────────────────────┘
 ```
 
-### Authentication (apps/web)
+1. User submits a message on the Hello World page
+2. tRPC mutation triggers a Trigger.dev task
+3. Task runs a Mastra workflow with an AI agent
+4. Agent can use tools (like Jina Search) to answer
+5. Results stream back to frontend via `useRealtimeRun`
 
-```env
-# Better Auth
-BETTER_AUTH_URL=http://localhost:3000
-BETTER_AUTH_SECRET=your-secret-key-here
+## Development
 
-# OAuth Providers (optional - enable as needed)
-GITHUB_CLIENT_ID=your-github-client-id
-GITHUB_CLIENT_SECRET=your-github-client-secret
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
+```bash
+# Start all apps
+bun dev
+
+# Start specific apps
+bun dev:web      # Next.js only
+bun dev:worker   # Trigger.dev worker
+bun dev:mastra   # Mastra dev server
+
+# Database
+bun db:generate  # Generate types
+bun db:migrate   # Run migrations
+bun db:studio    # Open Drizzle Studio
+
+# Linting
+bun lint         # Check code
+bun lint:fix     # Auto-fix issues
 ```
 
-### Background Jobs (apps/worker)
+## Apps
 
-```env
-# Trigger.dev
-TRIGGER_API_KEY=tr_dev_xxx
-TRIGGER_API_URL=https://api.trigger.dev
+### Web (apps/web)
 
-# Web Scraping
-JINA_API_KEY=jina_xxx
+Next.js frontend with a Hello World page that demonstrates:
+- Triggering background tasks via tRPC
+- Realtime updates using `useRealtimeRun`
+- Displaying AI responses
 
-# Job Feeds
-STEPSTONE_FEED_URL=https://...
+### Server (apps/server)
+
+Express API with:
+- Health check endpoint (`GET /health`)
+- AI Gateway proxy (`POST /v1/chat/completions`)
+
+### Worker (apps/worker)
+
+Trigger.dev worker with:
+- `hello-world` task that runs Mastra workflows
+
+## Packages
+
+### Mastra (packages/mastra)
+
+AI framework with:
+- **Example Agent** - Uses Jina Search tool
+- **Example Workflow** - Single-step workflow
+
+### tRPC (packages/trpc)
+
+Type-safe API routers:
+- `hello.trigger` - Trigger background tasks
+- `users.me` - Get current user
+
+### DB (packages/db)
+
+Drizzle ORM with Better-Auth compatible schema:
+- Users, Sessions, Accounts, Verifications
+
+## Extending
+
+### Add a new Mastra agent
+
+```typescript
+// packages/mastra/src/mastra/agents/my-agent.ts
+import { Agent } from "@mastra/core/agent";
+
+export const myAgent = new Agent({
+  id: "my-agent",
+  name: "My Agent",
+  instructions: "...",
+  model: "openai/gpt-4o-mini",
+  tools: { /* add tools */ },
+});
 ```
 
-### AI/LLM (packages/llm)
+### Add a new Trigger.dev task
 
-```env
-# OpenAI API (used via AI SDK)
-OPENAI_API_KEY=sk-xxx
+```typescript
+// apps/worker/src/jobs/my-task.ts
+import { task } from "@trigger.dev/sdk";
+
+export const myTask = task({
+  id: "my-task",
+  run: async (payload) => {
+    // Task logic here
+  },
+});
 ```
 
-### Search (packages/search)
+### Add a new tRPC router
 
-```env
-# Typesense
-TYPESENSE_HOST=localhost
-TYPESENSE_PORT=8108
-TYPESENSE_PROTOCOL=http
-TYPESENSE_API_KEY=xyz
+```typescript
+// packages/trpc/src/routers/my-router.ts
+import { createTRPCRouter, publicProcedure } from "../trpc";
+
+export const myRouter = createTRPCRouter({
+  hello: publicProcedure.query(() => "Hello!"),
+});
 ```
 
-### Email (packages/email)
+## Deployment
 
-```env
-# SendGrid
-SENDGRID_API_KEY=SG.xxx
+### Trigger.dev
+
+```bash
+cd apps/worker
+npx trigger.dev@latest deploy
 ```
 
-### Summary by Location
+### Vercel (Next.js)
 
-| Package/App | Variables |
-|-------------|-----------|
-| **Root** | `NODE_ENV`, `DATABASE_URL`, `NEXT_PUBLIC_APP_URL` |
-| **apps/web** | `BETTER_AUTH_*`, `GITHUB_*`, `GOOGLE_*` |
-| **apps/worker** | `TRIGGER_*`, `JINA_API_KEY`, `STEPSTONE_FEED_URL` |
-| **packages/db** | `DATABASE_URL` |
-| **packages/llm** | `OPENAI_API_KEY` |
-| **packages/search** | `TYPESENSE_*` |
-| **packages/email** | `SENDGRID_API_KEY` |
+Connect your repo to Vercel and set environment variables.
 
-> **Note:** All env vars should go in the root `.env` file. Turborepo handles passing them to the correct packages via `globalEnv` and `globalPassThroughEnv` in `turbo.json`.
-
----
-
-## 🛠️ Why Use This Template?
-
-- **Easy Initial Setup:** Get started in minutes, not hours.
-- **Type-Safe Everywhere:** No more guessing types between client and server.
-- **Scalable & Maintainable:** Modular structure for growing teams and projects.
-- **Modern Stack:** Stay up-to-date with the latest best practices.
-- **Ready for Production:** Sensible defaults and extensible configuration.
-
----
-
-## 📚 Learn More
-
-- [Next.js](https://nextjs.org/)
-- [Express.js](https://expressjs.com/)
-- [tRPC](https://trpc.io/)
-- [Bun](https://bun.sh/)
-- [Prisma](https://prisma.io/)
-- [Turborepo](https://turbo.build/)
-- [Better Auth](https://better-auth.com/)
-
----
-
-## 📝 Author
-
-- [@KitsunKode](https://x.com/KitsunKode)
-
----
-
-## 📄 License
+## License
 
 MIT
-
----
-
-> Want to contribute? Add badges, contribution guidelines, or a screenshot/demo section!

@@ -1,228 +1,124 @@
-import { ArrowRight, Leaf, Search, Users } from "lucide-react";
-import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CareerPageScraper } from "@/components/career-page-scraper";
-import { ImpactAssessor } from "@/components/impact-assessor";
-import { JobAnalyzer } from "@/components/job-analyzer";
-import { Link } from "@/i18n/navigation";
+"use client";
 
-interface LandingPageProps {
-  params: Promise<{ locale: string }>;
+import { Button } from "@baito/ui/components/button";
+import { Input } from "@baito/ui/components/input";
+import { useMutation } from "@tanstack/react-query";
+import { useRealtimeRun } from "@trigger.dev/react-hooks";
+import { Loader2, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { useTRPCClient } from "@/lib/trpc/client";
+
+interface RunData {
+  runId: string;
+  token: string;
 }
 
-export async function generateMetadata({
-  params,
-}: LandingPageProps): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Metadata" });
+export default function HelloWorldPage() {
+  const [message, setMessage] = useState("");
+  const [runData, setRunData] = useState<RunData | null>(null);
+  const trpc = useTRPCClient();
 
-  return {
-    title: t("landingTitle"),
-    description: t("landingDescription"),
+  const triggerMutation = useMutation({
+    mutationFn: (input: { message: string }) =>
+      trpc.hello.trigger.mutate(input),
+    onSuccess: (data) => setRunData(data),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) {
+      return;
+    }
+    setRunData(null);
+    triggerMutation.mutate({ message: message.trim() });
   };
-}
-
-export default async function LandingPage({ params }: LandingPageProps) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-
-  const t = await getTranslations("Landing");
-  const tCommon = await getTranslations("Common");
 
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-green-50 to-white py-20 lg:py-32">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-4xl text-center">
-            <h1 className="mb-6 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl lg:text-6xl">
-              {t("hero.title")}{" "}
-              <span className="text-green-600">{t("hero.titleHighlight")}</span>
-            </h1>
-            <p className="mb-8 text-gray-600 text-xl">{t("hero.subtitle")}</p>
+    <div className="container mx-auto max-w-2xl p-8">
+      <div className="mb-8 text-center">
+        <h1 className="mb-2 font-bold text-3xl">Hello World Boilerplate</h1>
+        <p className="text-gray-600">
+          Enter a message to trigger a background task with Mastra AI.
+        </p>
+      </div>
 
-            {/* Search Box */}
-            <div className="mx-auto max-w-2xl">
-              <form className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
-                  <input
-                    className="h-14 w-full rounded-lg border border-gray-200 bg-white pr-4 pl-12 text-lg focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
-                    placeholder={t("hero.searchPlaceholder")}
-                    type="text"
-                  />
-                </div>
-                <button
-                  className="h-14 rounded-lg bg-green-600 px-8 font-medium text-white transition-colors hover:bg-green-700"
-                  type="submit"
-                >
-                  {t("hero.searchButton")}
-                </button>
-              </form>
-            </div>
+      <form className="mb-6 flex gap-2" onSubmit={handleSubmit}>
+        <Input
+          className="flex-1"
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Enter a message..."
+          value={message}
+        />
+        <Button
+          disabled={triggerMutation.isPending || !message.trim()}
+          type="submit"
+        >
+          {triggerMutation.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            "Trigger Task"
+          )}
+        </Button>
+      </form>
 
-            {/* Quick Links */}
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link
-                className="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 font-medium text-green-800 text-sm hover:bg-green-200"
-                href="/jobs?category=sustainability"
-              >
-                <Leaf className="h-4 w-4" />
-                {t("categories.sustainability")}
-              </Link>
-              <Link
-                className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 font-medium text-blue-800 text-sm hover:bg-blue-200"
-                href="/jobs?category=social"
-              >
-                <Users className="h-4 w-4" />
-                {t("categories.socialImpact")}
-              </Link>
-              <Link
-                className="inline-flex items-center gap-2 rounded-full bg-purple-100 px-4 py-2 font-medium text-purple-800 text-sm hover:bg-purple-200"
-                href="/jobs?remote=true"
-              >
-                {t("categories.remoteJobs")}
-              </Link>
-            </div>
+      {triggerMutation.isError && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+          {triggerMutation.error?.message || "Failed to trigger task"}
+        </div>
+      )}
+
+      {runData && (
+        <RealtimeResult accessToken={runData.token} runId={runData.runId} />
+      )}
+    </div>
+  );
+}
+
+interface TaskOutput {
+  response: string;
+}
+
+function RealtimeResult({
+  runId,
+  accessToken,
+}: {
+  runId: string;
+  accessToken: string;
+}) {
+  const { run } = useRealtimeRun(runId, {
+    accessToken,
+  });
+
+  const output = run?.output as TaskOutput | undefined;
+
+  const isRunning = run?.status === "EXECUTING" || run?.status === "QUEUED";
+  const isCompleted = run?.status === "COMPLETED";
+  const isFailed = run?.status === "FAILED" || run?.status === "CRASHED";
+
+  return (
+    <div className="rounded-lg border bg-white p-6 shadow-sm">
+      {isRunning && (
+        <div className="flex items-center gap-2 text-blue-600">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span>Processing with Mastra AI...</span>
+        </div>
+      )}
+
+      {isFailed && (
+        <div className="text-red-600">
+          Something went wrong. Please try again.
+        </div>
+      )}
+
+      {isCompleted && output && (
+        <div className="flex items-start gap-3">
+          <Sparkles className="mt-1 h-5 w-5 shrink-0 text-purple-600" />
+          <div>
+            <p className="font-medium text-gray-900">Response</p>
+            <p className="mt-1 text-gray-700">{output.response}</p>
           </div>
         </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="border-y bg-gray-50 py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div className="text-center">
-              <div className="font-bold text-3xl text-gray-900">10,000+</div>
-              <div className="text-gray-600">{t("stats.activeJobs")}</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-3xl text-gray-900">2,500+</div>
-              <div className="text-gray-600">{t("stats.organizations")}</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-3xl text-gray-900">50,000+</div>
-              <div className="text-gray-600">{t("stats.monthlyVisitors")}</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-3xl text-gray-900">100%</div>
-              <div className="text-gray-600">{t("stats.impactFocused")}</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Job Analyzer Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-2xl">
-            <h2 className="mb-2 text-center font-bold text-2xl text-gray-900">
-              AI Job Analyzer
-            </h2>
-            <p className="mb-6 text-center text-gray-600">
-              Paste a job posting to analyze its category, required skills, and
-              more.
-            </p>
-            <JobAnalyzer />
-          </div>
-        </div>
-      </section>
-
-      {/* Career Page Scraper Section */}
-      <section className="border-t bg-gray-50 py-16">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-2xl">
-            <h2 className="mb-2 text-center font-bold text-2xl text-gray-900">
-              Career Page Scraper
-            </h2>
-            <p className="mb-6 text-center text-gray-600">
-              Enter a company&apos;s career page URL to automatically extract
-              all job listings.
-            </p>
-            <CareerPageScraper />
-          </div>
-        </div>
-      </section>
-
-      {/* Impact Assessor Section */}
-      <section className="border-t py-16">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-2xl">
-            <h2 className="mb-2 text-center font-bold text-2xl text-gray-900">
-              Company Impact Assessor
-            </h2>
-            <p className="mb-6 text-center text-gray-600">
-              Assess multiple companies at once to determine their social and
-              environmental impact.
-            </p>
-            <ImpactAssessor />
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Jobs Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="mb-8 flex items-center justify-between">
-            <h2 className="font-bold text-2xl text-gray-900">
-              {t("featuredJobs.title")}
-            </h2>
-            <Link
-              className="inline-flex items-center gap-2 text-green-600 hover:text-green-700"
-              href="/jobs"
-            >
-              {t("featuredJobs.viewAll")}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          {/* Job cards would go here - placeholder for now */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div className="rounded-lg border bg-white p-6 shadow-sm" key={i}>
-                <div className="mb-4 flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {t("featuredJobs.sampleTitle")}
-                    </h3>
-                    <p className="text-gray-600">
-                      {t("featuredJobs.sampleOrg")}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-green-100 px-2 py-1 font-medium text-green-800 text-xs">
-                    {tCommon("new")}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded bg-gray-100 px-2 py-1 text-gray-600 text-xs">
-                    {tCommon("fullTime")}
-                  </span>
-                  <span className="rounded bg-gray-100 px-2 py-1 text-gray-600 text-xs">
-                    {tCommon("remote")}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-green-600 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 font-bold text-3xl text-white">
-            {t("cta.title")}
-          </h2>
-          <p className="mb-8 text-green-100 text-lg">{t("cta.subtitle")}</p>
-          <Link
-            className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-medium text-green-600 transition-colors hover:bg-green-50"
-            href="/account/alerts"
-          >
-            {t("cta.button")}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+      )}
     </div>
   );
 }
