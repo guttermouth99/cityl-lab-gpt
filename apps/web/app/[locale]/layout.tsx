@@ -65,7 +65,7 @@ export default async function LocaleLayout({
 
   return (
     <html className={workSans.variable} lang={locale} suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col bg-slate-50 font-sans antialiased">
+      <body className="flex min-h-screen flex-col font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <div className="flex flex-1 flex-col">{children}</div>
