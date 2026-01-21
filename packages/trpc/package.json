@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@baito/worker": "*",
+    "@neondatabase/serverless": "^1.0.2",
     "@trigger.dev/sdk": "^4.0.0",
     "@trpc/server": "^11.0.0",
     "superjson": "^2.2.2",

@@ -1,6 +1,6 @@
 import { DocumentUpload } from "./document-upload";
 
-export default function DocumentsPage() {
+export default function AddDocumentPage() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
       <div className="mb-8 text-center">
