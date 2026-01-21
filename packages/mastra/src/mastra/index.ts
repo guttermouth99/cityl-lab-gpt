@@ -1,3 +1,4 @@
+import { chatRoute } from "@mastra/ai-sdk";
 import { Mastra } from "@mastra/core/mastra";
 import { LibSQLStore } from "@mastra/libsql";
 
@@ -22,6 +23,9 @@ export const mastra = new Mastra({
     id: "mastra",
     url: dbUrl,
   }),
+  server: {
+    apiRoutes: [chatRoute({ path: "/chat/:agentId" })],
+  },
   // Disable observability in worker context to avoid bundling issues
   // The deprecation warning is a known issue with @mastra/core@1.0.x
 });

@@ -9,7 +9,9 @@ const nextConfig = {
     "@baito/db",
     "@baito/shared",
     "@baito/search",
+    "@baito/mastra",
   ],
+  serverExternalPackages: ["@mastra/*"],
   cacheComponents: true,
 };
 
