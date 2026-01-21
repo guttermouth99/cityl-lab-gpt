@@ -13,6 +13,7 @@ interface DocumentSummary {
   publishedAt?: string;
   tags?: string[];
   author?: string;
+  topic?: string;
   chunkCount: number;
 }
 
@@ -38,6 +39,7 @@ export const documentsRouter = createTRPCRouter({
         metadata->>'publishedAt' as published_at,
         metadata->'tags' as tags,
         metadata->>'author' as author,
+        metadata->>'topic' as topic,
         COUNT(*) as chunk_count
       FROM "citylab_content"
       GROUP BY 
@@ -48,7 +50,8 @@ export const documentsRouter = createTRPCRouter({
         metadata->>'language',
         metadata->>'publishedAt',
         metadata->'tags',
-        metadata->>'author'
+        metadata->>'author',
+        metadata->>'topic'
       ORDER BY metadata->>'title'
     `;
 
@@ -61,6 +64,7 @@ export const documentsRouter = createTRPCRouter({
       publishedAt: row.published_at as string | undefined,
       tags: row.tags as string[] | undefined,
       author: row.author as string | undefined,
+      topic: row.topic as string | undefined,
       chunkCount: Number(row.chunk_count),
     })) satisfies DocumentSummary[];
   }),

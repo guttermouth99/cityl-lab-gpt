@@ -17,6 +17,18 @@ export type CityLabContentType =
 export type CityLabLanguage = "de" | "en";
 
 /**
+ * Topic areas for CityLAB Berlin content
+ */
+export type CityLabTopic =
+  | "smart-city"
+  | "innovative-administration"
+  | "open-cities"
+  | "kiezlabor"
+  | "open-data"
+  | "digital-collaboration"
+  | "events-networking";
+
+/**
  * Represents a piece of content from CityLAB Berlin
  * to be indexed in the vector database
  */
@@ -41,6 +53,8 @@ export interface CityLabContent {
   author?: string;
   /** Short description or excerpt */
   description?: string;
+  /** Topic area for the content */
+  topic?: CityLabTopic;
 }
 
 /**
@@ -65,6 +79,8 @@ export interface CityLabChunkMetadata {
   tags?: string[];
   /** Author information */
   author?: string;
+  /** Topic area for filtering */
+  topic?: CityLabTopic;
   /** Chunk index within the document */
   chunkIndex: number;
 }
@@ -125,6 +141,8 @@ export interface ExtractedDocumentMetadata {
   publishedAt?: string;
   /** Generated source ID (slug from title) */
   sourceId: string;
+  /** Topic area for the content */
+  topic?: CityLabTopic;
 }
 
 /**

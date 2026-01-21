@@ -1,4 +1,6 @@
+import { createTool } from "@mastra/core/tools";
 import { ofetch } from "ofetch";
+import { z } from "zod";
 
 /**
  * Regex patterns for extracting YouTube video IDs
@@ -127,3 +129,28 @@ export function fetchYouTubeTranscriptFromUrl(
   const videoId = extractVideoId(urlOrVideoId) ?? urlOrVideoId;
   return fetchYouTubeTranscript(videoId);
 }
+
+/**
+ * YouTube Transcriber tool for fetching transcripts from YouTube videos
+ */
+export const youtubeTranscriberTool = createTool({
+  id: "youtube-transcriber",
+  description:
+    "Fetch transcript from a YouTube video. Use for youtube.com or youtu.be URLs.",
+  inputSchema: z.object({
+    url: z.string().describe("YouTube video URL or video ID"),
+  }),
+  outputSchema: z.object({
+    title: z.string(),
+    content: z.string(),
+    url: z.string(),
+  }),
+  execute: async ({ url }) => {
+    const result = await fetchYouTubeTranscriptFromUrl(url);
+    return {
+      title: `YouTube Video: ${result.videoId}`,
+      content: result.fullTranscript,
+      url,
+    };
+  },
+});

@@ -9,7 +9,6 @@ import {
   type ExtractedDocumentMetadata,
   embedContent,
 } from "../rag";
-import { fetchUrlContent } from "../tools/jina-reader";
 
 // ============================================================================
 // Schemas
@@ -46,6 +45,7 @@ const metadataSchema = z.object({
   language: z
     .enum(["de", "en"])
     .describe("The primary language of the content"),
+
   publishedAt: z
     .string()
     .nullable()
@@ -56,6 +56,20 @@ const metadataSchema = z.object({
     .string()
     .describe(
       "A URL-safe slug generated from the title (lowercase, hyphens, no special chars)"
+    ),
+  topic: z
+    .enum([
+      "smart-city",
+      "innovative-administration",
+      "open-cities",
+      "kiezlabor",
+      "open-data",
+      "digital-collaboration",
+      "events-networking",
+    ])
+    .nullable()
+    .describe(
+      "The main CityLAB Berlin topic area. Use: smart-city (Smart City, digitale Stadt), innovative-administration (innovative Verwaltung), open-cities (Open Cities), kiezlabor (Kiezlabor), open-data (Open Data, offene Daten), digital-collaboration (digitale Zusammenarbeit, Digital Collaboration), events-networking (Events, Networking, Veranstaltungen). Set to null if the topic cannot be clearly determined."
     ),
 });
 
@@ -79,6 +93,17 @@ const extractedMetadataSchema = z.object({
   language: z.enum(["de", "en"]),
   publishedAt: z.string().optional(),
   sourceId: z.string(),
+  topic: z
+    .enum([
+      "smart-city",
+      "innovative-administration",
+      "open-cities",
+      "kiezlabor",
+      "open-data",
+      "digital-collaboration",
+      "events-networking",
+    ])
+    .optional(),
 });
 
 /**
@@ -140,25 +165,48 @@ function generateSlug(title: string): string {
 // ============================================================================
 
 /**
- * Step 1: Fetch content from URL using Jina Reader
+ * Output schema for content retrieval (used for structured output)
  */
-const fetchContentStep = createStep({
-  id: "fetch-content",
+const contentOutputSchema = z.object({
+  content: z.string(),
+  title: z.string(),
+  url: z.string(),
+});
+
+/**
+ * Step 1: Retrieve content using Content Retrieval Agent
+ *
+ * The agent analyzes the URL and routes to the appropriate tool:
+ * - YouTube URLs → youtubeTranscriberTool
+ * - Other URLs → jinaReaderTool
+ */
+const retrieveContentStep = createStep({
+  id: "retrieve-content",
   inputSchema: z.object({
     url: z.string().url(),
   }),
-  outputSchema: z.object({
-    content: z.string(),
-    title: z.string(),
-    url: z.string(),
-  }),
-  execute: async ({ inputData }) => {
-    const result = await fetchUrlContent(inputData.url);
-    return {
-      content: result.content,
-      title: result.title,
-      url: result.url,
-    };
+  outputSchema: contentOutputSchema,
+  execute: async ({ inputData, mastra }) => {
+    const agent = mastra?.getAgent("content-retrieval");
+    if (!agent) {
+      throw new Error("Content retrieval agent not found");
+    }
+
+    const response = await agent.generate(
+      [
+        {
+          role: "user",
+          content: `Fetch content from this URL: ${inputData.url}`,
+        },
+      ],
+      {
+        structuredOutput: {
+          schema: contentOutputSchema,
+        },
+      }
+    );
+
+    return response.object;
   },
 });
 
@@ -197,7 +245,17 @@ If the content is primarily in German, set language to "de", otherwise "en".
 For contentType, choose the most appropriate type based on the content structure and purpose.
 Extract 3-7 relevant tags that describe the main topics.
 Set author to null if no author name is found in the content.
-Set publishedAt to null if no clear publication date is found in the content.`,
+Set publishedAt to null if no clear publication date is found in the content.
+
+For topic, classify the content into one of the CityLAB Berlin topic areas:
+- "smart-city": Smart City, digitale Stadt, urban technology, connected city
+- "innovative-administration": innovative Verwaltung, public sector innovation, government modernization
+- "open-cities": Open Cities, open government, transparent city
+- "kiezlabor": Kiezlabor, neighborhood lab, local community projects
+- "open-data": Open Data, offene Daten, data portals, public datasets
+- "digital-collaboration": digitale Zusammenarbeit, Digital Collaboration, co-creation, participatory processes
+- "events-networking": Events, Networking, Veranstaltungen, conferences, meetups
+Set topic to null if the content does not clearly fit any of these categories.`,
     });
 
     const extractedMetadata: ExtractedDocumentMetadata = {
@@ -208,6 +266,7 @@ Set publishedAt to null if no clear publication date is found in the content.`,
       language: object.language,
       publishedAt: object.publishedAt ?? undefined, // Convert null to undefined
       sourceId: object.sourceId || generateSlug(object.title),
+      topic: object.topic ?? undefined, // Convert null to undefined
     };
 
     return {
@@ -308,6 +367,7 @@ const embedContentStep = createStep({
       publishedAt: inputData.metadata.publishedAt,
       tags: inputData.metadata.tags,
       author: inputData.metadata.author,
+      topic: inputData.metadata.topic,
     };
 
     const result: EmbedResult = await embedContent(contentToEmbed);
@@ -333,7 +393,7 @@ const embedContentStep = createStep({
  * Embed Document Workflow
  *
  * A single workflow that:
- * 1. Fetches content from a URL using Jina Reader
+ * 1. Retrieves content using Content Retrieval Agent (routes YouTube → transcriber, web → Jina Reader)
  * 2. Extracts metadata using AI
  * 3. Suspends for human review (HITL)
  * 4. Embeds approved content into the vector database
@@ -345,7 +405,7 @@ export const embedDocumentWorkflow = createWorkflow({
   }),
   outputSchema: embedResultSchema,
 })
-  .then(fetchContentStep)
+  .then(retrieveContentStep)
   .then(extractMetadataStep)
   .then(humanReviewStep)
   .then(embedContentStep)

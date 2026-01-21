@@ -44,7 +44,16 @@ interface DocumentSummary {
   publishedAt?: string;
   tags?: string[];
   author?: string;
+  topic?: string;
   chunkCount: number;
+}
+
+/** Format topic slug for display (e.g., "smart-city" -> "Smart City") */
+function formatTopic(topic: string): string {
+  return topic
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 export default function BrowseDocumentsPage() {
@@ -117,7 +126,12 @@ export default function BrowseDocumentsPage() {
                   <CardTitle className="line-clamp-2 text-lg">
                     {doc.title}
                   </CardTitle>
-                  <Badge variant="secondary">{doc.contentType}</Badge>
+                  <div className="flex flex-col gap-1">
+                    <Badge variant="secondary">{doc.contentType}</Badge>
+                    {doc.topic && (
+                      <Badge variant="outline">{formatTopic(doc.topic)}</Badge>
+                    )}
+                  </div>
                 </div>
                 <CardDescription className="flex items-center gap-1">
                   <Globe className="h-3 w-3" />

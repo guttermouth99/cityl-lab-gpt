@@ -1,4 +1,6 @@
+import { createTool } from "@mastra/core/tools";
 import { ofetch } from "ofetch";
+import { z } from "zod";
 
 /**
  * Response from Jina Reader API when using JSON format
@@ -70,3 +72,24 @@ export async function fetchUrlContent(url: string): Promise<JinaReaderContent> {
     tokensUsed: response.data.usage?.tokens ?? 0,
   };
 }
+
+/**
+ * Jina Reader tool for fetching and extracting content from webpages
+ */
+export const jinaReaderTool = createTool({
+  id: "jina-reader",
+  description:
+    "Fetch and extract content from a webpage URL. Returns clean markdown content with title.",
+  inputSchema: z.object({
+    url: z.string().describe("The webpage URL to fetch content from"),
+  }),
+  outputSchema: z.object({
+    title: z.string(),
+    content: z.string(),
+    url: z.string(),
+  }),
+  execute: async ({ url }) => {
+    const result = await fetchUrlContent(url);
+    return { title: result.title, content: result.content, url: result.url };
+  },
+});

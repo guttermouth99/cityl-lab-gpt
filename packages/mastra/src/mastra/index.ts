@@ -3,6 +3,7 @@ import { Mastra } from "@mastra/core/mastra";
 import { LibSQLStore } from "@mastra/libsql";
 
 import { citylabAgent } from "./agents/citylab-agent";
+import { contentRetrievalAgent } from "./agents/content-retrieval-agent";
 import { exampleAgent } from "./agents/example-agent";
 import { embedDocumentWorkflow } from "./workflows/embed-document-workflow";
 import { exampleWorkflow } from "./workflows/example-workflow";
@@ -25,7 +26,11 @@ const dbUrl =
   "file:/Users/lukas/Projects/citylabgpt/packages/mastra/mastra.db";
 
 export const mastra = new Mastra({
-  agents: { exampleAgent, citylabAgent },
+  agents: {
+    exampleAgent,
+    citylabAgent,
+    "content-retrieval": contentRetrievalAgent,
+  },
   workflows: {
     exampleWorkflow,
     embedDocumentWorkflow,

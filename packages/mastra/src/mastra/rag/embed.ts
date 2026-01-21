@@ -69,6 +69,7 @@ export async function embedContent(
       publishedAt: content.publishedAt,
       tags: content.tags,
       author: content.author,
+      topic: content.topic,
       chunkIndex: index,
     }));
 
