@@ -44,7 +44,22 @@
     "deleteConfirmTitle": "Eintrag löschen",
     "deleteConfirmDescription": "Sind Sie sicher, dass Sie \"{title}\" löschen möchten? Dies entfernt alle {chunkCount} Abschnitte aus der Wissensdatenbank. Diese Aktion kann nicht rückgängig gemacht werden.",
     "cancel": "Abbrechen",
-    "deleting": "Wird gelöscht..."
+    "deleting": "Wird gelöscht...",
+    "searchPlaceholder": "Nach Titel, URL, Autor oder Tag suchen...",
+    "clearSearch": "Suche löschen",
+    "contentType": "Inhaltstyp",
+    "language": "Sprache",
+    "topic": "Thema",
+    "clearFilter": "Filter löschen",
+    "clearAllFilters": "Alle löschen",
+    "filters": "Filter",
+    "activeFilters": "Aktive Filter",
+    "sortByTitle": "Nach Titel sortieren",
+    "sortByDate": "Nach Datum sortieren",
+    "sortByChunks": "Nach Abschnitten sortieren",
+    "showingResults": "{count} von {total} Einträgen",
+    "noResultsTitle": "Keine passenden Einträge",
+    "noResultsDescription": "Versuchen Sie, Ihre Suche oder Filter anzupassen, um das Gesuchte zu finden."
   },
   "AddDocument": {
     "pageTitle": "Dokument zur Wissensdatenbank hinzufügen",

@@ -11,34 +11,19 @@ import {
   AlertDialogTitle,
 } from "@baito/ui/components/alert-dialog";
 import { Badge } from "@baito/ui/components/badge";
-import { Button } from "@baito/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@baito/ui/components/card";
-import { Skeleton } from "@baito/ui/components/skeleton";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@baito/ui/components/toggle-group";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Calendar,
-  FileText,
-  Globe,
-  LayoutGrid,
-  List,
-  Tag,
-  Trash2,
-  User,
-} from "lucide-react";
+import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { LinkPreview } from "@/components/link-preview";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTRPC } from "@/lib/trpc/client";
+import { DocumentsEmpty } from "./components/documents-empty";
+import {
+  DocumentsFilters,
+  type SortOption,
+} from "./components/documents-filters";
+import { DocumentsGrid } from "./components/documents-grid";
+import { DocumentsHeader } from "./components/documents-header";
+import { DocumentsList } from "./components/documents-list";
 
 interface DocumentSummary {
   sourceId: string;
@@ -53,21 +38,39 @@ interface DocumentSummary {
   chunkCount: number;
 }
 
-/** Format topic slug for display (e.g., "smart-city" -> "Smart City") */
-function formatTopic(topic: string): string {
-  return topic
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+interface PreviewData {
+  image?: string;
+  description?: string;
+  siteName?: string;
+  favicon?: string;
 }
 
 export default function BrowseDocumentsPage() {
   const t = useTranslations("Knowledge");
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const [deleteDoc, setDeleteDoc] = useState<DocumentSummary | null>(null);
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
+  // State
+  const [deleteDoc, setDeleteDoc] = useState<DocumentSummary | null>(null);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("title");
+  const [filters, setFilters] = useState<{
+    contentType: string | null;
+    language: string | null;
+    topic: string | null;
+  }>({
+    contentType: null,
+    language: null,
+    topic: null,
+  });
+
+  // Preview data cache
+  const [previews, setPreviews] = useState<Map<string, PreviewData | null>>(
+    new Map()
+  );
+
+  // Data fetching
   const { data: documents, isLoading } = useQuery(
     trpc.documents.list.queryOptions()
   );
@@ -83,220 +86,206 @@ export default function BrowseDocumentsPage() {
     })
   );
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="mb-2 font-bold text-3xl">{t("pageTitle")}</h1>
-          <p className="text-muted-foreground">{t("pageDescription")}</p>
-        </div>
-        <ToggleGroup
-          onValueChange={(value) =>
-            value && setViewMode(value as "list" | "grid")
+  // Fetch previews for documents
+  useEffect(() => {
+    if (!documents) return;
+
+    const fetchPreviews = async () => {
+      const newPreviews = new Map(previews);
+
+      for (const doc of documents) {
+        if (newPreviews.has(doc.sourceId)) continue;
+
+        try {
+          const response = await fetch(
+            `/api/link-preview?url=${encodeURIComponent(doc.url)}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            newPreviews.set(doc.sourceId, data);
+          } else {
+            newPreviews.set(doc.sourceId, null);
           }
-          type="single"
-          value={viewMode}
-          variant="outline"
-        >
-          <ToggleGroupItem aria-label={t("listView")} value="list">
-            <List className="h-4 w-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem aria-label={t("gridView")} value="grid">
-            <LayoutGrid className="h-4 w-4" />
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+        } catch {
+          newPreviews.set(doc.sourceId, null);
+        }
+      }
 
-      {isLoading && viewMode === "list" && (
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              className="flex items-center gap-4 rounded-lg border p-4"
-              key={`skeleton-list-${i.toString()}`}
-            >
-              <Skeleton className="h-5 w-1/3" />
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-5 w-16" />
-              <Skeleton className="ml-auto h-8 w-20" />
-            </div>
-          ))}
+      setPreviews(newPreviews);
+    };
+
+    fetchPreviews();
+  }, [documents]);
+
+  // Filter handler
+  const handleFilterChange = useCallback(
+    (
+      filterType: "contentType" | "language" | "topic",
+      value: string | null
+    ) => {
+      setFilters((prev) => ({ ...prev, [filterType]: value }));
+    },
+    []
+  );
+
+  // Filtered and sorted documents
+  const filteredDocuments = useMemo(() => {
+    if (!documents) return [];
+
+    let result = [...documents];
+
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (doc) =>
+          doc.title.toLowerCase().includes(query) ||
+          doc.url.toLowerCase().includes(query) ||
+          doc.author?.toLowerCase().includes(query) ||
+          doc.tags?.some((tag) => tag.toLowerCase().includes(query))
+      );
+    }
+
+    // Apply filters
+    if (filters.contentType) {
+      result = result.filter((doc) => doc.contentType === filters.contentType);
+    }
+    if (filters.language) {
+      result = result.filter((doc) => doc.language === filters.language);
+    }
+    if (filters.topic) {
+      result = result.filter((doc) => doc.topic === filters.topic);
+    }
+
+    // Apply sorting
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case "title":
+          return a.title.localeCompare(b.title);
+        case "date":
+          if (!(a.publishedAt || b.publishedAt)) return 0;
+          if (!a.publishedAt) return 1;
+          if (!b.publishedAt) return -1;
+          return (
+            new Date(b.publishedAt).getTime() -
+            new Date(a.publishedAt).getTime()
+          );
+        case "chunks":
+          return b.chunkCount - a.chunkCount;
+        default:
+          return 0;
+      }
+    });
+
+    return result;
+  }, [documents, searchQuery, filters, sortBy]);
+
+  const documentCount = documents?.length ?? 0;
+  const filteredCount = filteredDocuments.length;
+  const hasFilters = searchQuery || Object.values(filters).some(Boolean);
+
+  return (
+    <div className="container mx-auto px-4 py-8 md:py-12">
+      {/* Header with search and view toggle */}
+      <DocumentsHeader
+        documentCount={documentCount}
+        onSearchChange={setSearchQuery}
+        onViewModeChange={setViewMode}
+        searchQuery={searchQuery}
+        viewMode={viewMode}
+      />
+
+      {/* Filters - only show when we have documents */}
+      {!isLoading && documents && documents.length > 0 && (
+        <DocumentsFilters
+          activeFilters={filters}
+          documents={documents}
+          onFilterChange={handleFilterChange}
+          onSortChange={setSortBy}
+          sortBy={sortBy}
+        />
+      )}
+
+      {/* Results count when filtered */}
+      {hasFilters && !isLoading && (
+        <div className="fade-in mb-6 animate-in duration-200">
+          <p className="text-muted-foreground text-sm">
+            {t("showingResults", {
+              count: filteredCount,
+              total: documentCount,
+            })}
+          </p>
         </div>
       )}
 
-      {isLoading && viewMode === "grid" && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={`skeleton-grid-${i.toString()}`}>
-              <CardHeader>
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="mt-2 h-4 w-1/2" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="mt-2 h-4 w-2/3" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      {/* Loading state */}
+      {isLoading &&
+        (viewMode === "grid" ? (
+          <DocumentsGrid
+            documents={[]}
+            isLoading
+            onDeleteDocument={() => {}}
+            previews={new Map()}
+          />
+        ) : (
+          <DocumentsList
+            documents={[]}
+            isLoading
+            onDeleteDocument={() => {}}
+            previews={new Map()}
+          />
+        ))}
+
+      {/* Empty state - no documents at all */}
+      {!isLoading && (!documents || documents.length === 0) && (
+        <DocumentsEmpty />
       )}
 
-      {/* List View */}
+      {/* No results from filtering */}
       {!isLoading &&
         documents &&
         documents.length > 0 &&
-        viewMode === "list" && (
-          <div className="space-y-4">
-            {documents.map((doc) => (
-              <div
-                className="rounded-lg border p-4 transition-colors hover:bg-muted/50"
-                key={doc.sourceId}
-              >
-                {/* Header Row with Title, Badges, and Actions */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                  {/* Title */}
-                  <div className="min-w-0 flex-1">
-                    <h3 className="line-clamp-1 font-medium">{doc.title}</h3>
-                  </div>
-
-                  {/* Badges */}
-                  <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
-                    <Badge variant="secondary">{doc.contentType}</Badge>
-                    {doc.topic && (
-                      <Badge variant="outline">{formatTopic(doc.topic)}</Badge>
-                    )}
-                    <Badge className="uppercase" variant="outline">
-                      {doc.language}
-                    </Badge>
-                    <span className="text-muted-foreground text-xs">
-                      {t("chunks", { count: doc.chunkCount })}
-                    </span>
-                  </div>
-
-                  {/* Delete Action */}
-                  <div className="flex gap-2 sm:shrink-0">
-                    <Button
-                      onClick={() => setDeleteDoc(doc)}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      <span className="sr-only">{t("delete")}</span>
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Link Preview */}
-                <LinkPreview className="mt-0" url={doc.url} />
-              </div>
-            ))}
+        filteredDocuments.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center border-2 border-muted">
+              <FileText className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="mb-2 font-semibold text-lg">
+              {t("noResultsTitle")}
+            </h3>
+            <p className="text-muted-foreground">{t("noResultsDescription")}</p>
           </div>
         )}
 
       {/* Grid View */}
-      {!isLoading &&
-        documents &&
-        documents.length > 0 &&
-        viewMode === "grid" && (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {documents.map((doc) => (
-              <Card className="flex flex-col" key={doc.sourceId}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="line-clamp-2 text-lg">
-                      {doc.title}
-                    </CardTitle>
-                    <div className="flex flex-col gap-1">
-                      <Badge variant="secondary">{doc.contentType}</Badge>
-                      {doc.topic && (
-                        <Badge variant="outline">
-                          {formatTopic(doc.topic)}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  <CardDescription className="flex items-center gap-1">
-                    <Globe className="h-3 w-3" />
-                    <span className="uppercase">{doc.language}</span>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-1 flex-col">
-                  {/* Link Preview with OG metadata */}
-                  <LinkPreview className="mt-0" url={doc.url} />
-
-                  <div className="mt-4 space-y-2 text-muted-foreground text-sm">
-                    {doc.author && (
-                      <div className="flex items-center gap-2">
-                        <User className="h-3 w-3" />
-                        <span>{doc.author}</span>
-                      </div>
-                    )}
-                    {doc.publishedAt && (
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-3 w-3" />
-                        <span>
-                          {new Date(doc.publishedAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-3 w-3" />
-                      <span>{t("chunks", { count: doc.chunkCount })}</span>
-                    </div>
-                  </div>
-                  {doc.tags && doc.tags.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {doc.tags.slice(0, 3).map((tag) => (
-                        <Badge className="text-xs" key={tag} variant="outline">
-                          <Tag className="mr-1 h-2 w-2" />
-                          {tag}
-                        </Badge>
-                      ))}
-                      {doc.tags.length > 3 && (
-                        <Badge className="text-xs" variant="outline">
-                          {t("moreTags", { count: doc.tags.length - 3 })}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                  <div className="mt-4 flex justify-end border-t pt-3">
-                    <Button
-                      onClick={() => setDeleteDoc(doc)}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <Trash2 className="mr-2 h-3 w-3" />
-                      {t("delete")}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-      {!isLoading && (!documents || documents.length === 0) && (
-        <Card className="py-12 text-center">
-          <CardContent>
-            <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <h2 className="mb-2 font-semibold text-lg">{t("noDocuments")}</h2>
-            <p className="mb-4 text-muted-foreground">
-              {t("noDocumentsDescription")}
-            </p>
-            <Button asChild>
-              <a href="/dashboard/add-document">{t("addDocument")}</a>
-            </Button>
-          </CardContent>
-        </Card>
+      {!isLoading && filteredDocuments.length > 0 && viewMode === "grid" && (
+        <DocumentsGrid
+          documents={filteredDocuments}
+          onDeleteDocument={setDeleteDoc}
+          previews={previews}
+        />
       )}
 
+      {/* List View */}
+      {!isLoading && filteredDocuments.length > 0 && viewMode === "list" && (
+        <DocumentsList
+          documents={filteredDocuments}
+          onDeleteDocument={setDeleteDoc}
+          previews={previews}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
       <AlertDialog
         onOpenChange={(open) => !open && setDeleteDoc(null)}
         open={!!deleteDoc}
       >
-        <AlertDialogContent>
+        <AlertDialogContent className="border-2">
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-xl">
+              {t("deleteConfirmTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
               {deleteDoc &&
                 t("deleteConfirmDescription", {
                   title: deleteDoc.title,
@@ -304,11 +293,34 @@ export default function BrowseDocumentsPage() {
                 })}
             </AlertDialogDescription>
           </AlertDialogHeader>
+
+          {/* Document preview in dialog */}
+          {deleteDoc && (
+            <div className="my-4 border-2 border-destructive/20 bg-destructive/5 p-4">
+              <div className="flex items-start gap-3">
+                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+                <div className="min-w-0">
+                  <p className="line-clamp-1 font-medium">{deleteDoc.title}</p>
+                  <p className="line-clamp-1 text-muted-foreground text-sm">
+                    {deleteDoc.url}
+                  </p>
+                  <div className="mt-2 flex gap-2">
+                    <Badge variant="secondary">{deleteDoc.contentType}</Badge>
+                    <Badge variant="outline">
+                      {deleteDoc.chunkCount} chunks
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleteMutation.isPending}>
               {t("cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteMutation.isPending}
               onClick={() =>
                 deleteDoc &&

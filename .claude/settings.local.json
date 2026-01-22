@@ -13,7 +13,9 @@
       "Bash(git push:*)",
       "mcp__trigger__search_docs",
       "Bash(bun x ultracite:*)",
-      "Bash(bun lint:fix:*)"
+      "Bash(bun lint:fix:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)"
     ]
   }
 }

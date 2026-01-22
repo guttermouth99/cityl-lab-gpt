@@ -44,7 +44,22 @@
     "deleteConfirmTitle": "Delete Entry",
     "deleteConfirmDescription": "Are you sure you want to delete \"{title}\"? This will remove all {chunkCount} chunks from the knowledge base. This action cannot be undone.",
     "cancel": "Cancel",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "searchPlaceholder": "Search by title, URL, author, or tag...",
+    "clearSearch": "Clear search",
+    "contentType": "Content Type",
+    "language": "Language",
+    "topic": "Topic",
+    "clearFilter": "Clear filter",
+    "clearAllFilters": "Clear all",
+    "filters": "Filters",
+    "activeFilters": "Active filters",
+    "sortByTitle": "Sort by title",
+    "sortByDate": "Sort by date",
+    "sortByChunks": "Sort by chunks",
+    "showingResults": "Showing {count} of {total} entries",
+    "noResultsTitle": "No matching entries",
+    "noResultsDescription": "Try adjusting your search or filters to find what you're looking for."
   },
   "AddDocument": {
     "pageTitle": "Add Document to Knowledge Base",

@@ -53,6 +53,19 @@ export const baseConfig: Partial<Config> = {
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
+      keyframes: {
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 2s infinite",
+        float: "float 6s ease-in-out infinite",
+      },
     },
   },
   plugins: [],
