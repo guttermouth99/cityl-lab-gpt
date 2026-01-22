@@ -1,10 +1,16 @@
 "use client";
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@baito/ui/components/avatar";
 import { cn } from "@baito/ui/lib/utils";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { authClient } from "@/lib/auth-client";
 import { MessageContent } from "./message-content";
 
 interface ChatMessagesProps {
@@ -27,6 +33,7 @@ function getMessageText(message: UIMessage): string {
 }
 
 export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
+  const { data: session } = authClient.useSession();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on message/loading changes
@@ -82,9 +89,15 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
             </div>
 
             {message.role === "user" && (
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary">
-                <User className="h-4 w-4" />
-              </div>
+              <Avatar className="bg-secondary">
+                <AvatarImage
+                  alt={session?.user?.name || "User"}
+                  src={session?.user?.image || undefined}
+                />
+                <AvatarFallback className="bg-secondary">
+                  <User className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
             )}
           </motion.div>
         ))}

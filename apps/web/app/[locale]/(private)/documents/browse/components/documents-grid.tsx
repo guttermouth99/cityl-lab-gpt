@@ -1,6 +1,7 @@
 "use client";
 
 import { Skeleton } from "@baito/ui/components/skeleton";
+import { Loader2 } from "lucide-react";
 import { DocumentCard } from "./document-card";
 
 interface DocumentSummary {
@@ -27,6 +28,9 @@ interface DocumentsGridProps {
   previews: Map<string, PreviewData | null>;
   onDeleteDocument: (doc: DocumentSummary) => void;
   isLoading?: boolean;
+  loadMoreRef?: (node: HTMLElement | null) => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
 }
 
 export function DocumentsGrid({
@@ -34,28 +38,48 @@ export function DocumentsGrid({
   previews,
   onDeleteDocument,
   isLoading,
+  loadMoreRef,
+  hasMore,
+  isLoadingMore,
 }: DocumentsGridProps) {
   if (isLoading) {
     return <DocumentsGridSkeleton />;
   }
 
   return (
-    <div className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {documents.map((doc, index) => (
+    <>
+      <div className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {documents.map((doc, index) => (
+          <div
+            className="fade-in slide-in-from-bottom-4 h-full animate-in fill-mode-backwards duration-500"
+            key={`${doc.sourceId}-${index}`}
+            style={{ animationDelay: `${Math.min(index * 50, 500)}ms` }}
+          >
+            <DocumentCard
+              document={doc}
+              index={index}
+              onDelete={() => onDeleteDocument(doc)}
+              previewData={previews.get(doc.sourceId)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Infinite scroll sentinel and loading indicator */}
+      {hasMore && (
         <div
-          className="fade-in slide-in-from-bottom-4 h-full animate-in fill-mode-backwards duration-500"
-          key={`${doc.sourceId}-${index}`}
-          style={{ animationDelay: `${Math.min(index * 50, 500)}ms` }}
+          className="flex items-center justify-center py-8"
+          ref={loadMoreRef}
         >
-          <DocumentCard
-            document={doc}
-            index={index}
-            onDelete={() => onDeleteDocument(doc)}
-            previewData={previews.get(doc.sourceId)}
-          />
+          {isLoadingMore && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="text-sm">Loading more...</span>
+            </div>
+          )}
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }
 

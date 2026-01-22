@@ -16,13 +16,7 @@ import {
 } from "@baito/ui/components/dropdown-menu";
 import { cn } from "@baito/ui/lib/utils";
 
-import {
-  LayoutDashboard,
-  LogIn,
-  LogOut,
-  MessageSquare,
-  Settings,
-} from "lucide-react";
+import { LayoutDashboard, LogIn, LogOut, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -200,13 +194,7 @@ export function Header() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer" href="/account/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer"

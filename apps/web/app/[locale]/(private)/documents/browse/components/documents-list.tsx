@@ -1,6 +1,7 @@
 "use client";
 
 import { Skeleton } from "@baito/ui/components/skeleton";
+import { Loader2 } from "lucide-react";
 import { DocumentRow } from "./document-row";
 
 interface DocumentSummary {
@@ -28,6 +29,9 @@ interface DocumentsListProps {
   previews: Map<string, PreviewData | null>;
   onDeleteDocument: (doc: DocumentSummary) => void;
   isLoading?: boolean;
+  loadMoreRef?: (node: HTMLElement | null) => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
 }
 
 export function DocumentsList({
@@ -35,28 +39,48 @@ export function DocumentsList({
   previews,
   onDeleteDocument,
   isLoading,
+  loadMoreRef,
+  hasMore,
+  isLoadingMore,
 }: DocumentsListProps) {
   if (isLoading) {
     return <DocumentsListSkeleton />;
   }
 
   return (
-    <div className="overflow-hidden border-2 border-muted">
-      {documents.map((doc, index) => (
+    <>
+      <div className="overflow-hidden border-2 border-muted">
+        {documents.map((doc, index) => (
+          <div
+            className="fade-in slide-in-from-left-2 animate-in fill-mode-backwards duration-300"
+            key={doc.sourceId}
+            style={{ animationDelay: `${Math.min(index * 30, 400)}ms` }}
+          >
+            <DocumentRow
+              document={doc}
+              index={index}
+              onDelete={() => onDeleteDocument(doc)}
+              previewData={previews.get(doc.sourceId)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Infinite scroll sentinel and loading indicator */}
+      {hasMore && (
         <div
-          className="fade-in slide-in-from-left-2 animate-in fill-mode-backwards duration-300"
-          key={doc.sourceId}
-          style={{ animationDelay: `${Math.min(index * 30, 400)}ms` }}
+          className="flex items-center justify-center py-8"
+          ref={loadMoreRef}
         >
-          <DocumentRow
-            document={doc}
-            index={index}
-            onDelete={() => onDeleteDocument(doc)}
-            previewData={previews.get(doc.sourceId)}
-          />
+          {isLoadingMore && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="text-sm">Loading more...</span>
+            </div>
+          )}
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }
 

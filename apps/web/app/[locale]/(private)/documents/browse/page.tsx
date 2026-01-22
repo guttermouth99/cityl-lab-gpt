@@ -11,10 +11,17 @@ import {
   AlertDialogTitle,
 } from "@baito/ui/components/alert-dialog";
 import { Badge } from "@baito/ui/components/badge";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { useTRPC } from "@/lib/trpc/client";
 import { DocumentsEmpty } from "./components/documents-empty";
 import {
@@ -70,17 +77,76 @@ export default function BrowseDocumentsPage() {
     new Map()
   );
 
-  // Data fetching
-  const { data: documents, isLoading } = useQuery(
-    trpc.documents.list.queryOptions()
+  // Debounce search query to prevent excessive API calls
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const isSearching = debouncedSearchQuery.length > 0;
+
+  // Fetch documents with infinite scroll pagination when not searching
+  const {
+    data: paginatedData,
+    isLoading: isLoadingAll,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery(
+    trpc.documents.listPaginated.infiniteQueryOptions(
+      { limit: 12 },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        enabled: !isSearching,
+      }
+    )
+  );
+
+  // Flatten paginated data into a single array
+  const allDocuments = useMemo(
+    () => paginatedData?.pages.flatMap((page) => page.items) ?? [],
+    [paginatedData]
+  );
+
+  // Server-side search when there's a search query
+  const { data: searchResults, isLoading: isLoadingSearch } = useQuery({
+    ...trpc.documents.search.queryOptions({
+      query: debouncedSearchQuery || "",
+      filters: {
+        contentType: filters.contentType,
+        language: filters.language,
+        topic: filters.topic,
+      },
+      sortBy,
+    }),
+    enabled: isSearching,
+  });
+
+  // Use search results when searching, otherwise use paginated documents
+  const documents = isSearching ? searchResults : allDocuments;
+  const isLoading = isSearching ? isLoadingSearch : isLoadingAll;
+
+  // Intersection observer for infinite scroll
+  const loadMoreRef = useIntersectionObserver(
+    () => {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    {
+      enabled: !isSearching && hasNextPage && !isFetchingNextPage,
+      rootMargin: "200px",
+    }
   );
 
   const deleteMutation = useMutation(
     trpc.documents.delete.mutationOptions({
       onSuccess: () => {
+        // Invalidate both list and search queries
         queryClient.invalidateQueries({
-          queryKey: trpc.documents.list.queryKey(),
+          queryKey: trpc.documents.listPaginated.queryKey(),
         });
+        if (isSearching) {
+          queryClient.invalidateQueries({
+            queryKey: trpc.documents.search.queryKey(),
+          });
+        }
         setDeleteDoc(null);
       },
     })
@@ -129,24 +195,19 @@ export default function BrowseDocumentsPage() {
   );
 
   // Filtered and sorted documents
+  // When searching, server already handles filtering and sorting
+  // When not searching, apply client-side filtering and sorting
   const filteredDocuments = useMemo(() => {
     if (!documents) return [];
 
-    let result = [...documents];
-
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (doc) =>
-          doc.title.toLowerCase().includes(query) ||
-          doc.url.toLowerCase().includes(query) ||
-          doc.author?.toLowerCase().includes(query) ||
-          doc.tags?.some((tag) => tag.toLowerCase().includes(query))
-      );
+    // When searching, server handles everything - return as-is
+    if (isSearching) {
+      return documents;
     }
 
-    // Apply filters
+    let result = [...documents];
+
+    // Apply client-side filters (only when not searching)
     if (filters.contentType) {
       result = result.filter((doc) => doc.contentType === filters.contentType);
     }
@@ -157,7 +218,7 @@ export default function BrowseDocumentsPage() {
       result = result.filter((doc) => doc.topic === filters.topic);
     }
 
-    // Apply sorting
+    // Apply client-side sorting (only when not searching)
     result.sort((a, b) => {
       switch (sortBy) {
         case "title":
@@ -178,11 +239,15 @@ export default function BrowseDocumentsPage() {
     });
 
     return result;
-  }, [documents, searchQuery, filters, sortBy]);
+  }, [documents, isSearching, filters, sortBy]);
 
-  const documentCount = documents?.length ?? 0;
+  // Total document count (from loaded documents)
+  const documentCount = allDocuments.length;
   const filteredCount = filteredDocuments.length;
   const hasFilters = searchQuery || Object.values(filters).some(Boolean);
+
+  // Show loading state when search query is typed but debounce hasn't triggered yet
+  const isPendingSearch = searchQuery !== debouncedSearchQuery;
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
@@ -207,7 +272,7 @@ export default function BrowseDocumentsPage() {
       )}
 
       {/* Results count when filtered */}
-      {hasFilters && !isLoading && (
+      {hasFilters && !isLoading && !isPendingSearch && (
         <div className="fade-in mb-6 animate-in duration-200">
           <p className="text-muted-foreground text-sm">
             {t("showingResults", {
@@ -219,7 +284,7 @@ export default function BrowseDocumentsPage() {
       )}
 
       {/* Loading state */}
-      {isLoading &&
+      {(isLoading || isPendingSearch) &&
         (viewMode === "grid" ? (
           <DocumentsGrid
             documents={[]}
@@ -237,15 +302,13 @@ export default function BrowseDocumentsPage() {
         ))}
 
       {/* Empty state - no documents at all */}
-      {!isLoading && (!documents || documents.length === 0) && (
-        <DocumentsEmpty />
-      )}
+      {!(isLoading || isPendingSearch || isSearching) &&
+        allDocuments.length === 0 && <DocumentsEmpty />}
 
-      {/* No results from filtering */}
-      {!isLoading &&
-        documents &&
-        documents.length > 0 &&
-        filteredDocuments.length === 0 && (
+      {/* No results from filtering/searching */}
+      {!(isLoading || isPendingSearch) &&
+        filteredDocuments.length === 0 &&
+        (isSearching || (allDocuments && allDocuments.length > 0)) && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center border-2 border-muted">
               <FileText className="h-8 w-8 text-muted-foreground" />
@@ -258,22 +321,32 @@ export default function BrowseDocumentsPage() {
         )}
 
       {/* Grid View */}
-      {!isLoading && filteredDocuments.length > 0 && viewMode === "grid" && (
-        <DocumentsGrid
-          documents={filteredDocuments}
-          onDeleteDocument={setDeleteDoc}
-          previews={previews}
-        />
-      )}
+      {!(isLoading || isPendingSearch) &&
+        filteredDocuments.length > 0 &&
+        viewMode === "grid" && (
+          <DocumentsGrid
+            documents={filteredDocuments}
+            hasMore={!isSearching && !!hasNextPage}
+            isLoadingMore={isFetchingNextPage}
+            loadMoreRef={loadMoreRef}
+            onDeleteDocument={setDeleteDoc}
+            previews={previews}
+          />
+        )}
 
       {/* List View */}
-      {!isLoading && filteredDocuments.length > 0 && viewMode === "list" && (
-        <DocumentsList
-          documents={filteredDocuments}
-          onDeleteDocument={setDeleteDoc}
-          previews={previews}
-        />
-      )}
+      {!(isLoading || isPendingSearch) &&
+        filteredDocuments.length > 0 &&
+        viewMode === "list" && (
+          <DocumentsList
+            documents={filteredDocuments}
+            hasMore={!isSearching && !!hasNextPage}
+            isLoadingMore={isFetchingNextPage}
+            loadMoreRef={loadMoreRef}
+            onDeleteDocument={setDeleteDoc}
+            previews={previews}
+          />
+        )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog
