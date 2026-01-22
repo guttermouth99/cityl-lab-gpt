@@ -30,7 +30,7 @@ export function DocumentsHeader({
       <div className="relative">
         {/* Staggered title animation */}
         <div className="fade-in slide-in-from-bottom-4 animate-in duration-500">
-          <h1 className="mb-2 font-bold text-5xl tracking-tight md:text-6xl lg:text-7xl">
+          <h1 className="mb-2 font-bold text-3xl tracking-tight md:text-4xl lg:text-5xl">
             <span className="bg-gradient-to-r from-citylab-pink via-citylab-blue to-citylab-pink bg-clip-text text-transparent">
               {t("pageTitle")}
             </span>

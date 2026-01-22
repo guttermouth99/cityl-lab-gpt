@@ -126,21 +126,33 @@ export function DocumentUpload() {
         onValueChange={(value) => setInputMode(value as InputMode)}
         value={inputMode}
       >
-        <TabsList className="w-full">
-          <TabsTrigger className="flex-1" disabled={isDisabled} value="url">
-            <Link className="mr-2 h-4 w-4" />
+        <TabsList className="h-auto w-full border-2 border-muted bg-transparent p-1">
+          <TabsTrigger
+            className={
+              "flex-1 gap-2 py-2.5 transition-all data-[state=active]:bg-citylab-blue data-[state=active]:text-white data-[state=active]:shadow-none"
+            }
+            disabled={isDisabled}
+            value="url"
+          >
+            <Link className="h-4 w-4" />
             {t("fromUrl")}
           </TabsTrigger>
-          <TabsTrigger className="flex-1" disabled={isDisabled} value="text">
-            <Type className="mr-2 h-4 w-4" />
+          <TabsTrigger
+            className={
+              "flex-1 gap-2 py-2.5 transition-all data-[state=active]:bg-citylab-blue data-[state=active]:text-white data-[state=active]:shadow-none"
+            }
+            disabled={isDisabled}
+            value="text"
+          >
+            <Type className="h-4 w-4" />
             {t("fromText")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="url">
-          <form className="flex gap-2" onSubmit={handleSubmit}>
+          <form className="flex gap-3" onSubmit={handleSubmit}>
             <Input
-              className="flex-1"
+              className="flex-1 border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
               disabled={isDisabled}
               onChange={(e) => setUrl(e.target.value)}
               placeholder={t("urlPlaceholder")}
@@ -148,11 +160,17 @@ export function DocumentUpload() {
               value={url}
             />
             {runData ? (
-              <Button onClick={handleReset} type="button" variant="outline">
+              <Button
+                className="border-2"
+                onClick={handleReset}
+                type="button"
+                variant="outline"
+              >
                 {t("newDocument")}
               </Button>
             ) : (
               <Button
+                className="bg-citylab-pink hover:bg-citylab-pink/90"
                 disabled={triggerMutation.isPending || !canSubmit}
                 type="submit"
               >
@@ -176,6 +194,7 @@ export function DocumentUpload() {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Input
+                className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
                 disabled={isDisabled}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={t("titlePlaceholder")}
@@ -184,6 +203,7 @@ export function DocumentUpload() {
             </div>
             <div className="space-y-2">
               <Input
+                className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
                 disabled={isDisabled}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder={t("sourcePlaceholder")}
@@ -194,7 +214,7 @@ export function DocumentUpload() {
             </div>
             <div className="space-y-2">
               <Textarea
-                className="min-h-[200px]"
+                className="min-h-[200px] border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
                 disabled={isDisabled}
                 onChange={(e) => setText(e.target.value)}
                 placeholder={t("textPlaceholder")}
@@ -202,13 +222,19 @@ export function DocumentUpload() {
               />
               <p className="text-muted-foreground text-xs">{t("textHelp")}</p>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-3">
               {runData ? (
-                <Button onClick={handleReset} type="button" variant="outline">
+                <Button
+                  className="border-2"
+                  onClick={handleReset}
+                  type="button"
+                  variant="outline"
+                >
                   {t("newDocument")}
                 </Button>
               ) : (
                 <Button
+                  className="bg-citylab-pink hover:bg-citylab-pink/90"
                   disabled={triggerMutation.isPending || !canSubmit}
                   type="submit"
                 >
@@ -232,9 +258,15 @@ export function DocumentUpload() {
 
       {/* Error Message */}
       {triggerMutation.isError && (
-        <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
-          <AlertCircle className="h-5 w-5 shrink-0" />
-          <span>{triggerMutation.error?.message || t("failedToStart")}</span>
+        <div className="fade-in relative animate-in overflow-hidden border-2 border-destructive/30 bg-destructive/5 p-4 duration-300">
+          {/* Accent stripe */}
+          <div className="absolute top-0 bottom-0 left-0 w-1 bg-destructive" />
+          <div className="flex items-center gap-3 pl-3">
+            <AlertCircle className="h-5 w-5 shrink-0 text-destructive" />
+            <span className="text-destructive">
+              {triggerMutation.error?.message || t("failedToStart")}
+            </span>
+          </div>
         </div>
       )}
 
@@ -290,10 +322,11 @@ function DocumentStatus({
 
   if (error) {
     return (
-      <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5" />
-          <span>Error: {error.message}</span>
+      <div className="fade-in relative animate-in overflow-hidden border-2 border-destructive/30 bg-destructive/5 p-4 duration-300">
+        <div className="absolute top-0 bottom-0 left-0 w-1 bg-destructive" />
+        <div className="flex items-center gap-3 pl-3">
+          <AlertCircle className="h-5 w-5 text-destructive" />
+          <span className="text-destructive">Error: {error.message}</span>
         </div>
       </div>
     );
@@ -301,17 +334,21 @@ function DocumentStatus({
 
   if (!run) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-4">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        <span>{t("connectingToTask")}</span>
+      <div className="fade-in relative animate-in overflow-hidden border-2 border-muted bg-muted/30 p-4 duration-300">
+        <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-citylab-pink to-citylab-blue" />
+        <div className="flex items-center gap-3 pl-3">
+          <Loader2 className="h-5 w-5 animate-spin text-citylab-pink" />
+          <span>{t("connectingToTask")}</span>
+        </div>
       </div>
     );
   }
 
   if (isFailed) {
     return (
-      <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-        <div className="flex items-center gap-2 text-destructive">
+      <div className="fade-in relative animate-in overflow-hidden border-2 border-destructive/30 bg-destructive/5 p-4 duration-300">
+        <div className="absolute top-0 bottom-0 left-0 w-1 bg-destructive" />
+        <div className="flex items-center gap-3 pl-3 text-destructive">
           <AlertCircle className="h-5 w-5" />
           <span>
             {t("taskFailed", { message: message || t("unknownError") })}
@@ -323,37 +360,62 @@ function DocumentStatus({
 
   if (isCompleted) {
     const output = run.output as EmbedDocumentOutput | undefined;
+    const isEmbedded = output?.status === "embedded";
+    const isRejected = output?.status === "rejected";
+
+    const getContainerClass = (): string => {
+      if (isEmbedded)
+        return "border-green-500/30 bg-green-50/50 dark:bg-green-950/20";
+      if (isRejected)
+        return "border-yellow-500/30 bg-yellow-50/50 dark:bg-yellow-950/20";
+      return "border-destructive/30 bg-destructive/5";
+    };
+
+    const getStripeClass = (): string => {
+      if (isEmbedded) return "bg-green-500";
+      if (isRejected) return "bg-yellow-500";
+      return "bg-destructive";
+    };
+
     return (
-      <div className="space-y-4">
+      <div className="fade-in animate-in space-y-4 duration-300">
         <div
-          className={`flex items-center gap-2 rounded-lg border p-4 ${
-            output?.status === "embedded"
-              ? "border-green-500/50 bg-green-50 text-green-700 dark:bg-green-950/20"
-              : output?.status === "rejected"
-                ? "border-yellow-500/50 bg-yellow-50 text-yellow-700 dark:bg-yellow-950/20"
-                : "border-destructive/50 bg-destructive/10 text-destructive"
-          }`}
+          className={`relative overflow-hidden border-2 p-4 ${getContainerClass()}`}
         >
-          {output?.status === "embedded" ? (
-            <>
-              <CheckCircle className="h-5 w-5" />
-              <span>
-                {t("embeddedSuccess", { chunksCreated: output.chunksCreated })}
-              </span>
-            </>
-          ) : output?.status === "rejected" ? (
-            <>
-              <X className="h-5 w-5" />
-              <span>{t("documentRejected")}</span>
-            </>
-          ) : (
-            <>
-              <AlertCircle className="h-5 w-5" />
-              <span>{output?.error || t("unknownError")}</span>
-            </>
-          )}
+          {/* Accent stripe */}
+          <div
+            className={`absolute top-0 bottom-0 left-0 w-1 ${getStripeClass()}`}
+          />
+          <div className="flex items-center gap-3 pl-3">
+            {isEmbedded && (
+              <>
+                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <span className="text-green-700 dark:text-green-300">
+                  {t("embeddedSuccess", {
+                    chunksCreated: output.chunksCreated,
+                  })}
+                </span>
+              </>
+            )}
+            {isRejected && (
+              <>
+                <X className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                <span className="text-yellow-700 dark:text-yellow-300">
+                  {t("documentRejected")}
+                </span>
+              </>
+            )}
+            {!(isEmbedded || isRejected) && (
+              <>
+                <AlertCircle className="h-5 w-5 text-destructive" />
+                <span className="text-destructive">
+                  {output?.error || t("unknownError")}
+                </span>
+              </>
+            )}
+          </div>
         </div>
-        <Button onClick={onComplete} variant="outline">
+        <Button className="border-2" onClick={onComplete} variant="outline">
           {t("embedAnother")}
         </Button>
       </div>
@@ -372,14 +434,18 @@ function DocumentStatus({
 
   // Show processing status
   return (
-    <div className="rounded-lg border bg-muted/50 p-4">
-      <div className="flex items-center gap-2">
-        <Loader2 className="h-5 w-5 animate-spin text-primary" />
-        <span className="font-medium">{getStatusLabel(status)}</span>
+    <div className="fade-in relative animate-in overflow-hidden border-2 border-muted bg-muted/30 p-4 duration-300">
+      {/* Animated gradient stripe */}
+      <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-citylab-pink to-citylab-blue" />
+      <div className="pl-3">
+        <div className="flex items-center gap-3">
+          <Loader2 className="h-5 w-5 animate-spin text-citylab-pink" />
+          <span className="font-medium">{getStatusLabel(status)}</span>
+        </div>
+        {message && (
+          <p className="mt-2 text-muted-foreground text-sm">{message}</p>
+        )}
       </div>
-      {message && (
-        <p className="mt-2 text-muted-foreground text-sm">{message}</p>
-      )}
     </div>
   );
 }
@@ -451,197 +517,223 @@ function MetadataReview({
   }, [tokenId, t]);
 
   return (
-    <div className="space-y-6 rounded-lg border bg-card p-6">
-      <div>
-        <h3 className="font-semibold text-lg">{t("reviewTitle")}</h3>
-        <p className="text-muted-foreground text-sm">
-          {t("reviewDescription")}
-        </p>
-      </div>
+    <div className="fade-in relative animate-in overflow-hidden border-2 border-muted bg-card p-6 duration-500">
+      {/* Accent stripe on left */}
+      <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-citylab-pink to-citylab-blue" />
 
-      {/* Content Preview */}
-      <div className="space-y-2">
-        <label className="font-medium text-sm">{t("contentPreview")}</label>
-        <div className="max-h-48 overflow-y-auto rounded-md border bg-muted/50 p-3 text-sm">
-          {extractedData.preview}...
-        </div>
-        <p className="text-muted-foreground text-xs">
-          {t("urlLabel", { url: extractedData.url })}
-        </p>
-      </div>
-
-      {/* Metadata Form */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {/* Title */}
-        <div className="space-y-2 sm:col-span-2">
-          <label className="font-medium text-sm" htmlFor="title">
-            {t("title")}
-          </label>
-          <Input
-            id="title"
-            onChange={(e) =>
-              setMetadata((prev) => ({ ...prev, title: e.target.value }))
-            }
-            value={metadata.title}
-          />
+      <div className="space-y-6 pl-4">
+        {/* Header with gradient text */}
+        <div>
+          <h3 className="mb-1 font-bold text-xl">
+            <span className="bg-gradient-to-r from-citylab-pink to-citylab-blue bg-clip-text text-transparent">
+              {t("reviewTitle")}
+            </span>
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            {t("reviewDescription")}
+          </p>
         </div>
 
-        {/* Author */}
+        {/* Content Preview */}
         <div className="space-y-2">
-          <label className="font-medium text-sm" htmlFor="author">
-            {t("authorOptional")}
-          </label>
-          <Input
-            id="author"
-            onChange={(e) =>
-              setMetadata((prev) => ({
-                ...prev,
-                author: e.target.value || undefined,
-              }))
-            }
-            placeholder={t("authorPlaceholder")}
-            value={metadata.author || ""}
-          />
+          <label className="font-medium text-sm">{t("contentPreview")}</label>
+          <div className="relative overflow-hidden border-2 border-muted bg-muted/30">
+            <div className="absolute top-0 bottom-0 left-0 w-0.5 bg-citylab-blue/50" />
+            <div className="max-h-48 overflow-y-auto p-4 pl-4 text-sm">
+              {extractedData.preview}...
+            </div>
+          </div>
+          <p className="text-muted-foreground text-xs">
+            {t("urlLabel", { url: extractedData.url })}
+          </p>
         </div>
 
-        {/* Source ID */}
-        <div className="space-y-2">
-          <label className="font-medium text-sm" htmlFor="sourceId">
-            {t("sourceId")}
-          </label>
-          <Input
-            id="sourceId"
-            onChange={(e) =>
-              setMetadata((prev) => ({ ...prev, sourceId: e.target.value }))
-            }
-            value={metadata.sourceId}
-          />
-        </div>
+        {/* Metadata Form */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Title */}
+          <div className="space-y-2 sm:col-span-2">
+            <label className="font-medium text-sm" htmlFor="title">
+              {t("title")}
+            </label>
+            <Input
+              className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
+              id="title"
+              onChange={(e) =>
+                setMetadata((prev) => ({ ...prev, title: e.target.value }))
+              }
+              value={metadata.title}
+            />
+          </div>
 
-        {/* Content Type */}
-        <div className="space-y-2">
-          <label className="font-medium text-sm">{t("contentType")}</label>
-          <Select
-            onValueChange={(value) =>
-              setMetadata((prev) => ({
-                ...prev,
-                contentType: value as ExtractedDocumentMetadata["contentType"],
-              }))
-            }
-            value={metadata.contentType}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t("selectContentType")} />
-            </SelectTrigger>
-            <SelectContent>
-              {CONTENT_TYPE_VALUES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {t(`contentTypes.${type}`)}
-                </SelectItem>
+          {/* Author */}
+          <div className="space-y-2">
+            <label className="font-medium text-sm" htmlFor="author">
+              {t("authorOptional")}
+            </label>
+            <Input
+              className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
+              id="author"
+              onChange={(e) =>
+                setMetadata((prev) => ({
+                  ...prev,
+                  author: e.target.value || undefined,
+                }))
+              }
+              placeholder={t("authorPlaceholder")}
+              value={metadata.author || ""}
+            />
+          </div>
+
+          {/* Source ID */}
+          <div className="space-y-2">
+            <label className="font-medium text-sm" htmlFor="sourceId">
+              {t("sourceId")}
+            </label>
+            <Input
+              className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
+              id="sourceId"
+              onChange={(e) =>
+                setMetadata((prev) => ({ ...prev, sourceId: e.target.value }))
+              }
+              value={metadata.sourceId}
+            />
+          </div>
+
+          {/* Content Type */}
+          <div className="space-y-2">
+            <label className="font-medium text-sm">{t("contentType")}</label>
+            <Select
+              onValueChange={(value) =>
+                setMetadata((prev) => ({
+                  ...prev,
+                  contentType:
+                    value as ExtractedDocumentMetadata["contentType"],
+                }))
+              }
+              value={metadata.contentType}
+            >
+              <SelectTrigger className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20">
+                <SelectValue placeholder={t("selectContentType")} />
+              </SelectTrigger>
+              <SelectContent>
+                {CONTENT_TYPE_VALUES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {t(`contentTypes.${type}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Language */}
+          <div className="space-y-2">
+            <label className="font-medium text-sm">{t("language")}</label>
+            <Select
+              onValueChange={(value) =>
+                setMetadata((prev) => ({
+                  ...prev,
+                  language: value as ExtractedDocumentMetadata["language"],
+                }))
+              }
+              value={metadata.language}
+            >
+              <SelectTrigger className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20">
+                <SelectValue placeholder={t("selectLanguage")} />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGE_VALUES.map((lang) => (
+                  <SelectItem key={lang} value={lang}>
+                    {t(`languages.${lang}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Published At */}
+          <div className="space-y-2">
+            <label className="font-medium text-sm" htmlFor="publishedAt">
+              {t("publishedDateOptional")}
+            </label>
+            <Input
+              className="border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
+              id="publishedAt"
+              onChange={(e) =>
+                setMetadata((prev) => ({
+                  ...prev,
+                  publishedAt: e.target.value || undefined,
+                }))
+              }
+              placeholder="YYYY-MM-DD"
+              type="date"
+              value={metadata.publishedAt?.split("T")[0] || ""}
+            />
+          </div>
+
+          {/* Tags */}
+          <div className="space-y-2 sm:col-span-2">
+            <label className="font-medium text-sm" htmlFor="tags">
+              {t("tagsLabel")}
+            </label>
+            <Textarea
+              className="min-h-[60px] border-2 border-muted bg-background transition-all focus:border-citylab-pink focus:ring-2 focus:ring-citylab-pink/20"
+              id="tags"
+              onChange={(e) => setTagsInput(e.target.value)}
+              placeholder={t("tagsPlaceholder")}
+              value={tagsInput}
+            />
+            <div className="flex flex-wrap gap-1.5">
+              {metadata.tags.map((tag, index) => (
+                <span
+                  className="border border-citylab-pink/30 bg-citylab-pink/10 px-2 py-0.5 text-citylab-pink text-xs"
+                  key={index}
+                >
+                  {tag}
+                </span>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Language */}
-        <div className="space-y-2">
-          <label className="font-medium text-sm">{t("language")}</label>
-          <Select
-            onValueChange={(value) =>
-              setMetadata((prev) => ({
-                ...prev,
-                language: value as ExtractedDocumentMetadata["language"],
-              }))
-            }
-            value={metadata.language}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t("selectLanguage")} />
-            </SelectTrigger>
-            <SelectContent>
-              {LANGUAGE_VALUES.map((lang) => (
-                <SelectItem key={lang} value={lang}>
-                  {t(`languages.${lang}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Published At */}
-        <div className="space-y-2">
-          <label className="font-medium text-sm" htmlFor="publishedAt">
-            {t("publishedDateOptional")}
-          </label>
-          <Input
-            id="publishedAt"
-            onChange={(e) =>
-              setMetadata((prev) => ({
-                ...prev,
-                publishedAt: e.target.value || undefined,
-              }))
-            }
-            placeholder="YYYY-MM-DD"
-            type="date"
-            value={metadata.publishedAt?.split("T")[0] || ""}
-          />
-        </div>
-
-        {/* Tags */}
-        <div className="space-y-2 sm:col-span-2">
-          <label className="font-medium text-sm" htmlFor="tags">
-            {t("tagsLabel")}
-          </label>
-          <Textarea
-            className="min-h-[60px]"
-            id="tags"
-            onChange={(e) => setTagsInput(e.target.value)}
-            placeholder={t("tagsPlaceholder")}
-            value={tagsInput}
-          />
-          <div className="flex flex-wrap gap-1">
-            {metadata.tags.map((tag, index) => (
-              <span
-                className="rounded-full bg-primary/10 px-2 py-0.5 text-primary text-xs"
-                key={index}
-              >
-                {tag}
-              </span>
-            ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-destructive text-sm">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>{error}</span>
+        {/* Error Message */}
+        {error && (
+          <div className="relative overflow-hidden border-2 border-destructive/30 bg-destructive/5 p-3">
+            <div className="absolute top-0 bottom-0 left-0 w-0.5 bg-destructive" />
+            <div className="flex items-center gap-2 pl-2 text-destructive text-sm">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex justify-end gap-3">
+          <Button
+            className="border-2"
+            disabled={isSubmitting}
+            onClick={handleReject}
+            variant="outline"
+          >
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <X className="mr-2 h-4 w-4" />
+            )}
+            {t("reject")}
+          </Button>
+          <Button
+            className="bg-citylab-pink hover:bg-citylab-pink/90"
+            disabled={isSubmitting}
+            onClick={handleApprove}
+          >
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle className="mr-2 h-4 w-4" />
+            )}
+            {t("approveAndEmbed")}
+          </Button>
         </div>
-      )}
-
-      {/* Actions */}
-      <div className="flex justify-end gap-2">
-        <Button
-          disabled={isSubmitting}
-          onClick={handleReject}
-          variant="outline"
-        >
-          {isSubmitting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <X className="mr-2 h-4 w-4" />
-          )}
-          {t("reject")}
-        </Button>
-        <Button disabled={isSubmitting} onClick={handleApprove}>
-          {isSubmitting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <CheckCircle className="mr-2 h-4 w-4" />
-          )}
-          {t("approveAndEmbed")}
-        </Button>
       </div>
     </div>
   );

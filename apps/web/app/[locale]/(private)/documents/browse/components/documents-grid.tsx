@@ -44,7 +44,7 @@ export function DocumentsGrid({
       {documents.map((doc, index) => (
         <div
           className="fade-in slide-in-from-bottom-4 h-full animate-in fill-mode-backwards duration-500"
-          key={doc.sourceId}
+          key={`${doc.sourceId}-${index}`}
           style={{ animationDelay: `${Math.min(index * 50, 500)}ms` }}
         >
           <DocumentCard
