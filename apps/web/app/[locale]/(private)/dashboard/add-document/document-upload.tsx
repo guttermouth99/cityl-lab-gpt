@@ -15,15 +15,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@baito/ui/components/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@baito/ui/components/tabs";
 import { Textarea } from "@baito/ui/components/textarea";
 import { useMutation } from "@tanstack/react-query";
 import { useRealtimeRun } from "@trigger.dev/react-hooks";
-import { AlertCircle, CheckCircle, FileText, Loader2, X } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  FileText,
+  Link,
+  Loader2,
+  Type,
+  X,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
 import { useTRPCClient } from "@/lib/trpc/client";
 import { completeDocumentReview } from "./actions";
+
+type InputMode = "url" | "text";
 
 interface RunData {
   runId: string;
@@ -55,63 +71,164 @@ const LANGUAGE_VALUES = ["de", "en"] as const;
 
 export function DocumentUpload() {
   const t = useTranslations("AddDocument");
+  const [inputMode, setInputMode] = useState<InputMode>("url");
   const [url, setUrl] = useState("");
+  const [text, setText] = useState("");
+  const [title, setTitle] = useState("");
+  const [source, setSource] = useState("");
   const [runData, setRunData] = useState<RunData | null>(null);
   const trpc = useTRPCClient();
 
   const triggerMutation = useMutation({
-    mutationFn: (input: { url: string }) => trpc.documents.embed.mutate(input),
+    mutationFn: (input: {
+      url?: string;
+      text?: string;
+      title?: string;
+      source?: string;
+    }) => trpc.documents.embed.mutate(input),
     onSuccess: (data) => setRunData(data),
   });
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!url.trim()) return;
     setRunData(null);
-    triggerMutation.mutate({ url: url.trim() });
+
+    if (inputMode === "url") {
+      if (!url.trim()) return;
+      triggerMutation.mutate({ url: url.trim() });
+    } else {
+      if (!text.trim()) return;
+      triggerMutation.mutate({
+        text: text.trim(),
+        title: title.trim() || undefined,
+        source: source.trim() || undefined,
+      });
+    }
   }
 
   function handleReset() {
     setUrl("");
+    setText("");
+    setTitle("");
+    setSource("");
     setRunData(null);
     triggerMutation.reset();
   }
 
+  const isDisabled = triggerMutation.isPending || runData !== null;
+  const canSubmit =
+    inputMode === "url" ? url.trim().length > 0 : text.trim().length > 0;
+
   return (
     <div className="space-y-6">
-      {/* URL Input Form */}
-      <form className="flex gap-2" onSubmit={handleSubmit}>
-        <Input
-          className="flex-1"
-          disabled={triggerMutation.isPending || runData !== null}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder={t("urlPlaceholder")}
-          type="url"
-          value={url}
-        />
-        {runData ? (
-          <Button onClick={handleReset} type="button" variant="outline">
-            {t("newDocument")}
-          </Button>
-        ) : (
-          <Button
-            disabled={triggerMutation.isPending || !url.trim()}
-            type="submit"
-          >
-            {triggerMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t("starting")}
-              </>
+      <Tabs
+        defaultValue="url"
+        onValueChange={(value) => setInputMode(value as InputMode)}
+        value={inputMode}
+      >
+        <TabsList className="w-full">
+          <TabsTrigger className="flex-1" disabled={isDisabled} value="url">
+            <Link className="mr-2 h-4 w-4" />
+            {t("fromUrl")}
+          </TabsTrigger>
+          <TabsTrigger className="flex-1" disabled={isDisabled} value="text">
+            <Type className="mr-2 h-4 w-4" />
+            {t("fromText")}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="url">
+          <form className="flex gap-2" onSubmit={handleSubmit}>
+            <Input
+              className="flex-1"
+              disabled={isDisabled}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder={t("urlPlaceholder")}
+              type="url"
+              value={url}
+            />
+            {runData ? (
+              <Button onClick={handleReset} type="button" variant="outline">
+                {t("newDocument")}
+              </Button>
             ) : (
-              <>
-                <FileText className="mr-2 h-4 w-4" />
-                {t("embedDocument")}
-              </>
+              <Button
+                disabled={triggerMutation.isPending || !canSubmit}
+                type="submit"
+              >
+                {triggerMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("starting")}
+                  </>
+                ) : (
+                  <>
+                    <FileText className="mr-2 h-4 w-4" />
+                    {t("embedDocument")}
+                  </>
+                )}
+              </Button>
             )}
-          </Button>
-        )}
-      </form>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="text">
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Input
+                disabled={isDisabled}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={t("titlePlaceholder")}
+                value={title}
+              />
+            </div>
+            <div className="space-y-2">
+              <Input
+                disabled={isDisabled}
+                onChange={(e) => setSource(e.target.value)}
+                placeholder={t("sourcePlaceholder")}
+                type="url"
+                value={source}
+              />
+              <p className="text-muted-foreground text-xs">{t("sourceHelp")}</p>
+            </div>
+            <div className="space-y-2">
+              <Textarea
+                className="min-h-[200px]"
+                disabled={isDisabled}
+                onChange={(e) => setText(e.target.value)}
+                placeholder={t("textPlaceholder")}
+                value={text}
+              />
+              <p className="text-muted-foreground text-xs">{t("textHelp")}</p>
+            </div>
+            <div className="flex justify-end gap-2">
+              {runData ? (
+                <Button onClick={handleReset} type="button" variant="outline">
+                  {t("newDocument")}
+                </Button>
+              ) : (
+                <Button
+                  disabled={triggerMutation.isPending || !canSubmit}
+                  type="submit"
+                >
+                  {triggerMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("starting")}
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="mr-2 h-4 w-4" />
+                      {t("embedDocument")}
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </form>
+        </TabsContent>
+      </Tabs>
 
       {/* Error Message */}
       {triggerMutation.isError && (

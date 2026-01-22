@@ -22,16 +22,30 @@ import { metadata, task, wait } from "@trigger.dev/sdk";
 export const embedDocumentTask = task({
   id: "embed-document",
   run: async (payload: EmbedDocumentInput): Promise<EmbedDocumentOutput> => {
-    const { url } = payload;
+    const { url, text, title, source } = payload;
+
+    // Determine the effective URL for reporting
+    const effectiveUrl = url ?? source ?? "text://user-provided";
 
     try {
       // Start the embed-document workflow
       metadata.set("status", "preparing");
-      metadata.set("message", `Fetching and analyzing content from ${url}...`);
+      metadata.set(
+        "message",
+        url
+          ? `Fetching and analyzing content from ${url}...`
+          : "Analyzing provided text content..."
+      );
 
       const workflow = mastra.getWorkflow("embedDocumentWorkflow");
       const run = await workflow.createRun();
-      const result = await run.start({ inputData: { url } });
+
+      // Pass either URL or text input to the workflow
+      const inputData = url
+        ? { url }
+        : { text, title: title ?? "Untitled Document", source };
+
+      const result = await run.start({ inputData });
 
       // Check if workflow suspended for human review
       if (result.status === "suspended") {
@@ -76,7 +90,7 @@ export const embedDocumentTask = task({
             success: false,
             status: "error",
             error: "Review timed out",
-            url,
+            url: effectiveUrl,
           };
         }
 
@@ -111,7 +125,7 @@ export const embedDocumentTask = task({
             success: false,
             status: "error",
             error: `Workflow ${resumeResult.status} after resume`,
-            url,
+            url: effectiveUrl,
           };
         }
 
@@ -133,7 +147,7 @@ export const embedDocumentTask = task({
           return {
             success: true,
             status: "rejected",
-            url,
+            url: effectiveUrl,
           };
         }
 
@@ -149,7 +163,7 @@ export const embedDocumentTask = task({
           status: "embedded",
           chunksCreated: embedResult.chunksCreated,
           sourceId: embedResult.sourceId,
-          url,
+          url: effectiveUrl,
         };
       }
 
@@ -173,7 +187,7 @@ export const embedDocumentTask = task({
           status: embedResult.status,
           chunksCreated: embedResult.chunksCreated,
           sourceId: embedResult.sourceId,
-          url,
+          url: effectiveUrl,
         };
       }
 
@@ -184,7 +198,7 @@ export const embedDocumentTask = task({
         success: false,
         status: "error",
         error: "Workflow failed",
-        url,
+        url: effectiveUrl,
       };
     } catch (error) {
       const errorMessage =
@@ -197,7 +211,7 @@ export const embedDocumentTask = task({
         success: false,
         status: "error",
         error: errorMessage,
-        url,
+        url: effectiveUrl,
       };
     }
   },

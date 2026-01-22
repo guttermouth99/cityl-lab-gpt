@@ -17,7 +17,7 @@ export default async function PrivateLayout({
   return (
     <>
       <Header />
-      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 bg-background">
+      <div className="flex min-h-0 w-full flex-1 bg-background px-4 sm:px-6 lg:px-0">
         <AdminSidebar />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>

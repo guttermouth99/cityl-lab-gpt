@@ -202,19 +202,47 @@ const contentOutputSchema = z.object({
 });
 
 /**
+ * Input schema for the workflow - accepts either URL or text
+ */
+const workflowInputSchema = z
+  .object({
+    /** URL to fetch content from */
+    url: z.string().url().optional(),
+    /** Direct text content (skips retrieval) */
+    text: z.string().optional(),
+    /** Title for text input */
+    title: z.string().optional(),
+    /** Source URL for text input (used for citation) */
+    source: z.string().url().optional(),
+  })
+  .refine((data) => data.url || data.text, {
+    message: "Either url or text must be provided",
+  });
+
+/**
  * Step 1: Retrieve content using Content Retrieval Agent
  *
  * The agent analyzes the URL and routes to the appropriate tool:
  * - YouTube URLs → youtubeTranscriberTool
  * - Other URLs → jinaReaderTool
+ *
+ * If text is provided directly, skips retrieval and returns the text.
  */
 const retrieveContentStep = createStep({
   id: "retrieve-content",
-  inputSchema: z.object({
-    url: z.string().url(),
-  }),
+  inputSchema: workflowInputSchema,
   outputSchema: contentOutputSchema,
   execute: async ({ inputData, mastra }) => {
+    // If text is provided directly, skip retrieval
+    if (inputData.text) {
+      return {
+        content: inputData.text,
+        title: inputData.title ?? "Untitled Document",
+        url: inputData.source ?? "text://user-provided",
+      };
+    }
+
+    // URL mode: fetch content using the agent
     const agent = mastra?.getAgent("content-retrieval");
     if (!agent) {
       throw new Error("Content retrieval agent not found");
@@ -425,15 +453,14 @@ const embedContentStep = createStep({
  *
  * A single workflow that:
  * 1. Retrieves content using Content Retrieval Agent (routes YouTube → transcriber, web → Jina Reader)
+ *    - Or skips retrieval if text is provided directly
  * 2. Extracts metadata using AI
  * 3. Suspends for human review (HITL)
  * 4. Embeds approved content into the vector database
  */
 export const embedDocumentWorkflow = createWorkflow({
   id: "embed-document",
-  inputSchema: z.object({
-    url: z.string().url(),
-  }),
+  inputSchema: workflowInputSchema,
   outputSchema: embedResultSchema,
 })
   .then(retrieveContentStep)

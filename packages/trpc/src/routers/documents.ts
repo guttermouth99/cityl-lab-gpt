@@ -72,14 +72,32 @@ export const documentsRouter = createTRPCRouter({
   /**
    * Trigger document embedding workflow
    * Returns the run ID and public access token for realtime updates
+   *
+   * Accepts either:
+   * - url: Fetch content from a URL
+   * - text: Direct text content (with optional title and source)
    */
   embed: publicProcedure
-    .input(z.object({ url: z.string().url("Valid URL is required") }))
+    .input(
+      z
+        .object({
+          url: z.string().url("Valid URL is required").optional(),
+          text: z.string().optional(),
+          title: z.string().optional(),
+          source: z.string().url("Valid source URL is required").optional(),
+        })
+        .refine((data) => data.url || data.text, {
+          message: "Either url or text must be provided",
+        })
+    )
     .mutation(async ({ input }) => {
       const handle = await tasks.trigger<typeof embedDocumentTask>(
         "embed-document",
         {
           url: input.url,
+          text: input.text,
+          title: input.title,
+          source: input.source,
         }
       );
       return {

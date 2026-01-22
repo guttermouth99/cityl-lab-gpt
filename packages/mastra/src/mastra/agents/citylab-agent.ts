@@ -1,9 +1,8 @@
-import { openai } from "@ai-sdk/openai";
 import { Agent } from "@mastra/core/agent";
 import { createTool } from "@mastra/core/tools";
-import { embed } from "ai";
 import { z } from "zod";
 
+import { generateJinaEmbedding } from "../rag/embed";
 import type { CityLabContentType, CityLabLanguage } from "../rag/types";
 import { pgVector } from "../vector";
 
@@ -58,24 +57,17 @@ Use this tool when users ask questions about CityLAB Berlin, its projects, activ
   execute: async (input) => {
     const { query, contentType, language, topK = 5 } = input;
     console.log("query", query);
-    // Generate embedding for the query
-    // Using 512 dimensions to match the citylab_content index
-    const { embedding } = await embed({
-      model: openai.embedding("text-embedding-3-small"),
-      value: query,
-      providerOptions: {
-        openai: {
-          dimensions: 512,
-        },
-      },
-    });
-    console.log("embedding", embedding);
+
+    // Generate embedding for the query using Jina AI
+    // Using retrieval.query task for optimized query embeddings
+    const { embedding } = await generateJinaEmbedding(query, "retrieval.query");
+    console.log("embedding dimensions", embedding.length);
     console.log(contentType, language);
 
     // Build filter if content type or language specified
     const filter: Record<string, CityLabContentType | CityLabLanguage> = {};
     //if (contentType) filter.contentType = contentType;
-    if (language) filter.language = language;
+    //if (language) filter.language = language;
 
     // Query the vector store
     const results = await pgVector.query({
@@ -142,6 +134,16 @@ CityLAB Berlin ist ein öffentliches Innovationslabor, das Verwaltung und Stadtg
 Du kannst die Suche nach Metadaten filtern:
 - contentType: "blog", "project", "youtube_transcript", "event", "page", "exhibition", "team", "newsletter"
 - language: "de", "en"
+
+## Quellenangaben:
+- Füge am Ende deiner Antwort immer die URLs der Quellen hinzu, die du verwendet hast
+- Formatiere Quellen als Markdown-Links: [Titel](URL)
+- Liste alle verwendeten Quellen unter einer "Quellen:" Überschrift auf
+- Beispiel:
+
+**Quellen:**
+- [BärGPT Projekt](https://citylab-berlin.org/de/projects/baergpt/)
+- [Parla - Schriftliche Anfragen durchsuchen](https://citylab-berlin.org/de/projects/parla/)
 `,
   model: "openai/gpt-4o",
   tools: { citylabKnowledgeTool },

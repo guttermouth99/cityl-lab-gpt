@@ -24,7 +24,7 @@ export const pgVector = new PgVector({
 export async function initializeCityLabIndex(): Promise<void> {
   await pgVector.createIndex({
     indexName: "citylab_content",
-    dimension: 512, // text-embedding-3-small output dimension
+    dimension: 256, // jina-embeddings-v3 Matryoshka dimension (98.9% quality)
     metric: "cosine",
     indexConfig: {
       type: "hnsw",

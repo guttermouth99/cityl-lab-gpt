@@ -46,3 +46,7 @@ yarn-error.log*
 
 # Logs
 logs/
+
+# Local scraping and embedding scripts
+/scraped_articles/
+/scripts/

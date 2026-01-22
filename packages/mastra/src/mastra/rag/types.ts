@@ -89,12 +89,12 @@ export interface CityLabChunkMetadata {
  * Options for the embedding pipeline
  */
 export interface EmbedOptions {
-  /** Maximum size of each chunk in characters */
-  maxChunkSize?: number;
-  /** Overlap between chunks in characters */
-  chunkOverlap?: number;
-  /** Chunking strategy */
-  strategy?: "recursive" | "markdown" | "sentence";
+  /** Chunking strategy to use */
+  chunkingStrategy?: "segmenter" | "markdown" | "recursive" | "fixed";
+  /** Maximum tokens per chunk (default: 2000) */
+  maxTokensPerChunk?: number;
+  /** Minimum tokens per chunk for merging small chunks (default: 256) */
+  minTokensPerChunk?: number;
 }
 
 /**
@@ -117,10 +117,17 @@ export interface EmbedResult {
 
 /**
  * Input payload for the embed-document Trigger.dev task
+ * Either url OR text must be provided (mutually exclusive)
  */
 export interface EmbedDocumentInput {
   /** URL of the document to fetch and embed */
-  url: string;
+  url?: string;
+  /** Direct text content to embed (skips external retrieval) */
+  text?: string;
+  /** Optional title for the document (used when text is provided) */
+  title?: string;
+  /** Optional source URL for citation (used when text is provided) */
+  source?: string;
 }
 
 /**
@@ -185,6 +192,116 @@ export interface EmbedDocumentOutput {
   sourceId?: string;
   /** Error message if failed */
   error?: string;
-  /** URL that was processed */
+  /** URL that was processed (or "text://user-provided" for text input) */
   url: string;
+}
+
+// ============================================================================
+// Jina AI API Types
+// ============================================================================
+
+/**
+ * Jina Segmenter API request
+ */
+export interface JinaSegmenterRequest {
+  /** The text content to segment */
+  content: string;
+  /** Whether to return the chunks array (default: false) */
+  return_chunks?: boolean;
+  /** Whether to return detailed token breakdown (default: false) */
+  return_tokens?: boolean;
+  /** Maximum chunk length in tokens (default: 1000) */
+  max_chunk_length?: number;
+  /** Tokenizer to use: "o200k_base" (GPT-4o) or "cl100k_base" (GPT-4) */
+  tokenizer?: "o200k_base" | "cl100k_base";
+}
+
+/**
+ * Jina Segmenter API response
+ */
+export interface JinaSegmenterResponse {
+  /** Total number of tokens in the input */
+  num_tokens: number;
+  /** Tokenizer used (e.g., "cl100k_base", "o200k_base") */
+  tokenizer: string;
+  /** Token usage stats */
+  usage: {
+    tokens: number;
+  };
+  /** Number of chunks created */
+  num_chunks: number;
+  /** Character positions for each chunk: [start, end] */
+  chunk_positions: [number, number][];
+  /** Optional detailed token breakdown per chunk */
+  tokens?: [string, number[]][][];
+  /** The actual text chunks */
+  chunks: string[];
+}
+
+/**
+ * Jina Embedding API request
+ */
+export interface JinaEmbeddingRequest {
+  /** Embedding model to use */
+  model: string;
+  /** Input text(s) - string, array of strings, or array of {text: string} objects */
+  input: string | string[] | Array<{ text: string }>;
+  /** Task type for optimized embeddings */
+  task:
+    | "retrieval.passage"
+    | "retrieval.query"
+    | "separation"
+    | "classification"
+    | "text-matching";
+  /** Output dimensions - Matryoshka supported: 32, 64, 128, 256, 512, 768, 1024 */
+  dimensions?: number;
+  /** Whether to use late chunking (default: false) */
+  late_chunking?: boolean;
+  /** Embedding output type */
+  embedding_type?: "float" | "base64" | "binary" | "ubinary";
+  /** Whether to truncate input if exceeds max length (default: true) */
+  truncate?: boolean;
+}
+
+/**
+ * Jina Embedding API response
+ */
+export interface JinaEmbeddingResponse {
+  model: string;
+  object: string;
+  data: Array<{
+    index: number;
+    embedding: number[];
+    object: string;
+  }>;
+  usage: {
+    total_tokens: number;
+    prompt_tokens: number;
+  };
+}
+
+/**
+ * Single embedding result (internal)
+ */
+export interface EmbeddingResponse {
+  embedding: number[];
+  tokenUsage: number;
+}
+
+/**
+ * Batch embeddings result (internal)
+ */
+export interface EmbeddingsResponse {
+  embeddings: number[][];
+  tokenUsage: number;
+}
+
+/**
+ * Internal chunk representation for batch processing
+ */
+export interface Chunk {
+  content: string;
+  page?: number;
+  chunkIndex: number;
+  tokenCount: number;
 }
