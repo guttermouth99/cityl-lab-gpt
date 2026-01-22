@@ -1,13 +1,28 @@
 "use client";
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@baito/ui/components/avatar";
 import { Button } from "@baito/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@baito/ui/components/dropdown-menu";
-import { LayoutDashboard, LogIn, MessageSquare } from "lucide-react";
+import { cn } from "@baito/ui/lib/utils";
+
+import {
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  MessageSquare,
+  Settings,
+} from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,6 +34,15 @@ const localeConfig: Record<Locale, { label: string; flag: string }> = {
   de: { label: "Deutsch", flag: "🇩🇪" },
   en: { label: "English", flag: "🇬🇧" },
 };
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
 
 export function Header() {
   const [isMounted, setIsMounted] = useState(false);
@@ -34,6 +58,16 @@ export function Header() {
 
   const handleLocaleChange = (locale: Locale) => {
     router.replace(pathname, { locale });
+  };
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+      },
+    });
   };
 
   const isLoggedIn = !!session?.user;
@@ -58,33 +92,43 @@ export function Header() {
           {/* Logged in: Chat and Dashboard buttons */}
           {isMounted && isLoggedIn && (
             <>
-              <Button asChild size="sm" variant="ghost">
-                <Link href="/chat">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  Chat
-                </Link>
-              </Button>
-              <Button asChild size="sm" variant="ghost">
-                <Link href="/dashboard">
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Dashboard
-                </Link>
-              </Button>
+              <Link
+                className={cn(
+                  "flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-sm transition-colors",
+                  pathname === "/chat"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                )}
+                href="/chat"
+              >
+                <MessageSquare className="h-4 w-4" />
+                Chat
+              </Link>
+              <Link
+                className={cn(
+                  "flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-sm transition-colors",
+                  pathname === "/dashboard"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                )}
+                href="/dashboard"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
             </>
           )}
 
           {/* Language Switch */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="gap-1.5" size="sm" variant="ghost">
-                <span className="text-base">
-                  {localeConfig[currentLocale].flag}
-                </span>
-                <span className="hidden sm:inline">
-                  {localeConfig[currentLocale].label}
-                </span>
+              <button
+                className="flex items-center rounded-lg px-3 py-2 text-muted-foreground text-xl transition-colors hover:bg-accent hover:text-accent-foreground"
+                type="button"
+              >
+                {localeConfig[currentLocale].flag}
                 <span className="sr-only">Switch language</span>
-              </Button>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {(Object.keys(localeConfig) as Locale[]).map((locale) => (
@@ -121,6 +165,59 @@ export function Header() {
                 Login
               </Link>
             </Button>
+          )}
+
+          {/* User avatar dropdown */}
+          {isMounted && isLoggedIn && session?.user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                  type="button"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      alt={session.user.name}
+                      src={session.user.image ?? undefined}
+                    />
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
+                      {getInitials(session.user.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="hidden font-medium text-sm sm:inline-block">
+                    {session.user.name.split(" ")[0]}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56" sideOffset={8}>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="font-medium text-sm leading-none">
+                      {session.user.name}
+                    </p>
+                    <p className="text-muted-foreground text-xs leading-none">
+                      {session.user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link className="cursor-pointer" href="/account/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleSignOut}
+                  variant="destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
