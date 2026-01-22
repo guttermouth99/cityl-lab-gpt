@@ -25,6 +25,10 @@ export function Providers({ children }: { children: ReactNode }) {
         navigate={router.push}
         onSessionChange={() => router.refresh()}
         replace={router.replace}
+        social={{
+          providers: ["github"]
+        }}
+
       >
         <Suspense>
           <TRPCReactProvider>{children}</TRPCReactProvider>

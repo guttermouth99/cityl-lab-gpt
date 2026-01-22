@@ -18,16 +18,12 @@ export const auth = betterAuth({
     enabled: true,
     sendVerificationEmail: false,
   },
-  // socialProviders: {
-  //   github: {
-  //     clientId: env.GITHUB_CLIENT_ID ?? "",
-  //     clientSecret: env.GITHUB_CLIENT_SECRET ?? "",
-  //   },
-  //   google: {
-  //     clientId: env.GOOGLE_CLIENT_ID ?? "",
-  //     clientSecret: env.GOOGLE_CLIENT_SECRET ?? "",
-  //   },
-  // },
+  socialProviders: {
+    github: {
+      clientId: env.GITHUB_CLIENT_ID ?? "",
+      clientSecret: env.GITHUB_CLIENT_SECRET ?? "",
+    },
+  },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day

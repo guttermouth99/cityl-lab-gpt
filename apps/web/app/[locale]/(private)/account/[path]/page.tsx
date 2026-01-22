@@ -2,8 +2,6 @@ import { AccountView, accountViewPaths } from "@daveyplate/better-auth-ui";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
     Object.values(accountViewPaths).map((path) => ({ locale, path }))
